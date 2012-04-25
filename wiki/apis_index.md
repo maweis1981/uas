@@ -14,7 +14,7 @@
 
 Objects          |       General |  Aspects      |   Actions   
 -----------------|---------------|---------------|-------------
- user[^1]        |    lookup     |   status      |  update_status       
+ [user]          |    lookup     |   status      |  update_status       
  		         |               |   key         |  store_data_by_key           
  		         |               |   contacts    |  add_in_contacts
     	         |               |   friends     |  batch_update
@@ -22,27 +22,15 @@ Objects          |       General |  Aspects      |   Actions
     	         |               |   applications|
     	         |               |   statuses    |
     	         |               |   keys        |
-    	         |    			 |               |  
- status[^2]      |public_timeline|      
-                 |               |         
- key[^3]         |keys           |         
-                 |               |
- application[^4] |applications   |   
-                 |               |
+ [status]        |public_timeline|      
+ [key]           |keys           |         
+ [application]   |applications   |   
 
 
 
 
-[^1]: Users  
-  : User is a object with two type   
-  : Compact User  
-  : Detail User  
+[user]: http://users "users"  
+[status]: http://users "users"    
+[key]: http://users "users" 
+[application]: http://users "users"  
 
-[^2]: status  
-  : status is user status in application  
-
-[^3]: key  
-  : self stored key-value in application
-
-[^4]: Application  
-  : Application Information
