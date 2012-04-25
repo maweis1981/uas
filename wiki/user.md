@@ -45,6 +45,10 @@ About Rates Limits [Rates Limit][2]
 
 ### Response  
 
+Base Profile Object [user_base_object]  
+Full Profile Object [user_full_object]
+Custom Fields Object[user_custom_fields_object]
+
 JSON Example   
 
 
@@ -110,3 +114,7 @@ JSON Example
         ...
     }
 
+
+ [user_base_object]:user_object.md "user object"
+ [user_full_object]:user_object.md "user object"
+ [user_custom_fields_object]:user_object.md "user object"
