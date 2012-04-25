@@ -16,7 +16,7 @@ Objects          |       General   |  Aspects      |   Actions
 -----------------|-----------------|---------------|-------------
  [user]          |    [lookup]     |   [contacts]            |  [add_in_contacts]       
  		         |                 |   [friends]             |  [batch_update]           
- 		         |                 |   [in_contacts]         |  
+ 		         |                 |   [in_contacts]         |  [destroy]
     	         |                 |   [applications]        |  
     	         |                 |   [statuses][user_status]                   |
     	         |                 |   [keys]                |
@@ -39,6 +39,7 @@ Objects          |       General   |  Aspects      |   Actions
 [store_data_by_key]: user_store_data_by_key.md "user store data by key"  
 [add_in_contacts]: user_add_in_contacts.md "user add in contacts"  
 [batch_update]: user_batch_update.md "users batch update"
+[destroy]: user_destroy.md "user destroy"
 
 [status]: status.md "status"    
 [public_timeline]: public_timeline.md "public timeline"

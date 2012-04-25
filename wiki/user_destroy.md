@@ -1,12 +1,9 @@
-# Users:
+## user.destroy
 
-## 1. user
-
-user CRUD uri
 
 ### URL 
 
-[https://api.uas.sdo.com/v1/user/{uid}](https://api.uas.sdo.com/v1/user/{uid} "user")
+[https://api.uas.sdo.com/v1/user/{uid}/destroy](https://api.uas.sdo.com/v1/user/{uid}/destroy "user.destroy")
 
 
 ### Parameters      
@@ -22,16 +19,11 @@ JSON
 
 ### HTTP Request Method  
 
-GET,POST
-
-GET   : Retrieve User
-POST  : Create or Update User  
-
+POST  : Destroy User  
 
 ### Authorization  
 
 YES
-
 
 About Authorization [authorization][1]  
 
@@ -44,10 +36,6 @@ Rates Limits: YES
 About Rates Limits [Rates Limit][2]
 
 ### Response  
-
-Base Profile Object:  [user_base_object]   
-Full Profile Object:  [user_full_object]   
-Custom Fields Object: [user_custom_fields_object]  
 
 
 JSON Example   
