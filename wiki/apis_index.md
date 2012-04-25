@@ -14,23 +14,35 @@
 
 Objects          |       General |  Aspects      |   Actions   
 -----------------|---------------|---------------|-------------
- [user]          |    lookup     |   status      |  update_status       
- 		         |               |   key         |  store_data_by_key           
- 		         |               |   contacts    |  add_in_contacts
-    	         |               |   friends     |  batch_update
-    	         |               |   in_contacts |
-    	         |               |   applications|
-    	         |               |   statuses    |
-    	         |               |   keys        |
- [status]        |public_timeline|      
- [key]           |keys           |         
- [application]   |applications   |   
+ [user]          |    ［lookup]   |               |  [update_status]       
+ 		         |               |               |  [store_data_by_key]           
+ 		         |               |   [contacts]    |  [add_in_contacts]
+    	         |               |   [friends]     |  [batch_update]
+    	         |               |   [in_contacts] |
+    	         |               |   [applications]|
+    	         |               |   [statuses]    |
+    	         |               |   [keys]        |
+ [status]        |[public_timeline]|      
+ [key]           |[keys]           |         
+ [application]   |[applications]   |   
 
 
 
 
-[user]: User.md "user"  
-[status]: Status.md "status"    
-[key]: Key.md "key-value" 
-[application]: Application.md "application"  
+[user]: user.md "user"  
+[lookup]: lookup.md "lookup"  
+[contacts]: user_contacts.md "user contacts"
+[friends]: user_friends.md "user friends"
+[in_contacts]: user_in_contacts.md "user in_contacts"
+[applications]: user_applications.md "user used applications"  
+[statuses]: user_statuses.md "user statuses"  
+[keys]: user_keys.md "user stored keys"  
+[update_status]: user_update_status.md "user update status"  
+[store_data_by_key]: user_store_data_by_key.md "user store data by key"  
+[add_in_contacts]: user_add_in_contacts.md "user add in contacts"  
+[batch_update]: user_batch_update.md "users batch update"
+
+[status]: status.md "status"    
+[key]: key.md "key-value" 
+[application]: application.md "application"  
 
