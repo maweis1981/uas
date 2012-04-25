@@ -1,0 +1,33 @@
+{
+    "uid": "87c09c8c-8b82-4e9f-a982-ec577074db4b",
+
+    "name": "Tom",
+
+    "location": "Shanghai,China",
+
+    "description": "Any Description.",
+
+
+    tel_numbers:[
+        {
+            "tel_number":  "13512345678",
+
+            "tel_type": "work"
+
+
+        },{
+            "tel_number":  "13588888888",
+
+            "tel_type": "home"
+
+
+        }
+    ],
+    avatars:[
+
+        {
+            "url":"http://avatar.com/test.avatar"
+        }
+
+    ]
+}

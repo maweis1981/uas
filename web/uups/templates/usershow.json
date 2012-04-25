@@ -1,0 +1,11 @@
+{
+    "code":200,
+    "message":"success",
+    "data": [
+{
+	{% for i,d in enumerate(data) %}
+	"{{ d }}":"{{ data[d] }}"{% if i < len(data) - 1 %},{% end %}
+	{% end %}
+}
+    ]
+}

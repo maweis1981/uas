@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+access token: {{ token }}<br/>
+
+Test: <a href="/auth/test?access_token={{ token }}">Access API:Test Via Access Token</a>
+
+{% endblock %}

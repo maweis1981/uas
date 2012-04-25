@@ -1,0 +1,6 @@
+{
+    "code":200,
+    "message":"successful",
+    "access_token":"{{ token }}",
+    "scope":"{{ scope }}"
+}

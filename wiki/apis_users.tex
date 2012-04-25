@@ -1,0 +1,1404 @@
+\part{General:}
+\label{general:}
+
+\chapter{1. lookup}
+\label{lookup}
+
+lookup user id uri
+
+\section{URL}
+\label{url}
+
+\href{https://api.uas.sdo.com/v1/users/lookup}{https:/\slash api.uas.sdo.com\slash v1\slash users\slash lookup}\footnote{\href{https://api.uas.sdo.com/v1/users/lookup}{https:/\slash api.uas.sdo.com\slash v1\slash users\slash lookup}}
+
+\section{Parameters}
+\label{parameters}
+
+\begin{table}[htbp]
+\begin{minipage}{\linewidth}
+\setlength{\tymax}{0.5\linewidth}
+\centering
+\small
+\begin{tabulary}{\textwidth}{@{}LCR@{}} \toprule
+Request Parameters&optional&Type&Description\\
+\midrule
+access\_token&False&String&\\
+tel\_number&True&String&User's Telephone Number\\
+email&True&String&User's Email\\
+
+\bottomrule
+
+\end{tabulary}
+\end{minipage}
+\end{table}
+
+
+\section{Support Format}
+\label{supportformat}
+
+JSON
+
+\section{HTTP Request Method}
+\label{httprequestmethod}
+
+GET
+
+\section{Authorization}
+\label{authorization}
+
+YES
+
+About Authorization \href{http://auth.uas.sdo.com/how_to_auth}{authorization}\footnote{\href{http://auth.uas.sdo.com/how_to_auth}{http:/\slash auth.uas.sdo.com\slash how\_to\_auth}}
+
+\section{Access Limits}
+\label{accesslimits}
+
+Level: General
+Rates Limits: YES
+
+About Rates Limits \href{http://auth.uas.sdo.com/about_rates}{Rates Limit}\footnote{\href{http://auth.uas.sdo.com/about_rates}{http:/\slash auth.uas.sdo.com\slash about\_rates}}
+
+\section{Response}
+\label{response}
+
+Just Response Base Profile 
+
+JSON Example
+
+\begin{verbatim}
+{
+    count: 1,
+
+    offset: 1,
+
+    limit: 1,
+
+    users:[
+    {
+        "uid": "87c09c8c-8b82-4e9f-a982-ec577074db4b",
+
+        "tel_number": "13812345678",
+
+        "email": "mawei02@snda.com",
+
+        ......
+    }
+}
+\end{verbatim}
+
+
+\part{Users:}
+\label{users:}
+
+\chapter{1. user}
+\label{user}
+
+user CRUD uri
+
+\section{URL}
+\label{url}
+
+\href{https://api.uas.sdo.com/v1/user/{uid}}{https:/\slash api.uas.sdo.com\slash v1\slash user\slash \{uid\}}\footnote{\href{https://api.uas.sdo.com/v1/user/{uid}}{https:/\slash api.uas.sdo.com\slash v1\slash user\slash \{uid\}}}
+
+\section{Parameters}
+\label{parameters}
+
+\textbar{}--------------------------------------------------------------------\textbar{}\\
+\textbar{}Request Parameters \textbar{} Optional \textbar{} Type \textbar{} Description \textbar{}\\
+\textbar{}accessToken \textbar{} False \textbar{} String \textbar{} \textbar{}\\
+\textbar{}fields \textbar{} True \textbar{} String \textbar{} Fields,support ``base'',``full'',``field1,field2,{\ldots}''\\
+\textbar{}command \textbar{} True \textbar{} String \textbar{} C,R,U,D C,D should be in GET, R,U should be in POST 
+
+\section{Support Format}
+\label{supportformat}
+
+JSON 
+
+\section{HTTP Request Method}
+\label{httprequestmethod}
+
+GET,POST
+
+GET : Retrieve User, Delete User
+POST : Create or Update User
+
+\section{Authorization}
+\label{authorization}
+
+YES
+
+About Authorization \href{http://auth.uas.sdo.com/how_to_auth}{authorization}\footnote{\href{http://auth.uas.sdo.com/how_to_auth}{http:/\slash auth.uas.sdo.com\slash how\_to\_auth}} 
+
+\section{Access Limits}
+\label{accesslimits}
+
+Level: General\\
+Rates Limits: YES 
+
+About Rates Limits \href{http://auth.uas.sdo.com/about_rates}{Rates Limit}\footnote{\href{http://auth.uas.sdo.com/about_rates}{http:/\slash auth.uas.sdo.com\slash about\_rates}}
+
+\section{Response}
+\label{response}
+
+JSON Example 
+
+\begin{verbatim}
+{
+
+    "uid": "87c09c8c-8b82-4e9f-a982-ec577074db4b",
+
+    "name": "Tom",
+
+    "gender": "Male",
+
+    "status":  "user's last status",
+
+    "last_use_date": "20 Apr, 2012",
+
+    ......
+
+    ####end base Profile####
+
+    "blood": "O"  ,
+
+    "marry": "YES"  ,  
+
+    "applications": [
+        {
+            "app_id": 1,  
+
+            "account_id": 12345,  
+
+            "account_nickname": "maven",  
+
+            "last_status": "just a status",  
+
+            ...   
+
+        }
+    ],  
+
+    tel_numbers:[
+        {
+            "tel_number":  "13512345678",
+
+            "tel_type": "work",
+
+            ......
+
+        },{
+            "tel_number":  "13588888888",
+
+            "tel_type": "home",
+
+            ......
+
+        }
+    ],
+
+    avatars:[],
+
+    ring_tones:[],
+
+    locations:[],
+
+    ...
+}
+\end{verbatim}
+
+
+\chapter{2. user\slash status}
+\label{userstatus}
+
+Retrieve User's status Information
+
+User's status List
+
+\section{URL}
+\label{url}
+
+\href{https://api.uas.sdo.com/v1/users/{uid}/statues}{https:/\slash api.uas.sdo.com\slash v1\slash user\slash \{uid\slash \}statues}\footnote{\href{https://api.uas.sdo.com/v1/users/{uid}/statues}{https:/\slash api.uas.sdo.com\slash v1\slash users\slash \{uid\}\slash statues}}
+
+\section{Parameters}
+\label{parameters}
+
+Request Parameters \textbar{} Optional \textbar{} Type \textbar{} Description\\
+accessToken \textbar{} False \textbar{} String\textbar{}\\
+app\_id \textbar{} True \textbar{} application id : full, application ids\\
+offset \textbar{} True \textbar{} int \textbar{} User's Contacts offset\\
+limit \textbar{} True \textbar{} int \textbar{} User's Contacts count you want to load 
+
+offset is the count you retrieve last.
+limit is contacts you retrieve once.
+
+\section{Support Format}
+\label{supportformat}
+
+JSON
+
+\section{HTTP Request Method}
+\label{httprequestmethod}
+
+GET,POST
+C
+R
+U
+D
+
+\section{Authorization}
+\label{authorization}
+
+YES
+
+About Authorization \href{http://auth.uas.sdo.com/how_to_auth}{authorization}\footnote{\href{http://auth.uas.sdo.com/how_to_auth}{http:/\slash auth.uas.sdo.com\slash how\_to\_auth}}
+
+\section{Access Limits}
+\label{accesslimits}
+
+Level: General
+Rates Limits: YES
+
+About Rates Limits \href{http://auth.uas.sdo.com/about_rates}{Rates Limit}\footnote{\href{http://auth.uas.sdo.com/about_rates}{http:/\slash auth.uas.sdo.com\slash about\_rates}}
+
+\section{Response}
+\label{response}
+
+JSON Example
+
+\begin{verbatim}
+{
+
+    "uid": "87c09c8c-8b82-4e9f-a982-ec577074db4b",
+
+    "name": "Tom",  
+
+    "counts": 50,  
+
+    "offset": 1,  
+
+    "limit": 20,  
+
+
+    "statues": [
+            {
+
+                "app_id": 1,
+
+                "status": "status in some application",
+
+                "created_date": "23 Apr 2012 18:06:00",
+
+                ......
+
+            },
+            {
+
+                "app_id": 2,
+
+                "status": "status in second application",
+
+                "created_date": "23 Apr 2012 18:08:00",
+
+                ......
+
+            }
+        ......
+    ]
+}
+\end{verbatim}
+
+
+\chapter{3. user\slash key}
+\label{userkey}
+
+Retrieve User's application-store-key value
+
+User's application-store-key values
+
+\section{URL}
+\label{url}
+
+[https:/\slash api.uas.sdo.com\slash v1\slash user\slash \{uid\}\slash key\slash \{key\}](https:/\slash api.uas.sdo.com\slash v1\slash users\slash \{uid\}\slash key\slash \{key\} users.key")
+
+\section{Parameters}
+\label{parameters}
+
+Request Parameters \textbar{} Optional \textbar{} Type \textbar{} Description\\
+accessToken \textbar{} False \textbar{} String\textbar{}\\
+app\_id \textbar{} True \textbar{} application id : full, application ids\\
+offset \textbar{} True \textbar{} int \textbar{} User's Contacts offset\\
+limit \textbar{} True \textbar{} int \textbar{} User's Contacts count you want to load 
+
+offset is the count you retrieve last.
+limit is contacts you retrieve once.
+
+\section{Support Format}
+\label{supportformat}
+
+JSON
+
+\section{HTTP Request Method}
+\label{httprequestmethod}
+
+GET,POST
+C
+R
+U
+D
+
+\section{Authorization}
+\label{authorization}
+
+YES
+
+About Authorization \href{http://auth.uas.sdo.com/how_to_auth}{authorization}\footnote{\href{http://auth.uas.sdo.com/how_to_auth}{http:/\slash auth.uas.sdo.com\slash how\_to\_auth}}
+
+\section{Access Limits}
+\label{accesslimits}
+
+Level: General
+Rates Limits: YES
+
+About Rates Limits \href{http://auth.uas.sdo.com/about_rates}{Rates Limit}\footnote{\href{http://auth.uas.sdo.com/about_rates}{http:/\slash auth.uas.sdo.com\slash about\_rates}}
+
+\section{Response}
+\label{response}
+
+JSON Example
+
+\begin{verbatim}
+{
+
+    "uid": "87c09c8c-8b82-4e9f-a982-ec577074db4b",
+
+    "name": "Tom",  
+
+    "counts": 50,  
+
+    "offset": 1,  
+
+    "limit": 20,  
+
+    "key": "stored-key",
+
+    "stored-values": [
+            {
+
+                "app_id": 1,
+
+                "value": "application self stored value in some application",
+
+                "created_date": "23 Apr 2012 18:06:00",
+
+                ......
+
+            },
+            {
+
+                "app_id": 2,
+
+                "value": "application self stored value in second application",
+
+                "created_date": "23 Apr 2012 18:08:00",
+
+                ......
+
+            }
+        ......
+    ]
+}
+\end{verbatim}
+
+
+\chapter{4. user\slash contacts}
+\label{usercontacts}
+
+Retrieve User's Contacts Information
+
+User's Contacts List 
+
+\section{URL}
+\label{url}
+
+\href{https://api.uas.sdo.com/v1/users/{uid}/contacts}{https:/\slash api.uas.sdo.com\slash v1\slash user\slash \{uid\slash \}contacts}\footnote{\href{https://api.uas.sdo.com/v1/users/{uid}/contacts}{https:/\slash api.uas.sdo.com\slash v1\slash users\slash \{uid\}\slash contacts}}
+
+\section{Parameters}
+\label{parameters}
+
+Request Parameters \textbar{} Optional \textbar{} Type \textbar{} Description\\
+accessToken \textbar{} False \textbar{} String\textbar{}\\
+fields \textbar{} True \textbar{} user profile type: base, full, fields\\
+offset \textbar{} True \textbar{} int \textbar{} User's Contacts offset\\
+limit \textbar{} True \textbar{} int \textbar{} User's Contacts count you want to load 
+
+telNumber or email must be has one.
+offset is the count you retrieve last.
+limit is contacts you retrieve once.
+Just like ``select * from contacts limit offset, limit''
+
+\section{Support Format}
+\label{supportformat}
+
+JSON 
+
+\section{HTTP Request Method}
+\label{httprequestmethod}
+
+GET
+
+\section{Authorization}
+\label{authorization}
+
+YES
+
+About Authorization \href{http://auth.uas.sdo.com/how_to_auth}{authorization}\footnote{\href{http://auth.uas.sdo.com/how_to_auth}{http:/\slash auth.uas.sdo.com\slash how\_to\_auth}} 
+
+\section{Access Limits}
+\label{accesslimits}
+
+Level: General\\
+Rates Limits: YES 
+
+About Rates Limits \href{http://auth.uas.sdo.com/about_rates}{Rates Limit}\footnote{\href{http://auth.uas.sdo.com/about_rates}{http:/\slash auth.uas.sdo.com\slash about\_rates}}
+
+\section{Response}
+\label{response}
+
+JSON Example 
+
+\begin{verbatim}
+{
+
+    "uid": "87c09c8c-8b82-4e9f-a982-ec577074db4b",
+
+    "name": "Tom",  
+
+    "counts": 50,  
+
+    "offset": 1,  
+
+    "limit": 20,  
+
+    "Contacts": [
+            {
+
+                "uid": "87c09c8c-8b82-4e9f-a982-ec577074db4b",
+
+                "name": "Tom",
+
+                "gender": "Male",
+
+                "status":  "user's last status",
+
+                "last_use_date": "20 Apr, 2012",
+
+                ......
+
+                ####end base Profile####
+
+                "blood": "O"  ,
+
+                "marry": "YES"  ,
+
+                tel_numbers:[
+                    {
+                        "tel_number":  "13512345678",
+
+                        "tel_type": "work",
+
+                        ......
+
+                    },{
+                        "tel_number":  "13588888888",
+
+                        "tel_type": "home",
+
+                        ......
+
+                    }
+                ],
+
+                avatars:[],
+
+                ring_tones:[],
+
+                locations:[],
+
+                ...
+            },
+            {
+
+                "uid": "87c09c8c-8b82-4e9f-a982-ec577074db4b",
+
+                "name": "Tom",
+
+                "gender": "Male",
+
+                "status":  "user's last status",
+
+                "last_use_date": "20 Apr, 2012",
+
+                ......
+
+                ####end base Profile####
+
+                "blood": "O"  ,
+
+                "marry": "YES"  ,
+
+                tel_numbers:[
+                    {
+                        "tel_number":  "13512345678",
+
+                        "tel_type": "work",
+
+                        ......
+
+                    },{
+                        "tel_number":  "13588888888",
+
+                        "tel_type": "home",
+
+                        ......
+
+                    }
+                ],
+
+                avatars:[],
+
+                ring_tones:[],
+
+                locations:[],
+
+                ...
+            },
+        ......                  
+    ]
+}
+\end{verbatim}
+
+
+\chapter{5. user\slash friends}
+\label{userfriends}
+
+friends is relative via backend computing.
+
+Retrieve User's friends Information
+
+User's friends List
+
+\section{URL}
+\label{url}
+
+\href{https://api.uas.sdo.com/v1/users/{uid}/friends}{https:/\slash api.uas.sdo.com\slash v1\slash user\slash \{uid\}\slash friends}\footnote{\href{https://api.uas.sdo.com/v1/users/{uid}/friends}{https:/\slash api.uas.sdo.com\slash v1\slash users\slash \{uid\}\slash friends}}
+
+\section{Parameters}
+\label{parameters}
+
+Request Parameters \textbar{} Optional \textbar{} Type \textbar{} Description\\
+accessToken \textbar{} False \textbar{} String\textbar{}\\
+fields \textbar{} True \textbar{} user profile type: base, full, fields\\
+offset \textbar{} True \textbar{} int \textbar{} User's Contacts offset\\
+limit \textbar{} True \textbar{} int \textbar{} User's Contacts count you want to load 
+
+fields is full or fields(``name,tel\_number'')
+offset is friends list offset
+limit is friends you retrieve once.
+Just like ``select * from friends limit offset, limit''
+
+\section{Support Format}
+\label{supportformat}
+
+JSON
+
+\section{HTTP Request Method}
+\label{httprequestmethod}
+
+GET
+
+\section{Authorization}
+\label{authorization}
+
+YES
+
+About Authorization \href{http://auth.uas.sdo.com/how_to_auth}{authorization}\footnote{\href{http://auth.uas.sdo.com/how_to_auth}{http:/\slash auth.uas.sdo.com\slash how\_to\_auth}}
+
+\section{Access Limits}
+\label{accesslimits}
+
+Level: General
+Rates Limits: YES
+
+About Rates Limits \href{http://auth.uas.sdo.com/about_rates}{Rates Limit}\footnote{\href{http://auth.uas.sdo.com/about_rates}{http:/\slash auth.uas.sdo.com\slash about\_rates}}
+
+\section{Response}
+\label{response}
+
+JSON Example
+
+\begin{verbatim}
+{
+
+    "uid": "87c09c8c-8b82-4e9f-a982-ec577074db4b",
+
+    "name": "Tom",
+
+    "counts": 50,  
+
+    "offset": 1,  
+
+    "limit": 20,
+
+    "Contacts": [
+            {
+
+                "uid": "87c09c8c-8b82-4e9f-a982-ec577074db4b",
+
+                "name": "Tom",
+
+                "gender": "Male",
+
+                "status":  "user's last status",
+
+                "last_use_date": "20 Apr, 2012",
+
+                ......
+
+                ####end base Profile####
+
+                "blood": "O"  ,
+
+                "marry": "YES"  ,
+
+                tel_numbers:[
+                    {
+                        "tel_number":  "13512345678",
+
+                        "tel_type": "work",
+
+                        ......
+
+                    },{
+                        "tel_number":  "13588888888",
+
+                        "tel_type": "home",
+
+                        ......
+
+                    }
+                ],
+
+                avatars:[],
+
+                ring_tones:[],
+
+                locations:[],
+
+                ...
+            },
+            {
+
+                "uid": "87c09c8c-8b82-4e9f-a982-ec577074db4b",
+
+                "name": "Tom",
+
+                "gender": "Male",
+
+                "status":  "user's last status",
+
+                "last_use_date": "20 Apr, 2012",
+
+                ......
+
+                ####end base Profile####
+
+                "blood": "O"  ,
+
+                "marry": "YES"  ,
+
+                tel_numbers:[
+                    {
+                        "tel_number":  "13512345678",
+
+                        "tel_type": "work",
+
+                        ......
+
+                    },{
+                        "tel_number":  "13588888888",
+
+                        "tel_type": "home",
+
+                        ......
+
+                    }
+                ],
+
+                avatars:[],
+
+                ring_tones:[],
+
+                locations:[],
+
+                ...
+            },
+        ......
+    ]
+}
+\end{verbatim}
+
+
+\chapter{6. user\slash in\_contacts}
+\label{userin_contacts}
+
+Retrieve User's friends Information
+
+User's friends List
+
+\section{URL}
+\label{url}
+
+\href{https://api.uas.sdo.com/v1/users/{uid}/in_contacts}{https:/\slash api.uas.sdo.com\slash v1\slash user\slash \{uid\}\slash in\_contacts}\footnote{\href{https://api.uas.sdo.com/v1/users/{uid}/in_contacts}{https:/\slash api.uas.sdo.com\slash v1\slash users\slash \{uid\}\slash in\_contacts}}
+
+\section{Parameters}
+\label{parameters}
+
+Request Parameters \textbar{} Optional \textbar{} Type \textbar{} Description\\
+accessToken \textbar{} False \textbar{} String\textbar{}\\
+fields \textbar{} True \textbar{} user profile type: base, full, fields\\
+offset \textbar{} True \textbar{} int \textbar{} User's Contacts offset\\
+limit \textbar{} True \textbar{} int \textbar{} User's Contacts count you want to load 
+
+fields is full or fields(``name,tel\_number'')
+offset is friends list offset
+limit is friends you retrieve once.
+Just like ``select * from friends limit offset, limit''
+
+\section{Support Format}
+\label{supportformat}
+
+JSON
+
+\section{HTTP Request Method}
+\label{httprequestmethod}
+
+GET
+
+\section{Authorization}
+\label{authorization}
+
+YES
+
+About Authorization \href{http://auth.uas.sdo.com/how_to_auth}{authorization}\footnote{\href{http://auth.uas.sdo.com/how_to_auth}{http:/\slash auth.uas.sdo.com\slash how\_to\_auth}}
+
+\section{Access Limits}
+\label{accesslimits}
+
+Level: General
+Rates Limits: YES
+
+About Rates Limits \href{http://auth.uas.sdo.com/about_rates}{Rates Limit}\footnote{\href{http://auth.uas.sdo.com/about_rates}{http:/\slash auth.uas.sdo.com\slash about\_rates}}
+
+\section{Response}
+\label{response}
+
+JSON Example
+
+\begin{verbatim}
+{
+
+    "uid": "87c09c8c-8b82-4e9f-a982-ec577074db4b",
+
+    "name": "Tom",  
+
+    "counts": 50,  
+
+    "offset": 1,  
+
+    "limit": 20,  
+
+    "in_contacts": [
+            {
+
+                "uid": "87c09c8c-8b82-4e9f-a982-ec577074db4b",
+
+                "name": "Tom",
+
+                "gender": "Male",
+
+                "status":  "user's last status",
+
+                "last_use_date": "20 Apr, 2012",
+
+                ......
+
+                ####end base Profile####
+
+                "blood": "O"  ,
+
+                "marry": "YES"  ,
+
+                tel_numbers:[
+                    {
+                        "tel_number":  "13512345678",
+
+                        "tel_type": "work",
+
+                        ......
+
+                    },{
+                        "tel_number":  "13588888888",
+
+                        "tel_type": "home",
+
+                        ......
+
+                    }
+                ],
+
+                avatars:[],
+
+                ring_tones:[],
+
+                locations:[],
+
+                ...
+            },
+            {
+
+                "uid": "87c09c8c-8b82-4e9f-a982-ec577074db4b",
+
+                "name": "Tom",
+
+                "gender": "Male",
+
+                "status":  "user's last status",
+
+                "last_use_date": "20 Apr, 2012",
+
+                ......
+
+                ####end base Profile####
+
+                "blood": "O"  ,
+
+                "marry": "YES"  ,
+
+                tel_numbers:[
+                    {
+                        "tel_number":  "13512345678",
+
+                        "tel_type": "work",
+
+                        ......
+
+                    },{
+                        "tel_number":  "13588888888",
+
+                        "tel_type": "home",
+
+                        ......
+
+                    }
+                ],
+
+                avatars:[],
+
+                ring_tones:[],
+
+                locations:[],
+
+                ...
+            },
+        ......
+    ]
+}
+\end{verbatim}
+
+
+\chapter{7. user\slash contacts\slash app}
+\label{usercontactsapp}
+
+Retrieve contacts is used the app list
+
+\section{URL}
+\label{url}
+
+\href{https://api.uas.sdo.com/v1/user/{uid}/contacts/app/{app_id}}{https:/\slash api.uas.sdo.com\slash v1\slash user\slash \{uid\}\slash contacts\slash app\slash \{app\_id\}}\footnote{\href{https://api.uas.sdo.com/v1/user/{uid}/contacts/app/{app_id}}{https:/\slash api.uas.sdo.com\slash v1\slash user\slash \{uid\}\slash contacts\slash app\slash \{app\_id\}}}
+
+\section{Parameters}
+\label{parameters}
+
+\textbar{}Request Parameters \textbar{} Optional \textbar{} Type \textbar{} Description\\
+\textbar{}accessToken \textbar{} False \textbar{} String\textbar{}\\
+\textbar{}uid \textbar{} False \textbar{} String\textbar{} User's id\\
+\textbar{}app\_id \textbar{} False \textbar{} String\textbar{} support full, app id array such as ``1,2,3''\\
+offset \textbar{} True \textbar{} int \textbar{} User's Contacts offset\\
+limit \textbar{} True \textbar{} int \textbar{} User's Contacts count you want to load 
+
+\section{Support Format}
+\label{supportformat}
+
+JSON
+
+\section{HTTP Request Method}
+\label{httprequestmethod}
+
+GET
+
+\section{Authorization}
+\label{authorization}
+
+YES
+
+About Authorization \href{http://auth.uas.sdo.com/how_to_auth}{authorization}\footnote{\href{http://auth.uas.sdo.com/how_to_auth}{http:/\slash auth.uas.sdo.com\slash how\_to\_auth}}
+
+\section{Access Limits}
+\label{accesslimits}
+
+Level: General
+Rates Limits: YES
+
+About Rates Limits \href{http://auth.uas.sdo.com/about_rates}{Rates Limit}\footnote{\href{http://auth.uas.sdo.com/about_rates}{http:/\slash auth.uas.sdo.com\slash about\_rates}}
+
+\section{Response}
+\label{response}
+
+JSON Example
+
+\begin{verbatim}
+{
+    "app_id": "full",
+
+    "app_name": "Application name",  
+
+    "counts": 50,  
+
+    "offset": 1,  
+
+    "limit": 20,
+
+    [{
+        "uid": "87c09c8c-8b82-4e9f-a982-ec577074db4b",
+
+        accounts:[
+
+            {
+                "app_id": 1,
+
+                "user_id_in_app": "12345",
+
+                "status":  "user's last status",
+
+                "last_use_date": "20 Apr, 2012",
+
+                ......
+            },{
+                "app_id": 9,
+
+                "user_id_in_app": "1356934",
+
+                "status": "user's status in application",
+
+                ......
+            }
+        ]
+        ......
+    },{
+        "uid": "87c09c8c-8b82-4e9f-a982-ec577074db4c",
+
+        accounts:[
+
+            {
+                "app_id": 1,
+
+                "user_id_in_app": "88888",
+
+                "status":  "user's last status",
+
+                "last_use_date": "20 Apr, 2012",
+
+                ......
+            }
+        ]
+        ......
+    },
+    ......
+    ]
+}
+\end{verbatim}
+
+
+\chapter{8. user\slash contacts\slash app\slash status}
+\label{usercontactsappstatus}
+
+Retrieve contacts last status Information
+
+\section{URL}
+\label{url}
+
+\href{https://api.uas.sdo.com/v1/user/{uid}/contacts/app/{app_id}/status}{https:/\slash api.uas.sdo.com\slash v1\slash user\slash \{uid\}\slash contacts\slash app\slash \{app\_id\}\slash status}\footnote{\href{https://api.uas.sdo.com/v1/user/{uid}/contacts/app/{app_id}/status}{https:/\slash api.uas.sdo.com\slash v1\slash user\slash \{uid\}\slash contacts\slash app\slash \{app\_id\}\slash status}}
+
+\section{Parameters}
+\label{parameters}
+
+Request Parameters \textbar{} Optional \textbar{} Type \textbar{} Description\\
+accessToken \textbar{} False \textbar{} String \textbar{}\\
+uid \textbar{} True \textbar{} String \textbar{} User's id\\
+app\_id \textbar{} True \textbar{} String \textbar{} Application id, support full,and fields ``1,2,3''\\
+status \textbar{} True \textbar{} String \textbar{} if Application allow, Application could support status features without coding.\\
+offset \textbar{} True \textbar{} int \textbar{} User's Contacts offset\\
+limit \textbar{} True \textbar{} int \textbar{} User's Contacts count you want to load 
+
+\section{Support Format}
+\label{supportformat}
+
+JSON
+
+\section{HTTP Request Method}
+\label{httprequestmethod}
+
+GET,POST
+
+CRUD
+
+\section{Authorization}
+\label{authorization}
+
+YES
+
+About Authorization \href{http://auth.uas.sdo.com/how_to_auth}{authorization}\footnote{\href{http://auth.uas.sdo.com/how_to_auth}{http:/\slash auth.uas.sdo.com\slash how\_to\_auth}}
+
+\section{Access Limits}
+\label{accesslimits}
+
+Level: General
+Rates Limits: YES
+
+About Rates Limits \href{http://auth.uas.sdo.com/about_rates}{Rates Limit}\footnote{\href{http://auth.uas.sdo.com/about_rates}{http:/\slash auth.uas.sdo.com\slash about\_rates}}
+
+\section{Response}
+\label{response}
+
+JSON Example
+
+\begin{verbatim}
+{
+    "app_id": 1
+
+    "app_name": "Application name",  
+
+    "counts": 50,  
+
+    "offset": 1,  
+
+    "limit": 20,
+
+
+    [{
+        "uid": "87c09c8c-8b82-4e9f-a982-ec577074db4b",
+
+        statuses: [
+            {
+                "app_id": 12345,
+
+                "status": "I just want to say something!",
+
+                "created_date": "2012-05-01 13:13:33"
+            },{
+                "app_id": 54321,
+
+                "status": "Someone say something!",
+
+                "created_date": "2012-05-01 13:13:33"
+            }
+
+        ]
+        ......
+    },{
+        "uid": "87c09c8c-8b82-4e9f-a982-ec577074db4c",
+
+        statuses: [
+            {
+                "app_id": 12345,
+
+                "status": "I just want to say something!",
+
+                "created_date": "2012-05-01 13:13:33"
+            }
+        ]
+
+    },{
+        "uid": "87c09c8c-8b82-4e9f-a982-ec577074db4d",
+
+        statuses: [
+            {
+                "app_id": 12345,
+
+                "status": "I just want to say something!",
+
+                "created_date": "2012-05-01 13:13:33"
+            },{
+                "app_id": 54321,
+
+                "status": "Someone say something!",
+
+                "created_date": "2012-05-01 13:13:33"
+            },{
+                "app_id": 333,
+
+                "status": "Someone say something!",
+
+                "created_date": "2012-05-01 13:13:33"
+            }
+        ]
+    },
+    ......
+    ]
+    ......
+}
+\end{verbatim}
+
+
+\chapter{9. user\slash contacts\slash app\slash key}
+\label{usercontactsappkey}
+
+Retrieve contacts last status Information
+
+\section{URL}
+\label{url}
+
+\href{https://api.uas.sdo.com/v1/user/{uid}/contacts/app/{app_id}/key/{key}}{https:/\slash api.uas.sdo.com\slash v1\slash user\slash \{uid\}\slash contacts\slash app\slash \{app\_id\}\slash key\slash \{key\}}\footnote{\href{https://api.uas.sdo.com/v1/user/{uid}/contacts/app/{app_id}/key/{key}}{https:/\slash api.uas.sdo.com\slash v1\slash user\slash \{uid\}\slash contacts\slash app\slash \{app\_id\}\slash key\slash \{key\}}}
+
+\section{Parameters}
+\label{parameters}
+
+Request Parameters \textbar{} Optional \textbar{} Type \textbar{} Description\\
+accessToken \textbar{} False \textbar{} String \textbar{}\\
+uid \textbar{} True \textbar{} String \textbar{} User's id\\
+app\_id \textbar{} True \textbar{} String \textbar{} Application id, support full,and fields ``1,2,3''\\
+key \textbar{} False \textbar{} String \textbar{} Application want to store meta key\\
+value \textbar{} False \textbar{} Object \textbar{} Application want to store meta value\\
+offset \textbar{} True \textbar{} int \textbar{} User's Contacts offset\\
+limit \textbar{} True \textbar{} int \textbar{} User's Contacts count you want to load 
+
+\section{Support Format}
+\label{supportformat}
+
+JSON
+
+\section{HTTP Request Method}
+\label{httprequestmethod}
+
+GET,POST
+
+CRUD
+
+\section{Authorization}
+\label{authorization}
+
+YES
+
+About Authorization \href{http://auth.uas.sdo.com/how_to_auth}{authorization}\footnote{\href{http://auth.uas.sdo.com/how_to_auth}{http:/\slash auth.uas.sdo.com\slash how\_to\_auth}}
+
+\section{Access Limits}
+\label{accesslimits}
+
+Level: General
+Rates Limits: YES
+
+About Rates Limits \href{http://auth.uas.sdo.com/about_rates}{Rates Limit}\footnote{\href{http://auth.uas.sdo.com/about_rates}{http:/\slash auth.uas.sdo.com\slash about\_rates}}
+
+\section{Response}
+\label{response}
+
+JSON Example
+
+\begin{verbatim}
+{
+    "app_id": 1
+
+    "app_name": "Application name",  
+
+    "counts": 50,  
+
+    "offset": 1,  
+
+    "limit": 20,
+
+
+    [{
+        "uid": "87c09c8c-8b82-4e9f-a982-ec577074db4b",
+
+        statuses: [
+            {
+                "app_id": 12345,
+
+                "self-stored-key": "self-stored-value for this app",
+
+                "created_date": "2012-05-01 13:13:33"
+            },{
+                "app_id": 54321,
+
+                "self-stored-key": "self-stored-value for this app",
+
+                "created_date": "2012-05-01 13:13:33"
+            }
+
+        ]
+        ......
+    },{
+        "uid": "87c09c8c-8b82-4e9f-a982-ec577074db4c",
+
+        statuses: [
+            {
+                "app_id": 12345,
+
+                "self-stored-key": "self-stored-value for this app",
+
+                "created_date": "2012-05-01 13:13:33"
+            }
+        ]
+
+    },
+    ......
+    ]
+    ......
+}
+\end{verbatim}
+
+
+\chapter{10. users batch update}
+\label{usersbatchupdate}
+
+Update Users Information
+
+\section{URL}
+\label{url}
+
+\href{https://api.uas.sdo.com/v1/users/update}{https:/\slash api.uas.sdo.com\slash v1\slash users\slash update}\footnote{\href{https://api.uas.sdo.com/v1/users/update}{https:/\slash api.uas.sdo.com\slash v1\slash users\slash update}}
+
+\section{Parameters}
+\label{parameters}
+
+Request Parameters \textbar{} Optional \textbar{} Type \textbar{} Description\\
+accessToken \textbar{} False \textbar{} String \textbar{}\\
+userData \textbar{} True \textbar{} String \textbar{} User's Data in JSON Format\\
+count \textbar{} int \textbar{} int \textbar{} how many users you batch update . 
+
+\section{Support Format}
+\label{supportformat}
+
+JSON
+
+\section{HTTP Request Method}
+\label{httprequestmethod}
+
+POST
+
+\section{Authorization}
+\label{authorization}
+
+YES
+
+About Authorization \href{http://auth.uas.sdo.com/how_to_auth}{authorization}\footnote{\href{http://auth.uas.sdo.com/how_to_auth}{http:/\slash auth.uas.sdo.com\slash how\_to\_auth}}
+
+\section{Access Limits}
+\label{accesslimits}
+
+Level: General
+Rates Limits: YES
+
+About Rates Limits \href{http://auth.uas.sdo.com/about_rates}{Rates Limit}\footnote{\href{http://auth.uas.sdo.com/about_rates}{http:/\slash auth.uas.sdo.com\slash about\_rates}}
+
+\section{Response}
+\label{response}
+
+JSON Example
+
+\begin{verbatim}
+{
+
+    "uid": "87c09c8c-8b82-4e9f-a982-ec577074db4b",
+
+    "name": "Tom",
+
+    "gender": "Male",
+
+    ......
+
+    ####end base Profile####
+
+    "blood": "O"  ,
+
+    "marry": "YES"  ,
+
+    tel_numbers:[
+        {
+            "tel_number":  "13512345678",
+
+            "tel_type": "work",
+
+            ......
+
+        },{
+            "tel_number":  "13588888888",
+
+            "tel_type": "home",
+
+            ......
+
+        }
+    ],
+
+    avatars:[],
+
+    ring_tones:[],
+
+    locations:[],
+
+    ...
+}
+\end{verbatim}
+
+
+\part{Application:}
+\label{application:}
+
+\begin{verbatim}
+Empty Now.  
+\end{verbatim}
+
+
+\part{Errors:}
+\label{errors:}
+
+\chapter{1. Uniform Error Response}
+\label{uniformerrorresponse}
+
+\section{Response}
+\label{response}
+
+JSON Example
+
+\begin{verbatim}
+{
+    "error":  {
+
+        "message": "(#401) Error Message",
+
+        "type": "Exception Type",
+
+        "code": 401
+    }
+}
+\end{verbatim}
+
+
+Exceptions:
+
+\textbar{} --------------------------------\textbar{}\\
+\textbar{} code \textbar{} message \textbar{} type \textbar{}\\
+\textbar{} 401 \textbar{} Forbidden \textbar{} Auth \textbar{}\\
+\textbar{} 701 \textbar{} Over Limits\textbar{} Rates \textbar{}\\
+{\ldots}

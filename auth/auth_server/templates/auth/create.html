@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block content %}
+    <form class="form-horizontal">
+		<legend>Create Application Form</legend>
+        <fieldset>
+            <div class="control-group">
+                <label class="control-label" for="input01">Application Name</label>
+                <div class="controls">
+                    <input type="text" class="input-xlarge" id="name" name="name">
+                    <p class="help-block">Name of the client application</p>
+                </div>
+            </div>
+        </fieldset>
+        <fieldset>
+            <div class="control-group">
+                <label class="control-label" for="input01">Description</label>
+                <div class="controls">
+                    <textarea class="input-xlarge" id="description" name="description"></textarea>
+                </div>
+            </div>
+        </fieldset>
+        <fieldset>
+            <div class="control-group">
+                <label class="control-label" for="input01">URL</label>
+                <div class="controls">
+                    <input type="text" class="input-xlarge" id="input01">
+                    <p class="help-block">Supporting help text</p>
+                </div>
+            </div>
+        </fieldset>
+    </form>
+
+{% endblock %}

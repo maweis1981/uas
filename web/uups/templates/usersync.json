@@ -1,0 +1,11 @@
+{
+    "code":{{ data["meta"]["code"] }},
+    "message":{{ data["meta"]["message"]}},
+    "data": [
+{
+	{% for i,d in enumerate(data["data"]) %}
+	"{{ d }}":"{{ data[d] }}"{% if i < len(data) - 1 %},{% end %}
+	{% end %}
+}
+    ]
+}

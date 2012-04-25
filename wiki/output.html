@@ -1,0 +1,155 @@
+<h1 id="contacts:">Contacts:</h1>
+
+<h2 id=".contactsapp">1. contacts/app</h2>
+
+<p>Retrieve contacts is used the app list</p>
+
+<h3 id="url">URL</h3>
+
+<p><a href="https://api.uas.sdo.com/1/contacts/app.json" title="contacts.app">https://api.uas.sdo.com/1/contacts/app.json</a></p>
+
+<h3 id=""> </h3>
+
+<p>Request Parameters  |  Optional  |  Type  |  Description <br />
+accessToken         |  False     |  String| <br />
+telNumber           |  True      |  String|  User&#8217;s Telephone Number
+email               |  True      |  String|  User&#8217;s Email  </p>
+
+<p>telNumber or email must be has one.
+App Id will be get from accessToken</p>
+
+<h3 id="supportformat">Support Format</h3>
+
+<p>JSON  </p>
+
+<h3 id="httprequestmethod">HTTP Request Method</h3>
+
+<p>GET</p>
+
+<h3 id="authorization">Authorization</h3>
+
+<p>YES</p>
+
+<p>About Authorization <a href="#" title=" ">authorization</a>  </p>
+
+<h3 id="accesslimits">Access Limits</h3>
+
+<p>Level: General <br />
+Rates Limits: YES  </p>
+
+<p>About Rates Limits <a href="#" title=" ">Rates Limit</a></p>
+
+<h3 id="response">Response</h3>
+
+<p>JSON Example   </p>
+
+<pre><code>{
+    "app_id": 1,
+
+    "app_name": "Application name"
+
+    [{
+        "uid": "87c09c8c-8b82-4e9f-a982-ec577074db4b",
+
+        "user_id_in_app": "12345"
+
+        ......
+    },{
+        "uid": "87c09c8c-8b82-4e9f-a982-ec577074db4c",
+
+        "user_id_in_app": "-1"
+
+        ......
+    },{
+        "uid": "87c09c8c-8b82-4e9f-a982-ec577074db4d",
+
+        "user_id_in_app": "-1"
+
+        ......
+    },
+    ......
+    ]
+
+    ......
+}
+</code></pre>
+
+<h2 id=".contactsstatus">2. contacts/status</h2>
+
+<p>Retrieve contacts last status Information</p>
+
+<h3 id="url">URL</h3>
+
+<p><a href="https://api.uas.sdo.com/1/contacts/app.json" title="contacts.app">https://api.uas.sdo.com/1/contacts/app.json</a></p>
+
+<h3 id=""> </h3>
+
+<p>Request Parameters  |  Optional  |  Type   |  Description <br />
+accessToken         |  False     |  String | <br />
+telNumber           |  True      |  String |  User&#8217;s Telephone Number
+email               |  True      |  String |  User&#8217;s Email <br />
+global              |  True      |  Boolean|  is Global status <br />
+appId               |  int       |  int    |  contacts&#8217;s status in one app  </p>
+
+<p>telNumber or email must be has one.</p>
+
+<h3 id="supportformat">Support Format</h3>
+
+<p>JSON  </p>
+
+<h3 id="httprequestmethod">HTTP Request Method</h3>
+
+<p>GET</p>
+
+<h3 id="authorization">Authorization</h3>
+
+<p>YES</p>
+
+<p>About Authorization <a href="#" title=" ">authorization</a>  </p>
+
+<h3 id="accesslimits">Access Limits</h3>
+
+<p>Level: General <br />
+Rates Limits: YES  </p>
+
+<p>About Rates Limits <a href="#" title=" ">Rates Limit</a></p>
+
+<h3 id="response">Response</h3>
+
+<p>JSON Example   </p>
+
+<pre><code>{
+    "app_id": 1
+
+    "app_name": "Application name"
+
+    [{
+        "uid": "87c09c8c-8b82-4e9f-a982-ec577074db4b",
+
+        "app_id": 12345,
+
+        "status": "I just want to say something!"
+
+        ......
+    },{
+        "uid": "87c09c8c-8b82-4e9f-a982-ec577074db4c",
+
+        "app_id": 2,
+
+        "status": "I just want to say something!------"
+
+        ......
+    },{
+        "uid": "87c09c8c-8b82-4e9f-a982-ec577074db4d",
+
+        "app_id": 888,
+
+        "status": "I just want to say something!!!!!!!!!"
+
+        ......
+    },
+    ......
+    ]
+    ......
+}
+</code></pre>

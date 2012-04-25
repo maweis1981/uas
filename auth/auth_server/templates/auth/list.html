@@ -1,0 +1,35 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+<!-- Main hero unit for a primary marketing message or call to action -->
+<div class="hero-unit">
+    <h1>SNDA UUPS</h1>
+    <p>SNDA Uniform User Profile System</p>
+    <p><a class="btn btn-primary btn-large" href="/apps/create">Create &raquo;</a></p>
+</div>
+
+
+<div class="row">
+{% for client in clients %}
+
+    <div class="span5">
+        <b>{{ client.title }}</b>
+
+
+        <div class="btn btn-success">
+            Access Token:
+            <a href="/oauth/auth/?client_id={{ client.identifier }}&response_type=token"/>{{ client.identifier }}</a>
+        </div>
+
+        <br/>
+        <b>{{ client.user }}</b>
+        <br/>
+        <b>{{ client.description }}</b><br/>
+        <b>{{ client.identifier }}</b><br/>
+        <b>{{ client.date_registered }}</b><br/>
+    </div>
+{% endfor  %}
+</div>
+{% endblock %}
