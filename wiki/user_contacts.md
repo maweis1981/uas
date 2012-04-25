@@ -13,14 +13,13 @@ User's Contacts List
 Request Parameters  |  Optional  |  Type  |  Description  
 -------------|-----------|---------|--------
 accessToken			|  False	 |  String|  
-fields              |  True      |  user profile type: base, full, fields  
+fields              |  True      |  user profile type: base, full, custom fields  
 offset				|  True      |  int   |  User's Contacts offset    
 limit 				|  True      |  int   |  User's Contacts count you want to load  
 
-telNumber or email must be has one.
+
 offset is the count you retrieve last.
 limit is contacts you retrieve once.
-Just like "select * from contacts limit offset, limit"
 
 ### Support Format  
 
@@ -52,17 +51,11 @@ JSON Example
 
     {
 
-        "uid": "87c09c8c-8b82-4e9f-a982-ec577074db4b",
-
-        "name": "Tom",  
-
 		"counts": 50,  
 		
-		"offset": 1,  
-		
-		"limit": 20,  
+		"limit": 2,  
 
-        "Contacts": [
+        "items": [
         	    {
 
                     "uid": "87c09c8c-8b82-4e9f-a982-ec577074db4b",
@@ -70,10 +63,6 @@ JSON Example
                     "name": "Tom",
 
                     "gender": "Male",
-
-                    "status":  "user's last status",
-
-                    "last_use_date": "20 Apr, 2012",
 
                     ......
 
@@ -116,10 +105,6 @@ JSON Example
                     "name": "Tom",
 
                     "gender": "Male",
-
-                    "status":  "user's last status",
-
-                    "last_use_date": "20 Apr, 2012",
 
                     ......
 

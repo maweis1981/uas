@@ -57,41 +57,14 @@ JSON Example
 
         "uid": "87c09c8c-8b82-4e9f-a982-ec577074db4b",
 
-        "name": "Tom",  
-
-		"counts": 50,  
-		
-		"offset": 1,  
-		
-		"limit": 20,  
+		"app_id": 1
 
         "key": "stored-key",
 
-        "stored-values": [
-        	    {
+        "values": "application self stored value in some application",
 
-                    "app_id": 1,
+		"created_date": "23 Apr 2012 18:06:00"
 
-                    "value": "application self stored value in some application",
-
-                    "created_date": "23 Apr 2012 18:06:00",
-
-                    ......
-
-                },
-        	    {
-
-                    "app_id": 2,
-
-                    "value": "application self stored value in second application",
-
-                    "created_date": "23 Apr 2012 18:08:00",
-
-                    ......
-
-                }
-        	......
-        ]
-    }
-
+  	}
+    
 

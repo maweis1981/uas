@@ -12,18 +12,18 @@
 ## Endpoints ##
 
 
-Objects          |       General |  Aspects      |   Actions   
------------------|---------------|---------------|-------------
- [user]          |    [lookup]   |   [contacts]            |  [update_status]       
- 		         |               |   [friends]             |  [store_data_by_key]           
- 		         |               |   [in_contacts]         |  [add_in_contacts]
-    	         |               |   [applications]        |  [batch_update]
-    	         |               |   [statuses]            |
-    	         |               |   [keys]                |
-    	         |               |                         |
-    	         |               |                         |
+Objects          |       General   |  Aspects      |   Actions   
+-----------------|-----------------|---------------|-------------
+ [user]          |    [lookup]     |   [contacts]            |  [add_in_contacts]       
+ 		         |                 |   [friends]             |  [batch_update]           
+ 		         |                 |   [in_contacts]         |  
+    	         |                 |   [applications]        |  
+    	         |                 |   [statuses][user_status]                   |
+    	         |                 |   [keys]                |
+    	         |                 |                         |
+    	         |                 |                         |
  [status]        |[public_timeline]|      
- [key]           |[keys]           |         
+ [key]           |                 |         
  [application]   |[applications]   |   
 
 
@@ -35,7 +35,7 @@ Objects          |       General |  Aspects      |   Actions
 [friends]: user_friends.md "user friends"
 [in_contacts]: user_in_contacts.md "user in_contacts"
 [applications]: user_applications.md "user used applications"  
-[statuses]: user_statuses.md "user statuses"  
+[user_status]: user_statuses.md "user statuses"  
 [keys]: user_keys.md "user stored keys"  
 [update_status]: user_update_status.md "user update status"  
 [store_data_by_key]: user_store_data_by_key.md "user store data by key"  

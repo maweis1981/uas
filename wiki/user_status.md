@@ -14,8 +14,8 @@ Request Parameters  |  Optional  |  Type  |  Description
 -------------|-----------|---------|--------
 accessToken			|  False	 |  String|  
 app_id              |  True      |  application id : full, application ids  
-offset				|  True      |  int   |  User's Contacts offset  
-limit 				|  True      |  int   |  User's Contacts count you want to load  
+offset				|  True      |  int   |  
+limit 				|  True      |  int   |  
 
 offset is the count you retrieve last.
 limit is contacts you retrieve once.
@@ -55,16 +55,9 @@ JSON Example
 
     {
 
-        "uid": "87c09c8c-8b82-4e9f-a982-ec577074db4b",
-
-        "name": "Tom",  
-
 		"counts": 50,  
-		
-		"offset": 1,  
-		
-		"limit": 20,  
-
+				
+		"limit": 2,  
 
         "statues": [
         	    {
@@ -75,8 +68,6 @@ JSON Example
 
                     "created_date": "23 Apr 2012 18:06:00",
 
-                    ......
-
                 },
         	    {
 
@@ -86,9 +77,6 @@ JSON Example
 
                     "created_date": "23 Apr 2012 18:08:00",
 
-                    ......
-
                 }
-        	......
         ]
     }
