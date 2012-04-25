@@ -11,6 +11,7 @@ Update Users Information
 
 ### Parameters
 Request Parameters  |  Optional  |  Type   |  Description  
+--------|----------|-----------|--------------
 accessToken			|  False	 |  String |  
 userData            |  True	     |  String |  User's Data in JSON Format  
 count 				|  int       |  int    |  how many users you batch update .  
@@ -43,46 +44,10 @@ About Rates Limits [Rates Limit][2]
 JSON Example
 
 
-    {
+	{
 
-        "uid": "87c09c8c-8b82-4e9f-a982-ec577074db4b",
+		"code": 200,  
 
-        "name": "Tom",
-
-        "gender": "Male",
-
-        ......
-
-        ####end base Profile####
-
-        "blood": "O"  ,
-
-        "marry": "YES"  ,
-
-        tel_numbers:[
-            {
-                "tel_number":  "13512345678",
-
-                "tel_type": "work",
-
-                ......
-
-            },{
-                "tel_number":  "13588888888",
-
-                "tel_type": "home",
-
-                ......
-
-            }
-        ],
-
-        avatars:[],
-
-        ring_tones:[],
-
-        locations:[],
-
-        ...
-    }
-
+		"message": "successful"  
+	
+	}

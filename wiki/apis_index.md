@@ -30,12 +30,12 @@ Objects          |       General   |  Aspects      |   Actions
 
 
 [user]: user.md "user"  
-[lookup]: lookup.md "lookup"  
+[lookup]: user_lookup.md "lookup"  
 [contacts]: user_contacts.md "user contacts"
 [friends]: user_friends.md "user friends"
 [in_contacts]: user_in_contacts.md "user in_contacts"
 [applications]: user_applications.md "user used applications"  
-[user_status]: user_statuses.md "user statuses"  
+[user_status]: user_status.md "user status"  
 [keys]: user_keys.md "user stored keys"  
 [update_status]: user_update_status.md "user update status"  
 [store_data_by_key]: user_store_data_by_key.md "user store data by key"  

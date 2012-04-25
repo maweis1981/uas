@@ -11,6 +11,7 @@ User add contact
 
 ### Parameters
 Request Parameters  |  Optional  |  Type   |  Description  
+--------|----------|-----------|--------------
 accessToken			|  False	 |  String |  
 uid            |  True	     |  String |  user's uid in our system
 tel_number            |  True	     |  String |  user's telephone number

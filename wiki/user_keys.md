@@ -62,8 +62,6 @@ JSON Example
 					
 					"key": "self-stored-key",  
 
-                    "value": "application self stored value in some application",
-
                     "created_date": "23 Apr 2012 18:06:00",
 
                 },
@@ -73,8 +71,6 @@ JSON Example
 					
 					"key": "self-stored-key",  
 
-                    "value": "application self stored value in some application",
-
                     "created_date": "23 Apr 2012 18:06:00",
 
                 },        	    {
@@ -82,8 +78,6 @@ JSON Example
                     "app_id": 3,  
 					
 					"key": "self-stored-key",  
-
-                    "value": "application self stored value in some application",
 
                     "created_date": "23 Apr 2012 18:06:00",
 

@@ -25,8 +25,8 @@ JSON
 
 GET,POST
 
-GET   : Retrieve User, Delete User
-POST  : Create or Update User
+GET   : Retrieve User, Delete User  
+POST  : Create or Update User  
 
 ### Authorization  
 
