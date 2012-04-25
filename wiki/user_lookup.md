@@ -11,8 +11,8 @@ lookup user id uri
 
 ### Parameters ###
 
-Request Parameters | optional | Type | Description
------|:-------------------:|-------------------:|
+Request Parameters  |  Optional     |  Type   |  Description       
+-------------|-----------|---------|--------
 access_token | False        | String        |  |
 tel_number	|	True	| String	|	User's Telephone Number	|
 email	|	True	|	String	|	User's Email
