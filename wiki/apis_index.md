@@ -20,8 +20,6 @@ Objects          |       General   |  Aspects      |   Actions
     	         |                 |   [applications]        |  
     	         |                 |   [statuses][user_status]                   |
     	         |                 |   [keys]                |
-    	         |                 |                         |
-    	         |                 |                         |
  [status]        |[public_timeline]|      
  [key]           |                 |         
  [application]   |[applications]   |   
