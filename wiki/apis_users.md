@@ -88,9 +88,9 @@ user CRUD uri
 [https://api.uas.sdo.com/v1/user/{uid}](https://api.uas.sdo.com/v1/user/{uid} "user")
 
 
-### Parameters  
-|--------------------------------------------------------------------|    
-|Request Parameters  |  Optional     |  Type   |  Description        |  
+### Parameters      
+Request Parameters  |  Optional     |  Type   |  Description       
+-------------|-----------|---------|--------
 |accessToken		 |  False	     |  String |                     |  
 |fields              |  True         |  String |  Fields,support "base","full","field1,field2,..."  
 |command             |  True         |  String |  C,R,U,D  C,D should be in GET, R,U should be in POST  
@@ -204,6 +204,7 @@ User's status List
 
 ### Parameters
 Request Parameters  |  Optional  |  Type  |  Description  
+-------------|-----------|---------|--------
 accessToken			|  False	 |  String|  
 app_id              |  True      |  application id : full, application ids  
 offset				|  True      |  int   |  User's Contacts offset  
@@ -298,6 +299,7 @@ User's application-store-key values
 
 ### Parameters
 Request Parameters  |  Optional  |  Type  |  Description  
+-------------|-----------|---------|--------
 accessToken			|  False	 |  String|  
 app_id              |  True      |  application id : full, application ids  
 offset				|  True      |  int   |  User's Contacts offset  
@@ -397,6 +399,7 @@ User's Contacts List
 
 ### Parameters  
 Request Parameters  |  Optional  |  Type  |  Description  
+-------------|-----------|---------|--------
 accessToken			|  False	 |  String|  
 fields              |  True      |  user profile type: base, full, fields  
 offset				|  True      |  int   |  User's Contacts offset    
@@ -561,6 +564,7 @@ User's friends List
 
 ### Parameters
 Request Parameters  |  Optional  |  Type  |  Description  
+-------------|-----------|---------|--------
 accessToken			|  False	 |  String|  
 fields              |  True      |  user profile type: base, full, fields  
 offset				|  True      |  int   |  User's Contacts offset  
@@ -723,6 +727,7 @@ User's friends List
 
 ### Parameters
 Request Parameters  |  Optional  |  Type  |  Description  
+-------------|-----------|---------|--------
 accessToken			|  False	 |  String|  
 fields              |  True      |  user profile type: base, full, fields  
 offset				|  True      |  int   |  User's Contacts offset  
