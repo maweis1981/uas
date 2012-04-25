@@ -51,3 +51,9 @@ JSON Example
 		"message": "successful"  
 	
 	}
+
+
+
+
+[1]: http://auth.uas.sdo.com/how_to_auth "如何登录授权"
+[2]: http://auth.uas.sdo.com/about_rates "访问频度限制"
