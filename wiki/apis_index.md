@@ -29,8 +29,8 @@ Objects          |       General |  Aspects      |   Actions
 
 
 
-[user]: http://users "users"  
-[status]: http://users "users"    
-[key]: http://users "users" 
-[application]: http://users "users"  
+[user]: user.md "users"  
+[status]: status.md "users"    
+[key]: key.md "users" 
+[application]: application.md "users"  
 
