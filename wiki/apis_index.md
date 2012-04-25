@@ -29,8 +29,8 @@ Objects          |       General |  Aspects      |   Actions
 
 
 
-[user]: user.md "users"  
-[status]: status.md "users"    
-[key]: key.md "users" 
-[application]: application.md "users"  
+[user]: User.md "user"  
+[status]: Status.md "status"    
+[key]: Key.md "key-value" 
+[application]: Application.md "application"  
 
