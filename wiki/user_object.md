@@ -20,7 +20,7 @@ first_name|string|
 
 
 
-## More User Profile ## ##
+## More User Profile ## 
 
 Field Name | Type | Description  
 -----------|------|-------------

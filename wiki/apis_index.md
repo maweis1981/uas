@@ -14,14 +14,14 @@
 
 Objects          |       General |  Aspects      |   Actions   
 -----------------|---------------|---------------|-------------
- [user]          |    [lookup]   |               |  [update_status]       
- 		         |               |               |  [store_data_by_key]           
- 		         |               |   [contacts]    |  [add_in_contacts]
-    	         |               |   [friends]     |  [batch_update]
-    	         |               |   [in_contacts] |
-    	         |               |   [applications]|
-    	         |               |   [statuses]    |
-    	         |               |   [keys]        |
+ [user]          |    [lookup]   |   [contacts]            |  [update_status]       
+ 		         |               |   [friends]             |  [store_data_by_key]           
+ 		         |               |   [in_contacts]         |  [add_in_contacts]
+    	         |               |   [applications]        |  [batch_update]
+    	         |               |   [statuses]            |
+    	         |               |   [keys]                |
+    	         |               |                         |
+    	         |               |                         |
  [status]        |[public_timeline]|      
  [key]           |[keys]           |         
  [application]   |[applications]   |   
