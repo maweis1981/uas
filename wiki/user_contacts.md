@@ -6,14 +6,14 @@ User's Contacts List
 
 ### URL 
 
-[https://api.uas.sdo.com/v1/user/{uid/}contacts](https://api.uas.sdo.com/v1/users/{uid}/contacts "users.contacts")
+[https://api.uas.sdo.com/v1/user/{uid}/contacts](https://api.uas.sdo.com/v1/users/{uid}/contacts "users.contacts")
 
 
 ### Parameters  
 Request Parameters  |  Optional  |  Type  |  Description  
 -------------|-----------|---------|--------
 accessToken			|  False	 |  String|  
-fields              |  True      |  user profile type: base, full, custom fields  
+fields              |  True      |  String| user profile type: base, full, custom fields  
 offset				|  True      |  int   |  User's Contacts offset    
 limit 				|  True      |  int   |  User's Contacts count you want to load  
 

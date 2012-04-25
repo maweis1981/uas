@@ -13,7 +13,7 @@ User's in Contacts List
 Request Parameters  |  Optional  |  Type  |  Description  
 -------------|-----------|---------|--------
 accessToken			|  False	 |  String|  
-fields              |  True      |  user profile type: base, full, fields  
+fields              |  True      |  String | user profile type: base, full, fields  
 offset				|  True      |  int   |  User's Contacts offset  
 limit 				|  True      |  int   |  User's Contacts count you want to load  
 

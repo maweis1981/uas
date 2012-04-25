@@ -13,7 +13,7 @@ User's application-store-key values
 Request Parameters  |  Optional  |  Type  |  Description  
 -------------|-----------|---------|--------
 accessToken			|  False	 |  String|  
-app_id              |  True      |  application id : full, application ids  
+app_id              |  True      | String | application id : full, application ids  
 offset				|  True      |  int   |  User's Contacts offset  
 limit 				|  True      |  int   |  User's Contacts count you want to load  
 

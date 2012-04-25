@@ -13,7 +13,7 @@ User's status List
 Request Parameters  |  Optional  |  Type  |  Description  
 -------------|-----------|---------|--------
 accessToken			|  False	 |  String|  
-app_id              |  True      |  application id : full, application ids  
+app_id              |  True      |  String| application id : full, application ids  
 offset				|  True      |  int   |  
 limit 				|  True      |  int   |  
 

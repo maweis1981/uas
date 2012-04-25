@@ -14,9 +14,9 @@
 
 Field Name   |   Type  |  Description
 -------------|---------|--------------
-uid|string|identify of user
-nick_name|string|user's nickname
-first_name|string|
+uid|String|identify of user
+nick_name|String|user's nickname
+first_name|String|
 
 
 
@@ -24,8 +24,8 @@ first_name|string|
 
 Field Name | Type | Description  
 -----------|------|-------------
-uid|string |identify of user
-telphones|array|telephone object array
+uid|String |identify of user
+telphones|Array|telephone object array
 
 
 
@@ -33,6 +33,6 @@ telphones|array|telephone object array
 
 Field Name | Type | Description  
 -----------|------|-------------
-uid | string | identify of user
+uid | String | identify of user
 
 

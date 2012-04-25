@@ -15,7 +15,7 @@ User's friends List
 Request Parameters  |  Optional  |  Type  |  Description  
 -------------|-----------|---------|--------
 accessToken			|  False	 |  String|  
-fields              |  True      |  user profile type: base, full, fields  
+fields              |  True      | String |  user profile type: base, full, fields  
 offset				|  True      |  int   |   
 limit 				|  True      |  int   |  
 
