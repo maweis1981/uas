@@ -14,7 +14,7 @@
 
 Objects          |       General |  Aspects      |   Actions   
 -----------------|---------------|---------------|-------------
- [user]          |    ［lookup]   |               |  [update_status]       
+ [user]          |    [lookup]   |               |  [update_status]       
  		         |               |               |  [store_data_by_key]           
  		         |               |   [contacts]    |  [add_in_contacts]
     	         |               |   [friends]     |  [batch_update]
@@ -43,6 +43,7 @@ Objects          |       General |  Aspects      |   Actions
 [batch_update]: user_batch_update.md "users batch update"
 
 [status]: status.md "status"    
+[public_timeline]: public_timeline.md "public timeline"
 [key]: key.md "key-value" 
 [application]: application.md "application"  
 
