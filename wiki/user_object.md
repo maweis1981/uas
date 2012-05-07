@@ -28,7 +28,7 @@ blood|String|
 Field Name | Type | Description  
 -----------|------|-------------
 uid|String|identify of user
-applitions|Array|applicion object array
+applications|Array|applicion object array
 telphones|Array|telephone object array
 emails|Array|user's email object array
 address|Array|user's address object array
@@ -47,10 +47,10 @@ sounds|Array|user sound object array
 Field Name | Type | Description  
 -----------|------|-------------
 app_id|String|
-nick_name|Array|user's nickname of apps
+nick_name|Array|user's nickname of app
 
 
-## applition Object ##
+## application Object ##
 
 Field Name | Type | Description  
 -----------|------|-------------
