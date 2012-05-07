@@ -65,7 +65,7 @@ last_status|Stirng|
 
 Field Name | Type | Description  
 -----------|------|-------------
-tel_type|String|
+tel_type|String|  _建议注明标准和建议值_
 tel_number|String|
 
 
@@ -73,7 +73,7 @@ tel_number|String|
 
 Field Name | Type | Description  
 -----------|------|-------------
-email_type|String|
+email_type|String|  _建议注明标准和建议值_
 email|String|
 
 
@@ -81,7 +81,7 @@ email|String|
 
 Field Name | Type | Description  
 -----------|------|-------------
-IM_type|String|QQ,gtalk...
+IM_type|String|QQ,gtalk...  _建议注明标准和建议值_
 IM|String|IM account
 
 
@@ -89,7 +89,7 @@ IM|String|IM account
 
 Field Name | Type | Description  
 -----------|------|-------------
-url_type|String|homepage,blog.....
+url_type|String|homepage,blog.....	_建议注明必须采用和建议采用的值，建议参考[HTML][html5-link-types]和[Microformats][microformats]的标准或约定_
 url|String|
 
 
@@ -157,3 +157,6 @@ Field Name | Type | Description
 event_type|String|
 event_caption|String|
 event_date|Date|
+
+[html5-link-types]: http://www.whatwg.org/specs/web-apps/current-work/#linkTypes
+[microformats]: http://microformats.org/wiki/existing-rel-values 
