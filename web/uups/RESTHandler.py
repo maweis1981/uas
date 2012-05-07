@@ -14,6 +14,14 @@ import logging
 
 class RESTHandler(tornado.web.RequestHandler):
 
+  """
+  do prepare operation in 
+  @TODO add auth validate
+  @TODO add rates limit
+  @TODO write to audit log
+  @TODO auto enable redis,mq,process naming
+
+  """
   def prepare(self):
     if "X-Http-Method-Override" in self.request.headers:
       self.request.method = self.request.headers["X-Http-Method-Override"]

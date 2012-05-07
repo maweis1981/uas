@@ -2,7 +2,7 @@
 
 ---    
 
-	Notes  
+	SNDA Uniform Account Profile System APIs Index.  
 	
 ---  
 
@@ -14,15 +14,15 @@
 
 Objects          |       General   |  Aspects      |   Actions   
 -----------------|-----------------|---------------|-------------
- [user]          |    [lookup]     |   [contacts]            |  [add_in_contacts]       
- 		         |                 |   [friends]             |  [batch_update]           
- 		         |                 |   [in_contacts]         |  [destroy]
+ [user]          |    [lookup]     |   [contacts]            |         
+ 	         |                 |   [friends]             |  [batch_update]           
+ 	         |                 |   [in_contacts]         |  
     	         |                 |   [applications]        |  
     	         |                 |   [statuses][user_status]                   |
-    	         |                 |   [keys]                |
- status        |public_timeline|      
- key           |                 |         
- application   |applications   |   
+ contacts        |                 |                         |
+ status          |                 |      
+ key             |                 |         
+ application     |                 |   
 
 
 
