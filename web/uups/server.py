@@ -52,11 +52,7 @@ class Application(tornado.web.Application):
 			static_path=os.path.join(os.path.dirname(__file__), "static"),
 			xsrf_cookies=False,
 			cookie_secret="11oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo=",
-<<<<<<< HEAD
 			debug=True,		
-=======
-			debug=True,
->>>>>>> ca4be9080766858b028db36a3d0b95ad146629ff
 		)
 		tornado.web.Application.__init__(self, handlers, **settings)
 
