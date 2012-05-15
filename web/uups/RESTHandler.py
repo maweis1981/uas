@@ -57,6 +57,12 @@ class RESTHandler(tornado.web.RequestHandler):
   def application_info(self):
     return "application mocked data"
   
+  def instanceByName(self, name):
+    ns = Pyro4.locateNS(host=options.pyro4_address, port=options.pyro4_port)
+    uri = ns.lookup(name)
+    instanceProcessor = Pyro4.Proxy(uri)
+    return instanceProcessor
+
   @property
   def user_show_processor(self):
     ns = Pyro4.locateNS(host=options.pyro4_address, port=options.pyro4_port)

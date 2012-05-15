@@ -26,7 +26,8 @@ class UserRestHandler(RESTHandler):
       return self.render('usershow.json', data = simplejson.loads(data))
 
     def put(self,id):
-      return self.write('get put request')
+      data = self.instanceByName('user_put_processor').greeting()
+      return self.write(data)
 
     def delete(self,id):
       return self.write('get delete request')
