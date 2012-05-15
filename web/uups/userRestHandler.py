@@ -17,13 +17,8 @@ from init import *
 
 class UserRestHandler(RESTHandler):
     def get(self,id):
-        ns = Pyro4.locateNS(host=PYRONSADDR, port=PYRONSPORT)
-        uri = ns.lookup('user_show_processor')
-        userProcessor = Pyro4.Proxy(uri)
-        print id
-        data = userProcessor.show(id, 2, None)
-        print simplejson.loads(data)
-        return self.render('usershow.json',data = simplejson.loads(data))
+      data = self.user_processor.show(id, 2, None)
+      return self.render('usershow.json',data = simplejson.loads(data))
     
     def post(self,id):
         return self.write('get post request')
