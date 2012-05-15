@@ -17,14 +17,16 @@ from init import *
 
 class UserRestHandler(RESTHandler):
     def get(self,id):
-      data = self.user_processor.show(id, 2, None)
+      data = self.user_show_processor.show(id, 2, None)
       return self.render('usershow.json',data = simplejson.loads(data))
     
     def post(self,id):
-        return self.write('get post request')
+      data = self.user_processor.objectByPK(id)
+      print data
+      return self.render('usershow.json', data = simplejson.loads(data))
 
     def put(self,id):
-        return self.write('get put request')
+      return self.write('get put request')
 
     def delete(self,id):
-        return self.write('get delete request')
+      return self.write('get delete request')
