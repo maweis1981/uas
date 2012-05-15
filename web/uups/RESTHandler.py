@@ -58,11 +58,19 @@ class RESTHandler(tornado.web.RequestHandler):
     return "application mocked data"
   
   @property
-  def user_processor(self):
+  def user_show_processor(self):
     ns = Pyro4.locateNS(host=options.pyro4_address, port=options.pyro4_port)
     uri = ns.lookup('user_show_processor')
+    userShowProcessor = Pyro4.Proxy(uri)
+    return userShowProcessor
+
+  @property
+  def user_processor(self):
+    ns = Pyro4.locateNS(host=options.pyro4_address, port=options.pyro4_port)
+    uri = ns.lookup('user_processor')
     userProcessor = Pyro4.Proxy(uri)
     return userProcessor
+
 
   @property
   def redisAdapter(self):
