@@ -31,11 +31,11 @@ uid|String|identify of user
 applications|Array|applicion object array
 telphones|Array|telephone object array
 emails|Array|user's email object array
-address|Array|user's address object array
-im|Array|user's im info object array
+addresses|Array|user's address object array
+ims|Array|user's im info object array
 urls|Array|url object array
-organization|Array|user org object array
-education|Array|user education object array
+organizations|Array|user org object array
+educations|Array|user education object array
 photos|Array|user photo object array
 sounds|Array|user sound object array
 
