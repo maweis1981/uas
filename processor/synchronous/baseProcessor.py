@@ -44,6 +44,7 @@ class BaseProcessor(object):
       raise Exception('Not Found %s instance in name server' % name)
 
   def registIntoNameServer(self, name):
+    print 'regist processor into name server [%s]' % name
     daemon = Pyro4.Daemon(host = options.service_host)
     server_uri = daemon.register(self)
 
@@ -51,3 +52,4 @@ class BaseProcessor(object):
     uri = ns.register(name, server_uri)
 
     daemon.requestLoop()
+    print 'regist successful'

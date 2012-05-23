@@ -13,7 +13,6 @@ import tornado.options
 import tornado.web
 
 from tornado.options import define, options
-from testRestfulHandler import testHandler
 from userRestHandler import UserRestHandler
 
 define("port", default=8000, help="API Server running on port", type=int)
@@ -21,7 +20,6 @@ define("port", default=8000, help="API Server running on port", type=int)
 class Application(tornado.web.Application):
   def __init__(self):
     handlers = [
-            (r'/test/(.*)', testHandler),
             (r'/user/(.*)', UserRestHandler),
           ]
     settings = dict(

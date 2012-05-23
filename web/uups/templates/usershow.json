@@ -1,11 +1,20 @@
 {
     "code":200,
-    "message":"success",
-    "data": [
+    "message":"success__",
+    "data": 
 {
 	{% for i,d in enumerate(data) %}
-	"{{ d }}":"{{ data[d] }}"{% if i < len(data) - 1 %},{% end %}
-	{% end %}
-}
-    ]
+            {% if not isinstance( data[d],list) %}
+                "{{ d }}":"{{ data[d] }}"{% if i < len(data) - 1 %},{% end %}
+            {% else %}
+                "{{ d }}":{
+                {% for e in data[d] %}
+                    {% for k,f in enumerate(e) %}
+                        "{{ f }}":"{{ e[f] }}"{% if k < len(e) -1 %},{% end %}
+                    {% end %}
+                    {% end %}
+                }{% if i < len(data) -1 %},{% end %}
+            {% end %}
+        {% end %}
+}  
 }
