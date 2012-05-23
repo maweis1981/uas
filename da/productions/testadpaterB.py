@@ -1,8 +1,14 @@
-import sys
-from init import *
+import os,sys,inspect
+#from init import *
+import logging
+import json
+
+curFilePath = os.path.abspath(os.path.dirname(inspect.stack()[1][1]))
+sys.path.append(os.path.dirname(curFilePath)+"\\productions")
+print curFilePath
+
 from dbWorker import DatabaseWorker
 
-import json
 
 def printvalue(value,lev=0):
 
