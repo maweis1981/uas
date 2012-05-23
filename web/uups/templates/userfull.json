@@ -1,0 +1,6 @@
+{
+    "code":"{{ 200 }}",
+    "message":"",
+    "data": 
+{% import json %}{% autoescape None %}{{ json.dumps(data, ensure_ascii=False, indent=4, encoding='utf8') }}
+}

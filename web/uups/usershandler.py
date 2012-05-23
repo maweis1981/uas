@@ -12,9 +12,8 @@ from basehandler import *
 import Pyro4
 import logging
 from init import *
-import simplejson
 
-import simplejson
+import json
 
 class UsersHandler(BaseHandler):
 
@@ -45,6 +44,44 @@ class UsersHandler(BaseHandler):
 				data = usProcessor.show(userid, level=level, require=require)
 				data = simplejson.loads(data)
 				return self.render('usershow.json',data = data)
+
+			if action == "base":
+				"""
+				/0/base
+				"""
+				ns = Pyro4.locateNS(host=PYRONSADDR, port=PYRONSPORT)
+				uri = ns.lookup("user_show_processor")
+				usProcessor = Pyro4.Proxy(uri)
+				#print dir(usProcessor)
+				data = usProcessor.apiUserBaseData(userid)
+                                print '**********************************'
+                                print data
+                                print '=================================='
+                                jsonData = json.dumps(data, ensure_ascii=False, indent=4, encoding='utf8')
+                                print jsonData
+                                print '**********************************'
+				#data = simplejson.loads(data)
+				return self.render('userbase.json',data = jsonData)
+                                #return self.write(simplejson.loads(jsonData))
+#return self.render('usershow.json',data = data)
+
+			if action == "full":
+				"""
+				/0/show?level={%d|0:basic,1:simple,...}&require={%json|["name","img",...]}
+				"""
+				level = self.get_argument("level", default=2)
+				require = self.get_argument("require", default=None)
+				ns = Pyro4.locateNS(host=PYRONSADDR, port=PYRONSPORT)
+				uri = ns.lookup("user_show_processor")
+				usProcessor = Pyro4.Proxy(uri)
+				#print dir(usProcessor)
+				data = usProcessor.apiUserFullData(userid)
+                                print '**********************************'
+                                print json.dumps(data, ensure_ascii=False, indent=4, encoding='utf8')
+                                print '**********************************'
+				#data = simplejson.loads(data)
+				return self.render('userfull.json',data = data)
+
 			elif action == "sync":
 				print userid
 				nameserver = Pyro4.locateNS(host=PYRONSADDR,port=PYRONSPORT)

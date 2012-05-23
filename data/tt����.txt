@@ -1,0 +1,137 @@
+0:肯定使用
+1:极其常用
+2:很常用
+3:常用
+4:一般
+5:不常用
+6:罕用
+7:基本不用
+8:保密字段
+9:废弃不用
+
+SELECT * 
+FROM `_tt_user` 
+GROUP BY `registered_phone_number` 
+HAVING count( * ) >1
+
+
+SELECT * 
+FROM `_tt_user` 
+WHERE `registered_phone_number` = ""
+
+INSERT INTO `users`(`phone`, `email`) 
+SELECT `registered_phone_number`, NULL  FROM `_tt_user`
+WHERE `registered_phone_number` <> ""
+
+UPDATE (
+_tt_user INNER JOIN users ON users.phone = _tt_user.registered_phone_number
+) SET _tt_user.user_id = users.user_id
+
+
+INSERT INTO user_info( user_id, key_group, key_name, value ) 
+SELECT user_id, "", "card_id", card_id
+FROM _tt_user
+WHERE user_id >0
+AND card_id <> ""
+;
+
+INSERT INTO user_info( user_id, key_group, key_name, value, checked ) 
+SELECT user_id, "", "phone", registered_phone_number, 1
+FROM _tt_user
+WHERE user_id >0
+AND registered_phone_number <> ""
+;
+
+INSERT INTO user_info( user_id, key_group, key_name, value ) 
+SELECT user_id, "", "name", display_name
+FROM _tt_user
+WHERE user_id >0
+AND display_name <> ""
+;
+
+INSERT INTO user_info( user_id, key_group, key_name, value ) 
+SELECT user_id, "", "work_phone", work_phone
+FROM _tt_user
+WHERE user_id >0
+AND work_phone <> ""
+;
+
+INSERT INTO user_info( user_id, key_group, key_name, value ) 
+SELECT user_id, "", "email ", email
+FROM _tt_user
+WHERE user_id >0
+AND email <> ""
+;
+
+INSERT INTO user_info( user_id, key_group, key_name, value ) 
+SELECT user_id, "", "company", company
+FROM _tt_user
+WHERE user_id >0
+AND company <> ""
+;
+
+INSERT INTO user_info( user_id, key_group, key_name, value ) 
+SELECT user_id, "", "department", department
+FROM _tt_user
+WHERE user_id >0
+AND department <> ""
+;
+
+INSERT INTO user_info( user_id, key_group, key_name, value ) 
+SELECT user_id, "", "duty", position
+FROM _tt_user
+WHERE user_id >0
+AND position <> ""  
+;
+
+INSERT INTO user_info( user_id, key_group, key_name, value ) 
+SELECT user_id, "", "school", school
+FROM _tt_user
+WHERE user_id >0
+AND school <> ""  
+;
+
+INSERT INTO user_info( user_id, key_group, key_name, value ) 
+SELECT user_id, "", "address", location 
+FROM _tt_user
+WHERE user_id >0
+AND location <> ""
+;
+
+INSERT INTO user_info( user_id, key_group, key_name, value ) 
+SELECT user_id, "", "homepage", website
+FROM _tt_user
+WHERE user_id >0
+AND website <> ""
+;
+
+INSERT INTO user_info( user_id, key_group, key_name, value ) 
+SELECT user_id, "", "QQ", qq
+FROM _tt_user
+WHERE user_id >0
+AND qq <> ""
+;
+
+INSERT INTO user_info( user_id, key_group, key_name, value ) 
+SELECT user_id, "", "msn", msn
+FROM _tt_user
+WHERE user_id >0
+AND msn <> ""
+
+
+
+SELECT _tt_relation.*, users.user_id FROM `_tt_relation` inner join users on _tt_relation.phone = users.phone
+
+SELECT _tt_relation. * , users.user_id AS phone_uid, u2.user_id AS contact_uid
+FROM `_tt_relation` 
+INNER JOIN users ON _tt_relation.phone = users.phone
+INNER JOIN users u2 ON _tt_relation.contact = u2.phone
+
+INSERT INTO user_relation ( `user_id`,`relation_user_id`,`relation_type`,`app_id`)
+SELECT users.user_id, u2.user_id, 'contact', 'TTContact'
+FROM `_tt_relation` 
+INNER JOIN users ON _tt_relation.phone = users.phone
+INNER JOIN users u2 ON _tt_relation.contact = u2.phone
+
+
+

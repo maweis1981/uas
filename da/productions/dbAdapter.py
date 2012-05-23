@@ -23,6 +23,19 @@ class DatabaseHandler(object):
 			return None
 		d = DatabaseWorker()
 		return d.userShow(userid, level, require)
+
+	def userData(self,user_id):
+		d = DatabaseWorker()
+		return d.userData(user_id)
+
+	def userBaseData(self,user_id):
+		d = DatabaseWorker()
+		return d.userBaseData(user_id)
+
+	# user full info
+	def userFullData(self,user_id):
+		d = DatabaseWorker()
+		return d.userFullData(user_id)
 		
 		
 database_handler = DatabaseHandler()
