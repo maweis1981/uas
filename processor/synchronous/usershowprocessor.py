@@ -73,10 +73,10 @@ class UserShowProcessor(object):
 		return data
 
 
-	def userLookup(self,TelOrEmail=''):
+	def userLookup(self, TelOrEmail='', retType='full'):
 		uri = ns.lookup("database_handler")
 		dbProcessor = Pyro4.Proxy(uri)
-		data = dbProcessor.userLookup(TelOrEmail)
+		data = dbProcessor.userLookup(TelOrEmail,retType)
 		return data
 
 # userProcessor = UserProcessor()

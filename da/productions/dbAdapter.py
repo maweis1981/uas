@@ -37,9 +37,9 @@ class DatabaseHandler(object):
 		d = DatabaseWorker()
 		return d.userFullData(user_id)
 
-	def userLookup(self,TelOrEmail=''):
+	def userLookup(self, TelOrEmail='', retType='full'):
 		d = DatabaseWorker()
-		return d.userLookup(TelOrEmail)
+		return d.userLookup(TelOrEmail, retType)
 		
 database_handler = DatabaseHandler()
 daemon = Pyro4.Daemon(host=LOCALADDR)

@@ -54,15 +54,15 @@ class UsersHandler(BaseHandler):
 				usProcessor = Pyro4.Proxy(uri)
 				#print dir(usProcessor)
 				data = usProcessor.apiUserBaseData(userid)
-                                print '**********************************'
-                                print data
-                                print '=================================='
-                                jsonData = json.dumps(data, ensure_ascii=False, indent=4, encoding='utf8')
-                                print jsonData
-                                print '**********************************'
+				print '**********************************'
+				print data
+				print '=================================='
+				jsonData = json.dumps(data, ensure_ascii=False, indent=4, encoding='utf8')
+				print jsonData
+				print '**********************************'
 				#data = simplejson.loads(data)
 				return self.render('userbase.json',data = jsonData)
-                                #return self.write(simplejson.loads(jsonData))
+				#return self.write(simplejson.loads(jsonData))
 
 			if action == "full":
 				"""
@@ -75,9 +75,31 @@ class UsersHandler(BaseHandler):
 				usProcessor = Pyro4.Proxy(uri)
 				#print dir(usProcessor)
 				data = usProcessor.apiUserFullData(userid)
-                                print '**********************************'
-                                print json.dumps(data, ensure_ascii=False, indent=4, encoding='utf8')
-                                print '**********************************'
+				print '**********************************'
+				print json.dumps(data, ensure_ascii=False, indent=4, encoding='utf8')
+				print '**********************************'
+				#data = simplejson.loads(data)
+				return self.render('userfull.json',data = data)
+
+			if action == "lookup":
+				"""
+				/0/show?level={%d|0:basic,1:simple,...}&require={%json|["name","img",...]}
+				"""
+				tel = self.get_argument("tel", default='')
+				mail = self.get_argument("email", default='')
+				retType = self.get_argument("rettype", default='full')
+				print retType
+				ns = Pyro4.locateNS(host=PYRONSADDR, port=PYRONSPORT)
+				uri = ns.lookup("user_show_processor")
+				usProcessor = Pyro4.Proxy(uri)
+				#print dir(usProcessor)
+				if tel != '' :
+					data = usProcessor.userLookup(tel,retType)
+				elif mail != '' :
+					data = usProcessor.userLookup(mail,retType)
+				print '**********************************'
+				print json.dumps(data, ensure_ascii=False, indent=4, encoding='utf8')
+				print '**********************************'
 				#data = simplejson.loads(data)
 				return self.render('userfull.json',data = data)
 

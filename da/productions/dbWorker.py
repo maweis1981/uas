@@ -168,7 +168,6 @@ where user_id= %s and (selected=1) and (under=0) order by roword' % (userid)
 			row_data['versign']  = fieldEncode(row['versign'])
 			#row_data['tel_city'] = fieldEncode(row['tel_city'])
 			#row_data['tel_region']  = fieldEncode(row['tel_region'])
-			
 		if len(rows)>0 : user_data['telephones'] = rows
 
 		## user im list data / muti property / dict 
@@ -708,18 +707,20 @@ order by rel_id, data_class, roword, userinfo.info_id' % (f,i)
 		elif (field['type']=='class') or (field['type']=='classlist'):
 			if type(field['struct']) is list :
 				if (type(record) is dict) :
+					r = None
 					if (field['source'] in record):
 						r = {caption:record[field['source']]}
 					if (field['source'] == '*') :
 						r = record
-					for (caption,c) in r.iteritems() :
-						if type(c) is list :
-							cl = []
-							parentData[caption]= cl
-							for r in c:
-								cl.append(self.apiStructParse(r,field['struct'],param))
-						elif type(c) is dict:
-							parentData[caption] = self.apiStructParse(c,field['struct'],param)
+					if type(r) is dict:
+						for (caption,c) in r.iteritems() :
+							if type(c) is list :
+								cl = []
+								parentData[caption]= cl
+								for r in c:
+									cl.append(self.apiStructParse(r,field['struct'],param))
+							elif type(c) is dict:
+								parentData[caption] = self.apiStructParse(c,field['struct'],param)
 		elif field['type'] == 'record' :
 			if (field['source'] != '') and (type(field['struct']) is list) :
 				if (data_id == '') and (type(record) is dict) and (field['rel_id_field']!='') and (field['rel_id_field'] in record):
@@ -882,10 +883,10 @@ order by rel_id, data_class, roword, userinfo.info_id' % (f,i)
 		else :
 			return False
 
-	def userLookup(self,TelOrEmail=''):
+	def userLookup(self, TelOrEmail='', retType='full'):
 		#format tel
 		#format email
-		if TelOrEmail == '' : return
+		if TelOrEmail == '' : return None
 		if self.isEMail(TelOrEmail):
 			sql = "select * from userinfo inner join userinfo_email on userinfo.info_id=userinfo_email.info_id where email like '%s' order by versign desc limit 1" % (TelOrEmail)
 		if self.isTel(TelOrEmail):
@@ -896,7 +897,12 @@ order by rel_id, data_class, roword, userinfo.info_id' % (f,i)
 		rs = conn.execute(sql)
 		conn.close()
 		for row in rs:
-			return self.userFullData(row['user_id'])
+			if retType=='full':
+				return self.userFullData(row['user_id'])
+			elif retType=='base':
+				return self.userBaseData(row['user_id'])
+			elif retType=='id':
+				return row['user_id']
 		return None
 
 	def userBatchPut(self, userid, value):

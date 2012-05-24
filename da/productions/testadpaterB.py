@@ -61,19 +61,19 @@ print '\n--------------------------------'
 
 v = d.userBaseData(12)
 printJsonData(v)
-
 '''
+
 print '\n--------------------------------'
 
-v = d.apiStruct('api-user-fullinfo',True)
+#v = d.apiStruct('api-user-fullinfo',True)
 #printJsonData(v)
 
 print '\n--------------------------------'
 
-v = d.userFullData(12)
+#v = d.userFullData(12)
 #printJsonData(v)
 
-v = d.userLookup('energy@sohu.com')
+v = d.userLookup('energy@sohu.com','base')
 printJsonData(v)
 
 
