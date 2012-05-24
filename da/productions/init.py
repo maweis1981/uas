@@ -13,7 +13,9 @@ import logging
 curFilePath = os.path.abspath(os.path.dirname(inspect.stack()[1][1]))
 sys.path.append(os.path.dirname(curFilePath))
 
+'''
 import conf
+
 
 # init logger
 logger = logging.getLogger("dalogger")
@@ -30,12 +32,14 @@ logging.basicConfig(filename = conf.daconf.LOGPATH + "/da.log", format='%(name)-
 
 from conf.daconf import LOCALADDR
 
+
 # init Pyro
 #import Pyro4
 #Pyro4.locateNS(host="192.168.91.216", port=9090)
 PYRONSADDR = "192.168.91.48"
 PYRONSPORT = 9999
 
+'''
 #init mysql
 MYSQLADDR = "localhost"
 #MYSQLADDR = "192.168.91.171"

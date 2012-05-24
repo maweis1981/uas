@@ -1,11 +1,7 @@
 import os,sys,inspect
-#from init import *
 import logging
 import json
 
-curFilePath = os.path.abspath(os.path.dirname(inspect.stack()[1][1]))
-sys.path.append(os.path.dirname(curFilePath)+"\\productions")
-print curFilePath
 
 from dbWorker import DatabaseWorker
 
@@ -53,13 +49,9 @@ def printJsonData(v):
 
 d = DatabaseWorker()
 v = d.userData(12)
-#print v ,'\n'
-#printvalue(v)
-printJsonData(v)
+#printJsonData(v)
 
-
-
-
+'''
 print '\n--------------------------------'
 
 v = d.apiStruct('api-user-baseinfo',True)
@@ -74,13 +66,15 @@ printJsonData(v)
 print '\n--------------------------------'
 
 v = d.apiStruct('api-user-fullinfo',True)
-printvalue(v)
+#printJsonData(v)
 
 print '\n--------------------------------'
 
 v = d.userFullData(12)
-printvalue(v)
-print v
-'''
+#printJsonData(v)
+
+v = d.userLookup('energy@sohu.com')
+printJsonData(v)
+
 
 

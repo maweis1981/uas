@@ -63,7 +63,6 @@ class UsersHandler(BaseHandler):
 				#data = simplejson.loads(data)
 				return self.render('userbase.json',data = jsonData)
                                 #return self.write(simplejson.loads(jsonData))
-#return self.render('usershow.json',data = data)
 
 			if action == "full":
 				"""

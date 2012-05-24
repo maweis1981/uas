@@ -152,6 +152,7 @@ where user_id= %s and (selected=1) and (under=0) order by roword' % (userid)
 			rows.append(row_data)
 			row_data['email_type'] = fieldEncode(row['email_type'])
 			row_data['email']  = fieldEncode(row['email'])
+			row_data['versign']  = fieldEncode(row['versign'])
 		if len(rows)>0 : user_data['emails'] = rows
 
 		## user tel data / mutiline
@@ -164,9 +165,11 @@ where user_id= %s and (selected=1) and (under=0) order by roword' % (userid)
 			rows.append(row_data)
 			row_data['tel_type'] = fieldEncode(row['tel_type'])
 			row_data['tel']  = fieldEncode(row['tel'])
-			row_data['tel_city'] = fieldEncode(row['tel_city'])
-			row_data['tel_region']  = fieldEncode(row['tel_region'])
-		if len(rows)>0 : user_data['telphones'] = rows
+			row_data['versign']  = fieldEncode(row['versign'])
+			#row_data['tel_city'] = fieldEncode(row['tel_city'])
+			#row_data['tel_region']  = fieldEncode(row['tel_region'])
+			
+		if len(rows)>0 : user_data['telephones'] = rows
 
 		## user im list data / muti property / dict 
 		sql = 'select * from userinfo inner join userinfo_im on userinfo.info_id=userinfo_im.info_id \
@@ -227,7 +230,7 @@ where user_id= %s and (selected=1) and (under=0) order by roword' % (userid)
 			rows.append(row_data)
 			row_data['org_name'] = fieldEncode(row['org_name'])
 			row_data['org_unit'] = fieldEncode(row['org_unit'])
-			row_data['org_subunit']  = fieldEncode(row['org_subunit'])
+			row_data['org_subunit']  = fieldEncode(row['org_Unit_sub'])
 			row_data['title'] = fieldEncode(row['title'])
 			row_data['role']  = fieldEncode(row['role'])
 			row_data['work_field']  = fieldEncode(row['work_field'])
@@ -292,7 +295,7 @@ where user_id= %s and (selected=1) and (under=0) order by roword' % (userid)
 			invalid                                    <- null          not null
 		}
 		'''
-		sql = 'select * from (userinfo inner join apps on userinfo.app_id = apps.app_id) inner join userinfo_data on userinfo.info_id=userinfo_data.info_id \
+		sql = 'select *, userinfo.info_id as infoid from userinfo inner join userinfo_data on userinfo.info_id=userinfo_data.info_id \
 where user_id= %s and (selected=1) and (under=0) \
 order by user_id, data_class, roword, userinfo.info_id' % (userid)
 		rs = conn.execute(sql)
@@ -305,8 +308,8 @@ order by user_id, data_class, roword, userinfo.info_id' % (userid)
 				if dataclass != row['data_class'] :
 					dataclass = row['data_class']
 					infoid = 0
-				if infoid != row['info_id'] :
-					infoid = row['info_id']
+				if infoid != row['infoid'] :
+					infoid = row['infoid']
 					row_data = {}
 					d = dataclass.encode('utf8')
 					if d in user_data :
@@ -326,17 +329,19 @@ order by user_id, data_class, roword, userinfo.info_id' % (userid)
 		# for application user data
 		# application nick
 		appdata = {}
-		sql = 'select * from userinfo inner join  userinfo_app on userinfo.info_id=userinfo_app.info_id \
+		sql = 'select *,apps.app_id as appid from (userinfo inner join apps on userinfo.app_id = apps.app_id) inner join  userinfo_app on userinfo.info_id=userinfo_app.info_id \
 where user_id= %s and (selected=1) and (under=1) order by roword' % (userid)
 		rs = conn.execute(sql)
 		for row in rs:
-			if row['app_id'] not in appdata :
-				appdata[row['app_id']]={}
-			appdata[row['app_id']]['app_id']= fieldEncode(row['app_id'])
-			appdata[row['app_id']]['app_account']= fieldEncode(row['app_account'])
-			appdata[row['app_id']]['app_nick'  ]= fieldEncode(row['app_avatar'])
-			appdata[row['app_id']]['app_avatar']= fieldEncode(row['app_avatar'])
-			appdata[row['app_id']]['last_status']= fieldEncode(row['app_last_status'])
+			app_id = row['appid']
+			if app_id not in appdata :
+				appdata[app_id]={}
+			appdata[app_id]['app_id']= fieldEncode(app_id)
+			appdata[app_id]['app_name']= fieldEncode(row['app_name'])
+			appdata[app_id]['app_account']= fieldEncode(row['app_account'])
+			appdata[app_id]['app_nick'  ]= fieldEncode(row['app_avatar'])
+			appdata[app_id]['app_avatar']= fieldEncode(row['app_avatar'])
+			appdata[app_id]['last_status']= fieldEncode(row['app_last_status'])
 
 		# for application comm user data
 		'''
@@ -353,7 +358,7 @@ where user_id= %s and (selected=1) and (under=1) order by roword' % (userid)
 		}
 		'''
 
-		sql = 'select * from userinfo inner join userinfo_data on userinfo.info_id=userinfo_data.info_id \
+		sql = 'select *, userinfo.info_id as infoid from userinfo inner join userinfo_data on userinfo.info_id=userinfo_data.info_id \
 where (user_id= %s) and (selected=1) and (under=1) and (not isnull(app_id)) \
 order by app_id, user_id, data_class, roword, userinfo.info_id' % (userid)
 		rs = conn.execute(sql)
@@ -376,8 +381,8 @@ order by app_id, user_id, data_class, roword, userinfo.info_id' % (userid)
 				if dataclass != row['data_class'] :
 					dataclass = row['data_class']
 					infoid = 0
-				if infoid != row['info_id'] :
-					infoid = row['info_id']
+				if infoid != row['infoid'] :
+					infoid = row['infoid']
 					row_data = {}
 					row_data[fieldEncode(row['data_field'])]= fieldEncode(row['data_value'])
 					d = fieldEncode(dataclass)
@@ -428,8 +433,8 @@ order by app_id, user_id, data_class, roword, userinfo.info_id' % (userid)
 				if dataclass != row['data_class'] :
 					dataclass = row['data_class']
 					infoid = 0
-				if infoid != row['info_id'] :
-					infoid = row['info_id']
+				if infoid != row['infoid'] :
+					infoid = row['infoid']
 					row_data = {}
 					row_data[fieldEncode(row['data_field'])]= fieldEncode(row['data_value'])
 					d= fieldEncode(dataclass)
@@ -625,6 +630,8 @@ order by rel_id, data_class, roword, userinfo.info_id' % (f,i)
 		else :
 			return apiDefine
 
+
+
 	
 	# 解析api返回结构定义
 	'''
@@ -660,20 +667,27 @@ order by rel_id, data_class, roword, userinfo.info_id' % (f,i)
 		caption = fieldEncode(caption)
 		if field['type']=='field' :
 			if type(record) is dict:
-				if field['source'] == '*':
-					result = []
-					for (k,v) in record.iteritems():
-						if (type(v) not in (list,dict,tuple)):
-							parentData[k]=v
-				elif (field['source'] in record) :
-					parentData[caption]=record[field['source']]
-		elif field['type']=='classfield' :
-			if (type(record) is dict) and (field['struct'] in record):
-				c = record[field['struct']]
-				if (type(c) is list) and (len(c)>0) :
-					c = c[0]
-				if (type(c) is dict) and (field['source'] in c) :
-					parentData[caption]=c[field['source']]
+				if (field['struct'] in record):
+					c = record[field['struct']]
+					if (type(c) is list) and (len(c)>0) :
+						c = c[0]
+				else :
+					c = record
+				if type(c) is dict:
+					if field['source'] == '*':
+						result = []
+						for (k,v) in c.iteritems():
+							if (type(v) not in (list,dict,tuple)):
+								parentData[k]=v
+					elif (field['source'] in c) :
+						parentData[caption]=c[field['source']]
+		#elif field['type']=='classfield' :
+		#	if (type(record) is dict) and (field['struct'] in record):
+		#		c = record[field['struct']]
+		#		if (type(c) is list) and (len(c)>0) :
+		#			c = c[0]
+		#		if (type(c) is dict) and (field['source'] in c) :
+		#			parentData[caption]=c[field['source']]
 		elif field['type']=='param' :
 			if (type(param) is dict) and (field['source'] in record) :
 				parentData[caption]=param[field['source']]
@@ -692,16 +706,20 @@ order by rel_id, data_class, roword, userinfo.info_id' % (f,i)
 				if (type(r) is dict) and (field['source'] in r) :
 					parentData[caption]=r[field['source']]
 		elif (field['type']=='class') or (field['type']=='classlist'):
-			if (type(record) is dict) and (field['source'] in record):
-				c = record[field['source']]
 			if type(field['struct']) is list :
-				if type(c) is list :
-					cl = []
-					parentData[caption]= cl
-					for r in c:
-						cl.append(self.apiStructParse(r,field['struct'],param))
-				elif type(c) is dict:
-					parentData[caption] = self.apiStructParse(c,field['struct'],param)
+				if (type(record) is dict) :
+					if (field['source'] in record):
+						r = {caption:record[field['source']]}
+					if (field['source'] == '*') :
+						r = record
+					for (caption,c) in r.iteritems() :
+						if type(c) is list :
+							cl = []
+							parentData[caption]= cl
+							for r in c:
+								cl.append(self.apiStructParse(r,field['struct'],param))
+						elif type(c) is dict:
+							parentData[caption] = self.apiStructParse(c,field['struct'],param)
 		elif field['type'] == 'record' :
 			if (field['source'] != '') and (type(field['struct']) is list) :
 				if (data_id == '') and (type(record) is dict) and (field['rel_id_field']!='') and (field['rel_id_field'] in record):
@@ -737,7 +755,7 @@ order by rel_id, data_class, roword, userinfo.info_id' % (f,i)
 							rellist.append(self.apiStructParse(self.userRelationData(relid=rel),field['struct'],param))
 		return result
 
-	
+	'''
 	def apiStructFieldParseO(self, record, data_id, dataStructField, param=None):
 		c = None
 		field = dataStructField
@@ -824,7 +842,7 @@ order by rel_id, data_class, roword, userinfo.info_id' % (f,i)
 						for rel in idlist :
 							rellist.append(self.apiStructParse(self.userRelationData(relid=rel),field['struct'],param))
 		return result
-	
+	'''
 
 	def apiStructParse(self, record, dataStruct, param=None):
 		datas = {}
@@ -845,14 +863,41 @@ order by rel_id, data_class, roword, userinfo.info_id' % (f,i)
 
 	# api list
 	# user base info
-	def userBaseData(self,user_id):
+	def userBaseData(self, user_id):
 		return self.apiData(user_id,'api-user-baseinfo')
 
 	# user full info
-	def userFullData(self,user_id):
+	def userFullData(self, user_id):
 		return self.apiData(user_id,'api-user-fullinfo')
 
+	def isEMail(self, mail): 
+		if (mail.find('@') >=0) and (mail.find('.')>=0) :
+			return True
+		else :
+			return False
 
+	def isTel(self, tel): # todo
+		if (tel[0]=='+') or ((tel[0]>='0') and (tel[0]<='9')):
+			return True
+		else :
+			return False
+
+	def userLookup(self,TelOrEmail=''):
+		#format tel
+		#format email
+		if TelOrEmail == '' : return
+		if self.isEMail(TelOrEmail):
+			sql = "select * from userinfo inner join userinfo_email on userinfo.info_id=userinfo_email.info_id where email like '%s' order by versign desc limit 1" % (TelOrEmail)
+		if self.isTel(TelOrEmail):
+			sql = "select * from userinfo inner join userinfo_tel on userinfo.info_id=userinfo_tel.info_id where tel like '%s' order by versign desc limit 1" % (TelOrEmail)
+		print sql
+		engine = create_engine('mysql://%s:%s@%s:%s/user_profile_m?charset=utf8'%(MYSQLUSER, MYSQLPWD, MYSQLADDR, MYSQLPORT))
+		conn   = engine.connect()
+		rs = conn.execute(sql)
+		conn.close()
+		for row in rs:
+			return self.userFullData(row['user_id'])
+		return None
 
 	def userBatchPut(self, userid, value):
 		if userid == None:
