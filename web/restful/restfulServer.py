@@ -14,6 +14,7 @@ import tornado.web
 
 from tornado.options import define, options
 from userRestHandler import UserRestHandler
+from userLookupRestHandler import UserLookupRestHandler
 
 define("port", default=8000, help="API Server running on port", type=int)
 
@@ -21,6 +22,7 @@ class Application(tornado.web.Application):
   def __init__(self):
     handlers = [
             (r'/user/(.*)', UserRestHandler),
+            (r'/lookup/(.*)', UserLookupRestHandler),
           ]
     settings = dict(
                 template_path=os.path.join(os.path.dirname(__file__), 'templates'),
