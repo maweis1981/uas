@@ -12,14 +12,16 @@ import Pyro4
 import logging
 import simplejson
 
-from init import *
 
 
 class UserRestHandler(RESTHandler):
     def get(self,id):
-        data = self.instanceByName('user_show_processor').userData(id)
-        
-        return self.write(data)
+        up = self.instanceByName('user_processor')
+        userData = up.getUserDataById(id)
+        userObject = simplejson.dumps(userData)
+        code = 200
+        message = 'User Rest Handler Get Successful'
+        return self.render('user_get.json',code = code, message = message, data = userObject)
     
     def post(self,id):
         data = self.instanceByName('user_show_processor').userData(id)
