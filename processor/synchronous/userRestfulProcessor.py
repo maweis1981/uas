@@ -10,4 +10,8 @@ class UserProcessor(BaseProcessor):
 
     def getUserDataById(self,id):
         da = self.instanceByName('database_handler')
-        return da.userData(id)
+        return da.userFullData(id)
+
+    def searchUserData(self,attribute):
+        da = self.instanceByName('database_handler')
+        return da.userLookup(attribute)
