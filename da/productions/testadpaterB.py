@@ -88,8 +88,8 @@ printJsonData(v)
 
 #print '\n--------------------------------'
 
-#v = d.userInContacts(12,dict(offset=0,limit=1))
-#printJsonData(v)
+v = d.userInContacts(12,dict(offset=0,limit=1))
+printJsonData(v)
 
 #print '\n--------------------------------'
 
@@ -108,6 +108,6 @@ printJsonData(v)
 '''
 print '\n--------------------------------'
 
-v = d.userInContacts(12)
-printJsonData(v)
+#v = d.userInContacts(12,dict(offset=1,limit=1))
+#printJsonData(v)
 

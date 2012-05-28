@@ -89,6 +89,7 @@ class UserShowProcessor(object):
 	def userContacts(self, user_id, param={}):
 		uri = ns.lookup("database_handler")
 		dbProcessor = Pyro4.Proxy(uri)
+		print dict(user_id=user_id,param=param)
 		data = dbProcessor.userContacts(user_id, param)
 		return data
 

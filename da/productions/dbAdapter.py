@@ -48,6 +48,7 @@ class DatabaseHandler(object):
 	# for Relation
 	def userContacts(self, user_id, param={}):
 		d = DatabaseWorker()
+		print dict(user_id=user_id,param=param)
 		return d.userContacts(user_id, param)
 
 	def userRelationsIdList(self, user_id, param={}):

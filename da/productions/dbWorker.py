@@ -546,6 +546,7 @@ order by rel_id, data_class, roword, userinfo.info_id' % (f,i)
 
 
 	def userRelationList(self, userid=0, relUserid=0, param = {}):
+		print dict(userid=userid,param=param)
 		engine = create_engine('mysql://%s:%s@%s:%s/user_profile_m?charset=utf8'%(MYSQLUSER, MYSQLPWD, MYSQLADDR, MYSQLPORT))
 		conn   = engine.connect()
 
@@ -575,6 +576,7 @@ order by rel_id, data_class, roword, userinfo.info_id' % (f,i)
 		if f == '' : 
 			return []
 		else :
+			print 'userRelationList,',param
 			sql = 'select * from user_relation where (%s = %s) and (deleted=0) order by contact_alias %s' % (f,i,limit)
 			print sql
 			rs = conn.execute(sql)
@@ -801,7 +803,7 @@ order by rel_id, data_class, roword, userinfo.info_id' % (f,i)
 					rellist=[]
 					parentData[caption] = rellist
 					if (type(data_id) is str) and (data_id != '') :
-						idlist = self.userRelationList(data_id, param)
+						idlist = self.userRelationList(data_id,0  , param)
 					if type(idlist) is list :
 						for rel in idlist :
 							rellist.append(self.apiStructParse(self.userRelationDatas(relid=rel),field['struct'],param))
@@ -904,6 +906,7 @@ order by rel_id, data_class, roword, userinfo.info_id' % (f,i)
 			
 
 	def apiData(self, data_id, apiDefineName, param={}):
+		#print dict(user_id=user_id,param=param)
 		apiStru = self.apiStruct(apiDefineName)
 		datas = {}
 		self.apiStructFieldParse(None, data_id, apiStru, datas, param)
@@ -943,7 +946,7 @@ order by rel_id, data_class, roword, userinfo.info_id' % (f,i)
 	# user contacts info
 	# return contacts with user base data
 	def userRelationsIdList(self, user_id, param={}):
-		return self.userRelationList(user_id, param)
+		return self.userRelationList(user_id,0,param)
 
 	def userContacts(self, user_id, param={}):
 		return self.apiData(user_id,'api-user-contacts', param)

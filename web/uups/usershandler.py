@@ -123,7 +123,7 @@ class UsersHandler(BaseHandler):
 				data = usProcessor.userContacts(userid,param)
 				print data
 				print '**********************************'
-				jsonData = json.dumps(data, ensure_ascii=False, indent=4, encoding='utf8')
+				jsonData = json.dumps(data, ensure_ascii=False, indent=4)
 				print jsonData
 				print '**********************************'
 				#data = simplejson.loads(data)
