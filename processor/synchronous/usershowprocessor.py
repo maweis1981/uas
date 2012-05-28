@@ -52,21 +52,25 @@ class UserShowProcessor(object):
 		return json.dumps(data,ensure_ascii=True,encoding='utf8')
 		
 	# api list
+	'''
 	def userData(self,userid):
 		uri = ns.lookup("database_handler")
 		dbProcessor = Pyro4.Proxy(uri)
 		data = dbProcessor.userData(userid)
 		return data
-
+	'''
+	###
 	# api list
-	def apiUserBaseData(self,userid):
+	# user
+	# user base info
+	def userBaseData(self,userid):
 		uri = ns.lookup("database_handler")
 		dbProcessor = Pyro4.Proxy(uri)
 		data = dbProcessor.userBaseData(userid)
 		return data
 
 	# user full info
-	def apiUserFullData(self,userid):
+	def userFullData(self,userid):
 		uri = ns.lookup("database_handler")
 		dbProcessor = Pyro4.Proxy(uri)
 		data = dbProcessor.userFullData(userid)
@@ -77,6 +81,49 @@ class UserShowProcessor(object):
 		uri = ns.lookup("database_handler")
 		dbProcessor = Pyro4.Proxy(uri)
 		data = dbProcessor.userLookup(TelOrEmail,retType)
+		return data
+
+	###
+ 	# Contact
+
+	def userContacts(self, user_id, param={}):
+		uri = ns.lookup("database_handler")
+		dbProcessor = Pyro4.Proxy(uri)
+		data = dbProcessor.userContacts(user_id, param)
+		return data
+
+	def userRelationsIdList(self, user_id, param={}):
+		uri = ns.lookup("database_handler")
+		dbProcessor = Pyro4.Proxy(uri)
+		data = dbProcessor.userRelationsIdList(user_id, param)
+		return data
+
+	def userRelationData(self, rel_id):
+		uri = ns.lookup("database_handler")
+		dbProcessor = Pyro4.Proxy(uri)
+		data = dbProcessor.userRelationData(rel_id)
+		return data
+
+	def userContactData(self, rel_id):
+		uri = ns.lookup("database_handler")
+		dbProcessor = Pyro4.Proxy(uri)
+		data = dbProcessor.userContactData(rel_id)
+		return data
+
+
+	####
+ 	# InContact
+
+	def userInRelationsIdList(self, user_id, param={}):
+		uri = ns.lookup("database_handler")
+		dbProcessor = Pyro4.Proxy(uri)
+		data = dbProcessor.userInRelationsIdList(user_id, param)
+		return data
+
+	def	userInContacts(self, user_id, param={}):
+		uri = ns.lookup("database_handler")
+		dbProcessor = Pyro4.Proxy(uri)
+		data = dbProcessor.userInContacts(user_id, param)
 		return data
 
 # userProcessor = UserProcessor()

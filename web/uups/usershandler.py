@@ -53,7 +53,7 @@ class UsersHandler(BaseHandler):
 				uri = ns.lookup("user_show_processor")
 				usProcessor = Pyro4.Proxy(uri)
 				#print dir(usProcessor)
-				data = usProcessor.apiUserBaseData(userid)
+				data = usProcessor.userBaseData(userid)
 				print '**********************************'
 				print data
 				print '=================================='
@@ -74,9 +74,10 @@ class UsersHandler(BaseHandler):
 				uri = ns.lookup("user_show_processor")
 				usProcessor = Pyro4.Proxy(uri)
 				#print dir(usProcessor)
-				data = usProcessor.apiUserFullData(userid)
+				data = usProcessor.userFullData(userid)
 				print '**********************************'
-				print json.dumps(data, ensure_ascii=False, indent=4, encoding='utf8')
+				jsonData = json.dumps(data, ensure_ascii=False, indent=4, encoding='utf8')
+				print jsonData
 				print '**********************************'
 				#data = simplejson.loads(data)
 				return self.render('userfull.json',data = data)
@@ -98,7 +99,133 @@ class UsersHandler(BaseHandler):
 				elif mail != '' :
 					data = usProcessor.userLookup(mail,retType)
 				print '**********************************'
-				print json.dumps(data, ensure_ascii=False, indent=4, encoding='utf8')
+				jsonData = json.dumps(data, ensure_ascii=False, indent=4, encoding='utf8')
+				print jsonData
+				print '**********************************'
+				return self.render('userfull.json',data = data)
+
+			if action == "contacts":
+				"""
+				/0/show?level={%d|0:basic,1:simple,...}&require={%json|["name","img",...]}
+				"""
+				ioffset = self.get_argument("offset", default=None)
+				ilimit = self.get_argument("limit", default=None)
+				ns = Pyro4.locateNS(host=PYRONSADDR, port=PYRONSPORT)
+				uri = ns.lookup("user_show_processor")
+				usProcessor = Pyro4.Proxy(uri)
+				#print dir(usProcessor)
+				param = {}
+				if ioffset != None :
+					param['offset']= ioffset
+				if ilimit != None :
+					param['limit'] = ilimit
+				print userid, param
+				data = usProcessor.userContacts(userid,param)
+				print data
+				print '**********************************'
+				jsonData = json.dumps(data, ensure_ascii=False, indent=4, encoding='utf8')
+				print jsonData
+				print '**********************************'
+				#data = simplejson.loads(data)
+				return self.render('userfull.json',data = data)
+
+			if action == "relationlist":
+				"""
+				/0/show?level={%d|0:basic,1:simple,...}&require={%json|["name","img",...]}
+				"""
+				ioffset = self.get_argument("offset", default=None)
+				ilimit = self.get_argument("limit", default=None)
+				ns = Pyro4.locateNS(host=PYRONSADDR, port=PYRONSPORT)
+				uri = ns.lookup("user_show_processor")
+				usProcessor = Pyro4.Proxy(uri)
+				#print dir(usProcessor)
+				param = {}
+				if ioffset != None :
+					param['offset']= ioffset
+				if ilimit != None :
+					param['limit'] = ilimit
+				print userid, param
+				data = usProcessor.userRelationsIdList(userid,param)
+				print data
+				print '**********************************'
+				jsonData = json.dumps(data, ensure_ascii=False, indent=4, encoding='utf8')
+				print jsonData
+				print '**********************************'
+				#data = simplejson.loads(data)
+				return self.render('userfull.json',data = data)
+
+			if action == "relationdata":
+				relid = self.get_argument("relid", default=None)
+				ns = Pyro4.locateNS(host=PYRONSADDR, port=PYRONSPORT)
+				uri = ns.lookup("user_show_processor")
+				usProcessor = Pyro4.Proxy(uri)
+				#print dir(usProcessor)
+				data = usProcessor.userRelationData(relid)
+				print data
+				print '**********************************'
+				jsonData = json.dumps(data, ensure_ascii=False, indent=4, encoding='utf8')
+				print jsonData
+				print '**********************************'
+				#data = simplejson.loads(data)
+				return self.render('userfull.json',data = data)
+
+			if action == "contactdata":
+				relid = self.get_argument("relid", default=None)
+				ns = Pyro4.locateNS(host=PYRONSADDR, port=PYRONSPORT)
+				uri = ns.lookup("user_show_processor")
+				usProcessor = Pyro4.Proxy(uri)
+				#print dir(usProcessor)
+				data = usProcessor.userContactData(relid)
+				print data
+				print '**********************************'
+				jsonData = json.dumps(data, ensure_ascii=False, indent=4, encoding='utf8')
+				print jsonData
+				print '**********************************'
+				#data = simplejson.loads(data)
+				return self.render('userfull.json',data = data)
+
+			if action == "inrelationlist":
+				ioffset = self.get_argument("offset", default=None)
+				ilimit = self.get_argument("limit", default=None)
+				ns = Pyro4.locateNS(host=PYRONSADDR, port=PYRONSPORT)
+				uri = ns.lookup("user_show_processor")
+				usProcessor = Pyro4.Proxy(uri)
+				param = {}
+				if ioffset != None :
+					param['offset']= ioffset
+				if ilimit != None :
+					param['limit'] = ilimit
+				print userid, param
+				data = usProcessor.userInRelationsIdList(userid,param)
+				print data
+				print '**********************************'
+				jsonData = json.dumps(data, ensure_ascii=False, indent=4, encoding='utf8')
+				print jsonData
+				print '**********************************'
+				#data = simplejson.loads(data)
+				return self.render('userfull.json',data = data)
+
+			if action == "userInContacts":
+				"""
+				/0/show?level={%d|0:basic,1:simple,...}&require={%json|["name","img",...]}
+				"""
+				ioffset = self.get_argument("offset", default=None)
+				ilimit  = self.get_argument("limit", default=None)
+				ns = Pyro4.locateNS(host=PYRONSADDR, port=PYRONSPORT)
+				uri = ns.lookup("user_show_processor")
+				usProcessor = Pyro4.Proxy(uri)
+				#print dir(usProcessor)
+				param = {}
+				if ioffset != None :
+					param['offset']= ioffset
+				if ilimit != None :
+					param['limit'] = ilimit
+				print userid, param
+				data = usProcessor.userInContacts(userid,param)
+				print data
+				print '**********************************'
+				jsonData = json.dumps(data, ensure_ascii=False, indent=4, encoding='utf8')
+				print jsonData
 				print '**********************************'
 				#data = simplejson.loads(data)
 				return self.render('userfull.json',data = data)
@@ -125,7 +252,7 @@ class UsersHandler(BaseHandler):
 				data = "unknown action"
 			
 		#return self.write(data)
-		return self.render('usershow.json',data = data)
+		return self.render('usershow.json',data = [])
 		#		print data
 		# for d in data:
 			# return d

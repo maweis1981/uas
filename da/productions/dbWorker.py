@@ -86,7 +86,7 @@ ORDER BY key_level, key_order' % (userid,level,keylist)
 		return row_data
 	
 
-	def userData(self, userid, param=None):
+	def userData(self, userid, param={}):
 		print 'userData'
 
 		#debug = True
@@ -164,7 +164,7 @@ where user_id= %s and (selected=1) and (under=0) order by roword' % (userid)
 			row_data = {}
 			rows.append(row_data)
 			row_data['tel_type'] = fieldEncode(row['tel_type'])
-			row_data['tel']  = fieldEncode(row['tel'])
+			row_data['tel_number']  = fieldEncode(row['tel'])
 			row_data['versign']  = fieldEncode(row['versign'])
 			#row_data['tel_city'] = fieldEncode(row['tel_city'])
 			#row_data['tel_region']  = fieldEncode(row['tel_region'])
@@ -452,7 +452,7 @@ order by app_id, user_id, data_class, roword, userinfo.info_id' % (userid)
 		return 
 
 
-	def userRelationData(self, userid, relUserid, relid=0):
+	def userRelationDatas(self, userid=0, relUserid=0, relid=0):
 		engine = create_engine('mysql://%s:%s@%s:%s/user_profile_m?charset=utf8'%(MYSQLUSER, MYSQLPWD, MYSQLADDR, MYSQLPORT))
 		conn   = engine.connect()
 		
@@ -462,12 +462,23 @@ order by app_id, user_id, data_class, roword, userinfo.info_id' % (userid)
 		## user basic data
 		rel_data = {}
 
-		if relid == 0 :
-			f = 'user_id'
-			i = userid
-		else :
-			f = 'rel_id'
-			i= relid
+		
+		try :
+			if userid != 0 :
+				f = 'user_id'
+				userid = long(userid)
+				i = userid
+			elif relUserid != 0 :
+				f = 'relation_user_id'
+				relUserid = long(relUserid)
+				i = relUserid
+			else :
+				f = 'rel_id'
+				relid = long(relid)
+				i = relid
+		except :
+			return None
+
 
 		sql = 'select * from user_relation where (%s = %s) and (deleted=0)' % (f,i)
 
@@ -475,31 +486,33 @@ order by app_id, user_id, data_class, roword, userinfo.info_id' % (userid)
 		for row in rs:
 			relrow = {}
 			rel_data[row['rel_id']]= relrow
-			relrow['relation_user_id'] = fieldEncode(row['relation_user_id'])
-			relrow['relation_type']  = fieldEncode(row['relation_type'])
 			relrow['app_id']= fieldEncode(row['app_id'])
+			relrow['contact_user_id'] = fieldEncode(row['relation_user_id'])
+			relrow['contact_type']  = fieldEncode(row['relation_type'])
 			relrow['contact_alias']= fieldEncode(row['contact_alias'])
 			relrow['contact_group']= fieldEncode(row['contact_group'])
 			relrow['contact_note'] = fieldEncode(row['contact_note'])
 			relrow['contact_lastdate']= fieldEncode(row['contact_lastdate'])
-			userid = relrow['user_id']
+			relrow['@user_id']= fieldEncode(row['user_id'])
+			userid = row['user_id']
 		
 		sql = 'select * from userinfo inner join userinfo_data on userinfo.info_id=userinfo_data.info_id \
 where(%s = %s) and (selected=1) and (under=2) and (not isnull(rel_id)) \
 order by rel_id, data_class, roword, userinfo.info_id' % (f,i)
 		rs = conn.execute(sql)
+		conn.close()
 		dataclass = ''
 		infoid = 0
-		relid  = None
+		rel_id = 0
 		relrow = {}
 		for row in rs:
-			if relid != row['rel_id'] :
-				relid = row['rel_id']
-				if relid in rel_data :
-					relrow = rel_data[relid]
+			if rel_id != row['rel_id'] :
+				rel_id = row['rel_id']
+				if rel_id in rel_data :
+					relrow = rel_data[rel_id]
 				else:
 					relrow = {}
-					rel_data[relid] = relrow
+					rel_data[rel_id] = relrow
 
 			if row['data_class'] == None:
 				relrow[fieldEncode(row['data_field'])]= fieldEncode(row['data_value'])
@@ -523,23 +536,56 @@ order by rel_id, data_class, roword, userinfo.info_id' % (f,i)
 						relrow[dataclass.encode('utf8')] = row_data
 				else :
 					row_data[fieldEncode(row['data_field'])]= fieldEncode(row['data_value'])
+		if (f == 'rel_id') and (relid in rel_data):
+			return rel_data[relid]
+		else :
+			result = []
+			for v in rel_data.itervalues() :
+				result.append(v)
+			return result
 
-		conn.close()
-		return rel_data
 
-	def userRelationList(self, userid, param):
+	def userRelationList(self, userid=0, relUserid=0, param = {}):
 		engine = create_engine('mysql://%s:%s@%s:%s/user_profile_m?charset=utf8'%(MYSQLUSER, MYSQLPWD, MYSQLADDR, MYSQLPORT))
 		conn   = engine.connect()
 
-		sql = 'select * from user_relation where (user_id = %s) and (deleted=0) ' % (userid)
-		rs = conn.execute(sql)
-		r = []
-		for row in rs:
-			r.append(row['rel_id'])
-		conn.close()
-		return r
+		limit = ''
+		if ('offset' in param ) and (str(param['offset']).isdigit()):
+			limit = ' limit %s' % (param['offset'])
+		if ('limit' in param) and (str(param['limit']).isdigit()):
+			if limit == '':
+				limit = ' limit %s ' % (param['limit'])
+			else :
+				limit = ' %s,%s '%(limit,param['limit'])
+		else :
+			if limit != '' :
+				limit = ' %s,%s '%(limit,'18446744073709551615')
+
+		rel_data = {}
 	
-	def appInfoData(self, app_id, param):
+		
+		f = ''
+		if userid != 0 :
+			f = 'user_id'
+			i = userid
+		elif relUserid != 0 :
+			f = 'relation_user_id'
+			i = relUserid
+		
+		if f == '' : 
+			return []
+		else :
+			sql = 'select * from user_relation where (%s = %s) and (deleted=0) order by contact_alias %s' % (f,i,limit)
+			print sql
+			rs = conn.execute(sql)
+			conn.close()
+			r = []
+			for row in rs:
+				r.append(row['rel_id'])
+			return r
+
+	
+	def appInfoData(self, app_id, param = {}):
 		engine = create_engine('mysql://%s:%s@%s:%s/user_profile_m?charset=utf8'%(MYSQLUSER, MYSQLPWD, MYSQLADDR, MYSQLPORT))
 		conn   = engine.connect()
 
@@ -554,7 +600,7 @@ order by rel_id, data_class, roword, userinfo.info_id' % (f,i)
 		return appInfo
 
 
-	def appInfoDataList(self, param):
+	def appInfoDataList(self, param = {}):
 		engine = create_engine('mysql://%s:%s@%s:%s/user_profile_m?charset=utf8'%(MYSQLUSER, MYSQLPWD, MYSQLADDR, MYSQLPORT))
 		conn   = engine.connect()
 
@@ -598,6 +644,8 @@ order by rel_id, data_class, roword, userinfo.info_id' % (f,i)
 	#
 	# 获取api返回结构定义
 	'''
+	#	todo: struct list and first struct
+	#
 	def apiStruct(self, dataStructName, root=True):
 		engine = create_engine('mysql://%s:%s@%s:%s/user_profile_m?charset=utf8'%(MYSQLUSER, MYSQLPWD, MYSQLADDR, MYSQLPORT))
 		conn   = engine.connect()
@@ -656,10 +704,12 @@ order by rel_id, data_class, roword, userinfo.info_id' % (f,i)
 
 		]
 	'''
-	def apiStructFieldParse(self, record, data_id, dataStructField, parentData, param=None):
+	def apiStructFieldParse(self, record, data_id, dataStructField, parentData, param={}):
 		c = None
 		field = dataStructField
 		result = None
+		if type(data_id) in (int, unicode, str, long) :
+			data_id = str(data_id)
 		caption = field['caption']
 		if caption == None : caption = ''
 		if caption == '*' : caption = field['source']
@@ -676,8 +726,9 @@ order by rel_id, data_class, roword, userinfo.info_id' % (f,i)
 					if field['source'] == '*':
 						result = []
 						for (k,v) in c.iteritems():
-							if (type(v) not in (list,dict,tuple)):
-								parentData[k]=v
+							if (len(k)>0) and (str(k)[0]!='@'):
+								if (type(v) not in (list,dict,tuple)): #(int, unicode, str, long)
+									parentData[k]=v
 					elif (field['source'] in c) :
 						parentData[caption]=c[field['source']]
 		#elif field['type']=='classfield' :
@@ -696,7 +747,7 @@ order by rel_id, data_class, roword, userinfo.info_id' % (f,i)
 				if field['rel_rec_name'] == 'user' :
 					r = self.userData(data_id, param)
 				elif field['rel_rec_name'] == 'relation' :
-					r = self.userRelationData(relid=data_id)
+					r = self.userRelationDatas(relid=data_id)
 				elif field['rel_rec_name'] == 'app':
 					r = self.appInfoData(data_id, param)
 				if type(r) is dict :
@@ -731,7 +782,7 @@ order by rel_id, data_class, roword, userinfo.info_id' % (f,i)
 						if type(r) is dict :
 							parentData[caption] = self.apiStructParse(r,field['struct'],param)
 					elif field['source'] == 'relation' :
-						r = self.userRelationData(relid=data_id)
+						r = self.userRelationDatas(relid=data_id)
 						if type(r) is dict :
 							parentData[caption] = self.apiStructParse(r,field['struct'],param)
 					elif field['source'] == 'app':
@@ -740,20 +791,20 @@ order by rel_id, data_class, roword, userinfo.info_id' % (f,i)
 							parentData[caption] = self.apiStructParse(r,field['struct'],param)
 					#elif field['source'] == '@a':
 		elif field['type'] == 'list' :
-			if (field['source'] != '') and (field['struct'] is list) :
+			if (field['source'] != '') and (type(field['struct']) is list) :
 				idlist = None
 				if type(data_id) is list :
 					idlist = data_id
 				if (data_id == '') and (type(record) is dict) and (field['rel_id_field']!='') and (field['rel_id_field'] in record):
 					data_id = record[field['rel_id_field']]
-				if field['source'] == 'relations' :
+				if field['source'] == 'relation' :
 					rellist=[]
 					parentData[caption] = rellist
 					if (type(data_id) is str) and (data_id != '') :
 						idlist = self.userRelationList(data_id, param)
 					if type(idlist) is list :
 						for rel in idlist :
-							rellist.append(self.apiStructParse(self.userRelationData(relid=rel),field['struct'],param))
+							rellist.append(self.apiStructParse(self.userRelationDatas(relid=rel),field['struct'],param))
 		return result
 
 	'''
@@ -790,7 +841,7 @@ order by rel_id, data_class, roword, userinfo.info_id' % (f,i)
 				if field['rel_rec_name'] == 'user' :
 					r = self.userData(data_id, param)
 				elif field['rel_rec_name'] == 'relation' :
-					r = self.userRelationData(relid=data_id)
+					r = self.userRelationDatas(relid=data_id)
 				elif field['rel_rec_name'] == 'app':
 					r = self.appInfoData(data_id, param)
 				if type(r) is dict :
@@ -819,7 +870,7 @@ order by rel_id, data_class, roword, userinfo.info_id' % (f,i)
 						if type(r) is dict :
 							result = {caption:self.apiStructParse(r,field['struct'],param)}
 					elif field['source'] == 'relation' :
-						r = self.userRelationData(relid=data_id)
+						r = self.userRelationDatas(relid=data_id)
 						if type(r) is dict :
 							result = {caption:self.apiStructParse(r,field['struct'],param)}
 					elif field['source'] == 'app':
@@ -841,35 +892,25 @@ order by rel_id, data_class, roword, userinfo.info_id' % (f,i)
 						idlist = self.userRelationList(data_id, param)
 					if type(idlist) is list :
 						for rel in idlist :
-							rellist.append(self.apiStructParse(self.userRelationData(relid=rel),field['struct'],param))
+							rellist.append(self.apiStructParse(self.userRelationDatas(relid=rel),field['struct'],param))
 		return result
 	'''
 
-	def apiStructParse(self, record, dataStruct, param=None):
+	def apiStructParse(self, record, dataStruct, param={}):
 		datas = {}
 		for field in dataStruct :
 			self.apiStructFieldParse(record, '', field, datas, param)
 		return datas
 			
 
-	def apiData(self, data_id, apiDefineName):
+	def apiData(self, data_id, apiDefineName, param={}):
 		apiStru = self.apiStruct(apiDefineName)
 		datas = {}
-		self.apiStructFieldParse(None, data_id, apiStru, datas)
+		self.apiStructFieldParse(None, data_id, apiStru, datas, param)
 		if apiStru['caption'] in datas:
 			return datas[apiStru['caption']]
 		else :
 			return None
-
-
-	# api list
-	# user base info
-	def userBaseData(self, user_id):
-		return self.apiData(user_id,'api-user-baseinfo')
-
-	# user full info
-	def userFullData(self, user_id):
-		return self.apiData(user_id,'api-user-fullinfo')
 
 	def isEMail(self, mail): 
 		if (mail.find('@') >=0) and (mail.find('.')>=0) :
@@ -883,6 +924,56 @@ order by rel_id, data_class, roword, userinfo.info_id' % (f,i)
 		else :
 			return False
 
+	
+	'''
+
+	'''
+	
+	# api list
+	# user base info
+	# return User Base Data Struct
+	def userBaseData(self, user_id):
+		return self.apiData(user_id,'api-user-baseinfo')
+
+	# user full info
+	# return User Full Data Struct
+	def userFullData(self, user_id):
+		return self.apiData(user_id,'api-user-fullinfo')
+
+	# user contacts info
+	# return contacts with user base data
+	def userRelationsIdList(self, user_id, param={}):
+		return self.userRelationList(user_id, param)
+
+	def userContacts(self, user_id, param={}):
+		return self.apiData(user_id,'api-user-contacts', param)
+
+
+	def	userRelationData(self, rel_id):
+		return self.userRelationDatas(relid = rel_id)
+	
+	def	userContactData(self, rel_id):
+		return self.apiData(rel_id,'api-relation-info')
+
+	# user in contacts info
+	# return contacts with user base data
+	def userInRelationsIdList(self, user_id, param={}):
+		return self.userRelationList(0,user_id, param)
+
+	def userInContacts(self, user_id, param={}):
+		idlist = self.userInRelationsIdList(user_id, param)
+		print idlist
+		return self.apiData(idlist,'api-user-in-contacts', param)
+
+	'''
+	def userContactsIdList(self, user_id, param={}):
+		return self.userRelationList(user_id, param)
+
+	def userInContactsIdList(self, user_id, param={}):
+		return self.userRelationList(0,user_id, param)
+	'''
+
+	
 	def userLookup(self, TelOrEmail='', retType='full'):
 		#format tel
 		#format email
@@ -891,7 +982,7 @@ order by rel_id, data_class, roword, userinfo.info_id' % (f,i)
 			sql = "select * from userinfo inner join userinfo_email on userinfo.info_id=userinfo_email.info_id where email like '%s' order by versign desc limit 1" % (TelOrEmail)
 		if self.isTel(TelOrEmail):
 			sql = "select * from userinfo inner join userinfo_tel on userinfo.info_id=userinfo_tel.info_id where tel like '%s' order by versign desc limit 1" % (TelOrEmail)
-		print sql
+		#print sql
 		engine = create_engine('mysql://%s:%s@%s:%s/user_profile_m?charset=utf8'%(MYSQLUSER, MYSQLPWD, MYSQLADDR, MYSQLPORT))
 		conn   = engine.connect()
 		rs = conn.execute(sql)
@@ -904,6 +995,7 @@ order by rel_id, data_class, roword, userinfo.info_id' % (f,i)
 			elif retType=='id':
 				return row['user_id']
 		return None
+
 
 	def userBatchPut(self, userid, value):
 		if userid == None:

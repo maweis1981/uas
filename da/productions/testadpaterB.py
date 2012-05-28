@@ -48,33 +48,66 @@ def printJsonData(v):
 
 
 d = DatabaseWorker()
-v = d.userData(12)
+#v = d.userData(12)
+#printJsonData(v)
+
+
+print '\n--------------------------------'
+
+#v = d.apiStruct('api-relation-info',True)
 #printJsonData(v)
 
 '''
-print '\n--------------------------------'
-
-v = d.apiStruct('api-user-baseinfo',True)
-printJsonData(v)
-
 print '\n--------------------------------'
 
 v = d.userBaseData(12)
 printJsonData(v)
 '''
 
-print '\n--------------------------------'
+#print '\n--------------------------------'
 
 #v = d.apiStruct('api-user-fullinfo',True)
 #printJsonData(v)
 
-print '\n--------------------------------'
+#print '\n--------------------------------'
 
 #v = d.userFullData(12)
 #printJsonData(v)
 
-v = d.userLookup('energy@sohu.com','base')
+#v = d.userLookup('mawei02@snda.com','base')
+#v = d.userLookup('energy@sohu.com','base')
+#printJsonData(v)
+
+#v = d.userRelationList(12)
+#printJsonData(v)
+    
+#print '\n--------------------------------'
+
+#v = d.userContacts(12,dict(offset=0,limit=1))
+#printJsonData(v)
+
+#print '\n--------------------------------'
+
+#v = d.userInContacts(12,dict(offset=0,limit=1))
+#printJsonData(v)
+
+#print '\n--------------------------------'
+
+#v = d.userRelationsIdList("12",dict(offset=0,limit=2))
+#printJsonData(v)
+'''
+v = d.userInRelationsIdList("12")
 printJsonData(v)
 
+v = d.userRelationData(2)
+printJsonData(v)
 
+v = d.userContactData(5)
+printJsonData(v)
+
+'''
+print '\n--------------------------------'
+
+v = d.userInContacts(12)
+printJsonData(v)
 

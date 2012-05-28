@@ -1,0 +1,56 @@
+
+
+## user api list
+
+# user base info
+# param: user_id
+# return: User Data Struct (base style)
+userBaseData(userid)
+
+# user full info
+# param: user_id
+# return: User Data Struct (full style)
+userFullData(userid)
+
+# user look up 
+# param: tel or email , Exact match
+# return: User Data Struct (default full style)
+userLookup(TelOrEmail='', retType='full')
+
+
+## Contact api list
+
+# user contact list
+# param: user_id
+#        param={offset=n,limit=m}
+# return: Contact list[ {Relation info {Contact info}}]
+userContacts(user_id, param={})
+
+# user Contact id list
+# param: user_id
+#        param={offset=n,limit=m}
+# return: [relation id list]
+userRelationsIdList(user_id, param={})
+
+# relation field data 
+# param: relation id
+# return: {relation data, user for user data}
+userRelationData(rel_id)
+
+# contact info 
+# param: relation id
+# return: {relation data, contact's base user info}
+userContactData(rel_id)
+
+
+# reverse relation user list 
+# param: user id
+#        param={offset=n,limit=m}
+# return: {relation id list}
+userInRelationsIdList(user_id, param={})
+
+# reverse relation info with user info 
+# param: user id
+#        param={offset=n,limit=m}
+# return: {relation data, re contact's base user info}
+userInContacts(user_id, param={})

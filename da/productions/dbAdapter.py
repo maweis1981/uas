@@ -24,10 +24,14 @@ class DatabaseHandler(object):
 		d = DatabaseWorker()
 		return d.userShow(userid, level, require)
 
+	'''
 	def userData(self,user_id):
 		d = DatabaseWorker()
 		return d.userData(user_id)
-
+	'''
+	
+	# for user
+	# user base data
 	def userBaseData(self,user_id):
 		d = DatabaseWorker()
 		return d.userBaseData(user_id)
@@ -40,7 +44,36 @@ class DatabaseHandler(object):
 	def userLookup(self, TelOrEmail='', retType='full'):
 		d = DatabaseWorker()
 		return d.userLookup(TelOrEmail, retType)
+
+	# for Relation
+	def userContacts(self, user_id, param={}):
+		d = DatabaseWorker()
+		return d.userContacts(user_id, param)
+
+	def userRelationsIdList(self, user_id, param={}):
+		d = DatabaseWorker()
+		return d.userRelationsIdList(user_id, param)
+
+	def	userRelationData(self, rel_id):
+		d = DatabaseWorker()
+		return d.userRelationData(rel_id)
+
+	def	userContactData(self, rel_id):
+		d = DatabaseWorker()
+		return d.userContactData(rel_id)
+
+	# for in Relation
+
+	def userInRelationsIdList(self, user_id, param={}):
+		d = DatabaseWorker()
+		return d.userInRelationsIdList(user_id, param)
+
+	def	userInContacts(self, user_id, param={}):
+		d = DatabaseWorker()
+		return d.userInContacts(user_id, param)
 		
+
+
 database_handler = DatabaseHandler()
 daemon = Pyro4.Daemon(host=LOCALADDR)
 db_uri = daemon.register(database_handler)
