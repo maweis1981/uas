@@ -230,6 +230,53 @@ class UsersHandler(BaseHandler):
 				#data = simplejson.loads(data)
 				return self.render('userfull.json',data = data)
 
+			if action == "friends":
+				"""
+				/0/show?level={%d|0:basic,1:simple,...}&require={%json|["name","img",...]}
+				"""
+				ioffset = self.get_argument("offset", default=None)
+				ilimit  = self.get_argument("limit", default=None)
+				ns = Pyro4.locateNS(host=PYRONSADDR, port=PYRONSPORT)
+				uri = ns.lookup("user_show_processor")
+				usProcessor = Pyro4.Proxy(uri)
+				#print dir(usProcessor)
+				param = {}
+				if ioffset != None :
+					param['offset']= ioffset
+				if ilimit != None :
+					param['limit'] = ilimit
+				print userid, param
+				data = usProcessor.userFriends(userid,param)
+				print data
+				print '**********************************'
+				jsonData = json.dumps(data, ensure_ascii=False, indent=4, encoding='utf8')
+				print jsonData
+				print '**********************************'
+				#data = simplejson.loads(data)
+				return self.render('userfull.json',data = data)
+
+			if action == "apps":
+				ioffset = self.get_argument("offset", default=None)
+				ilimit = self.get_argument("limit", default=None)
+				ns = Pyro4.locateNS(host=PYRONSADDR, port=PYRONSPORT)
+				uri = ns.lookup("user_show_processor")
+				usProcessor = Pyro4.Proxy(uri)
+				param = {}
+				if ioffset != None :
+					param['offset']= ioffset
+				if ilimit != None :
+					param['limit'] = ilimit
+				print userid, param
+				data = usProcessor.userApps(userid,param)
+				print data
+				print '**********************************'
+				jsonData = json.dumps(data, ensure_ascii=False, indent=4, encoding='utf8')
+				print jsonData
+				print '**********************************'
+				#data = simplejson.loads(data)
+				return self.render('userfull.json',data = data)
+
+
 			elif action == "sync":
 				print userid
 				nameserver = Pyro4.locateNS(host=PYRONSADDR,port=PYRONSPORT)

@@ -43,14 +43,16 @@ userRelationData(rel_id)
 userContactData(rel_id)
 
 
-# reverse relation user list 
-# param: user id
-#        param={offset=n,limit=m}
-# return: {relation id list}
-userInRelationsIdList(user_id, param={})
+## in contact api
 
 # reverse relation info with user info 
 # param: user id
 #        param={offset=n,limit=m}
 # return: {relation data, re contact's base user info}
 userInContacts(user_id, param={})
+
+# reverse relation user list 
+# param: user id
+#        param={offset=n,limit=m}
+# return: {relation id list}
+userInRelationsIdList(user_id, param={})

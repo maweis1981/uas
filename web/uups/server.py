@@ -16,7 +16,6 @@ import tornado.ioloop
 import tornado.options
 import tornado.web
 import unicodedata
-import simplejson
 
 from tornado.options import define, options
 

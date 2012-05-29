@@ -13,7 +13,7 @@ import logging
 curFilePath = os.path.abspath(os.path.dirname(inspect.stack()[1][1]))
 sys.path.append(os.path.dirname(curFilePath))
 
-'''
+
 import conf
 
 
@@ -39,7 +39,7 @@ from conf.daconf import LOCALADDR
 PYRONSADDR = "192.168.91.48"
 PYRONSPORT = 9999
 
-'''
+
 #init mysql
 MYSQLADDR = "localhost"
 #MYSQLADDR = "192.168.91.171"

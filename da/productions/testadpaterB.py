@@ -88,26 +88,40 @@ printJsonData(v)
 
 #print '\n--------------------------------'
 
-v = d.userInContacts(12,dict(offset=0,limit=1))
-printJsonData(v)
+#v = d.userInContacts(12,dict(offset=0,limit=1))
+#printJsonData(v)
 
 #print '\n--------------------------------'
 
 #v = d.userRelationsIdList("12",dict(offset=0,limit=2))
 #printJsonData(v)
-'''
-v = d.userInRelationsIdList("12")
-printJsonData(v)
 
-v = d.userRelationData(2)
-printJsonData(v)
+#v = d.userInRelationsIdList("12")
+#printJsonData(v)
 
-v = d.userContactData(5)
-printJsonData(v)
+#print '\n--------------------------------'
 
-'''
-print '\n--------------------------------'
+#v = d.userRelationData(2)
+#printJsonData(v)
+
+#print '\n--------------------------------'
+
+#v = d.userContactData(5)
+#printJsonData(v)
+
+#print '\n--------------------------------'
 
 #v = d.userInContacts(12,dict(offset=1,limit=1))
 #printJsonData(v)
+
+#v = d.userApps(12)
+#printJsonData(v)
+
+#v = d.userRelationDatas(userid=12,friend=1)
+#printJsonData(v)
+
+v = d.apiData(12,'api-user-friends')
+printJsonData(v)
+
+
 

@@ -86,17 +86,16 @@ class UserShowProcessor(object):
 	###
  	# Contact
 
-	def userContacts(self, user_id, param={}):
+	def userContacts(self, user_id, commonParam={}):
 		uri = ns.lookup("database_handler")
 		dbProcessor = Pyro4.Proxy(uri)
-		print dict(user_id=user_id,param=param)
-		data = dbProcessor.userContacts(user_id, param)
+		data = dbProcessor.userContacts(user_id, commonParam)
 		return data
 
-	def userRelationsIdList(self, user_id, param={}):
+	def userRelationsIdList(self, user_id, commonParam={}):
 		uri = ns.lookup("database_handler")
 		dbProcessor = Pyro4.Proxy(uri)
-		data = dbProcessor.userRelationsIdList(user_id, param)
+		data = dbProcessor.userRelationsIdList(user_id, commonParam)
 		return data
 
 	def userRelationData(self, rel_id):
@@ -112,20 +111,38 @@ class UserShowProcessor(object):
 		return data
 
 
-	####
- 	# InContact
+	###
+ 	# In Contact
 
-	def userInRelationsIdList(self, user_id, param={}):
+	def userInRelationsIdList(self, user_id, commonParam={}):
 		uri = ns.lookup("database_handler")
 		dbProcessor = Pyro4.Proxy(uri)
-		data = dbProcessor.userInRelationsIdList(user_id, param)
+		data = dbProcessor.userInRelationsIdList(user_id, commonParam)
 		return data
 
-	def	userInContacts(self, user_id, param={}):
+	def	userInContacts(self, user_id, commonParam={}):
 		uri = ns.lookup("database_handler")
 		dbProcessor = Pyro4.Proxy(uri)
-		data = dbProcessor.userInContacts(user_id, param)
+		data = dbProcessor.userInContacts(user_id, commonParam)
 		return data
+
+ 	# friends
+	###
+	
+	def userFriends(self, user_id, commonParam={}):
+		uri = ns.lookup("database_handler")
+		dbProcessor = Pyro4.Proxy(uri)
+		data = dbProcessor.userFriends(user_id, commonParam)
+		return data
+
+ 	# apps
+	###
+	def userApps(self, user_id, commonParam={}):
+		uri = ns.lookup("database_handler")
+		dbProcessor = Pyro4.Proxy(uri)
+		data = dbProcessor.userApps(user_id, commonParam)
+		return data
+
 
 # userProcessor = UserProcessor()
 # daemon = Pyro4.Daemon()

@@ -46,14 +46,14 @@ class DatabaseHandler(object):
 		return d.userLookup(TelOrEmail, retType)
 
 	# for Relation
-	def userContacts(self, user_id, param={}):
+	def userContacts(self, user_id, commonParam={}):
 		d = DatabaseWorker()
-		print dict(user_id=user_id,param=param)
-		return d.userContacts(user_id, param)
+		print dict(user_id=user_id,Param=commonParam)
+		return d.userContacts(user_id, commonParam)
 
-	def userRelationsIdList(self, user_id, param={}):
+	def userRelationsIdList(self, user_id, commonParam={}):
 		d = DatabaseWorker()
-		return d.userRelationsIdList(user_id, param)
+		return d.userRelationsIdList(user_id, commonParam)
 
 	def	userRelationData(self, rel_id):
 		d = DatabaseWorker()
@@ -65,15 +65,24 @@ class DatabaseHandler(object):
 
 	# for in Relation
 
-	def userInRelationsIdList(self, user_id, param={}):
+	def	userInContacts(self, user_id, commonParam={}):
 		d = DatabaseWorker()
-		return d.userInRelationsIdList(user_id, param)
-
-	def	userInContacts(self, user_id, param={}):
-		d = DatabaseWorker()
-		return d.userInContacts(user_id, param)
+		return d.userInContacts(user_id, commonParam)
 		
+	def userInRelationsIdList(self, user_id, commonParam={}):
+		d = DatabaseWorker()
+		return d.userInRelationsIdList(user_id, commonParam)
 
+	# for friends
+	def userFriends(self, user_id, commonParam={}):
+		d = DatabaseWorker()
+		return d.userFriends(user_id, commonParam)
+
+	# for apps
+
+	def userApps(self, user_id, commonParam={}):
+		d = DatabaseWorker()
+		return d.userApps(user_id, commonParam)
 
 database_handler = DatabaseHandler()
 daemon = Pyro4.Daemon(host=LOCALADDR)
