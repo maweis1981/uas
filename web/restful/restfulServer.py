@@ -15,13 +15,19 @@ import tornado.web
 from tornado.options import define, options
 from userRestHandler import UserRestHandler
 from userLookupRestHandler import UserLookupRestHandler
+from contactRestHandler import ContactRestHandler
+from inContactRestHandler import InContactRestHandler
+from appRestHandler import AppRestHandler
 
 define("port", default=8000, help="API Server running on port", type=int)
 
 class Application(tornado.web.Application):
   def __init__(self):
     handlers = [
-            (r'/user/(.*)', UserRestHandler),
+            (r'/user/([0-9]+)', UserRestHandler),
+            (r'/user/([0-9]+)/contacts', ContactRestHandler),
+            (r'/user/([0-9]+)/in_contacts', InContactRestHandler),
+            (r'/user/([0-9]+)/apps', AppRestHandler),
             (r'/lookup/(.*)', UserLookupRestHandler),
           ]
     settings = dict(

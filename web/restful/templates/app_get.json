@@ -1,0 +1,8 @@
+{
+    "code": {{ code }},
+    "message":"{{ message }}",
+    "counts": {{ len(data) }},
+    "limit": {{ len(data) }},
+    "data":
+{% import simplejson %}{% autoescape None %}{{ simplejson.dumps(data) }}
+}
