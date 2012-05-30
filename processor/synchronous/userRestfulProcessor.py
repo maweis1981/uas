@@ -30,6 +30,9 @@ class UserProcessor(BaseProcessor):
 
     def getInContacts(self,id,param):
         return self.da.userInContacts(id, param)
+    
+    def getFriends(self,id,param):
+        return self.da.userFriends(id, param)
 
     def getUserApps(self,id,param):
         return self.da.userApps(id,param)
