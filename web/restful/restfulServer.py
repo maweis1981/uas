@@ -21,7 +21,7 @@ from appRestHandler import AppRestHandler
 
 import logging
 
-define("port", default=8000, help="API Server running on port", type=int)
+define("port", default=8888, help="API Server running on port", type=int)
 
 class Application(tornado.web.Application):
   def __init__(self):
