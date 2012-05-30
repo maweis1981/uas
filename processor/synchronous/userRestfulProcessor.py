@@ -18,11 +18,11 @@ class UserProcessor(BaseProcessor):
         return self.da.userBaseData(id)
 
     def getUserFullDataById(self,id):
-        return da.userFullData(id)
+        return self.da.userFullData(id)
 
     # lookup user
     def searchUserData(self,attribute):
-        return da.userLookup(attribute)
+        return self.da.userLookup(attribute)
 
     # load user's contacts
     def getContacts(self,id,param):
