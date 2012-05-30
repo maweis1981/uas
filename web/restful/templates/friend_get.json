@@ -1,0 +1,6 @@
+{
+    "code": {{ code }},
+    "message":"{{ message }}",
+    "data":
+{% autoescape None %}{{ data }}
+}
