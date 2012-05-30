@@ -26,11 +26,11 @@ define("port", default=8000, help="API Server running on port", type=int)
 class Application(tornado.web.Application):
   def __init__(self):
     handlers = [
-            (r'/user/([0-9]+)', UserRestHandler),
-            (r'/user/([0-9]+)/contacts', ContactRestHandler),
-            (r'/user/([0-9]+)/in_contacts', InContactRestHandler),
-            (r'/user/([0-9]+)/apps', AppRestHandler),
-            (r'/lookup/(.*)', UserLookupRestHandler),
+            (r'/api/v1/user/([0-9]+)', UserRestHandler),
+            (r'/api/v1/user/([0-9]+)/contacts', ContactRestHandler),
+            (r'/api/v1/user/([0-9]+)/in_contacts', InContactRestHandler),
+            (r'/api/v1/user/([0-9]+)/apps', AppRestHandler),
+            (r'/api/v1/lookup/(.*)', UserLookupRestHandler),
           ]
     settings = dict(
                 template_path=os.path.join(os.path.dirname(__file__), 'templates'),
