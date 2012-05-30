@@ -21,6 +21,7 @@ class UserRestHandler(RESTHandler):
         userObject = simplejson.dumps(userData)
         code = 200
         message = 'User Rest Handler Get Successful'
+        logging.info(message)
         return self.render('user_get.json',code = code, message = message, data = userObject)
     
     def post(self,id):

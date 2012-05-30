@@ -19,6 +19,8 @@ from contactRestHandler import ContactRestHandler
 from inContactRestHandler import InContactRestHandler
 from appRestHandler import AppRestHandler
 
+import logging
+
 define("port", default=8000, help="API Server running on port", type=int)
 
 class Application(tornado.web.Application):
@@ -48,4 +50,11 @@ def main():
 
 
 if __name__ == '__main__':
+  logging.basicConfig(
+          level = logging.DEBUG,
+          filename = 'api_server.log',
+          filemode = 'w',
+          )
+
+  logging.info('start api server')
   main()

@@ -5,6 +5,7 @@
 
 
 from baseProcessor import BaseProcessor
+import logging
 
 class UserProcessor(BaseProcessor):
 
@@ -13,6 +14,7 @@ class UserProcessor(BaseProcessor):
 
     # load user data
     def getUserDataById(self,id):
+        logging.info('query user data by id')
         return self.da.userBaseData(id)
 
     def getUserFullDataById(self,id):
