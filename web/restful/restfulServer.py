@@ -17,6 +17,7 @@ from userRestHandler import UserRestHandler
 from userLookupRestHandler import UserLookupRestHandler
 from contactRestHandler import ContactRestHandler
 from inContactRestHandler import InContactRestHandler
+from friendRestHandler import FriendRestHandler
 from appRestHandler import AppRestHandler
 
 import logging
@@ -29,6 +30,7 @@ class Application(tornado.web.Application):
             (r'/api/v1/user/([0-9]+)', UserRestHandler),
             (r'/api/v1/user/([0-9]+)/contacts', ContactRestHandler),
             (r'/api/v1/user/([0-9]+)/in_contacts', InContactRestHandler),
+            (r'/api/v1/user/([0-9]+)/friends', FriendRestHandler),
             (r'/api/v1/user/([0-9]+)/apps', AppRestHandler),
             (r'/api/v1/lookup/(.*)', UserLookupRestHandler),
           ]
