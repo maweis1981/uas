@@ -4,32 +4,48 @@
 {% block content %}
 
 <!-- Main hero unit for a primary marketing message or call to action -->
-<div class="hero-unit">
-    <h1>SNDA UUPS</h1>
-    <p>SNDA Uniform User Profile System</p>
-    <p><a class="btn btn-primary btn-large" href="/apps/create">Create &raquo;</a></p>
-</div>
-
-
 <div class="row">
+    <div class='span'><a class="btn btn-primary btn-large" href="/auth/create">Create &raquo;</a></div>
+</div>
+<br/>
+
+<div class="row"><div class="span6">
 {% for client in clients %}
-
+	<div class="row">
+		<div class="span"><a href="/auth/detail/{{ client.id }}" ><b>{{ client.title }}</b></a></div>
+	</div>
+	<div class="row">
+		<div class="span">{{ client.description }}</div>
+	</div>
+	<div class="row">
+		<div class="span">{{ client.date_registered }}</div>
+		<div class="pull-right"><a href="/auth/detail/{{ client.id }}" >detail</a></div>
+	</div>
+<!-- 
     <div class="span5">
-        <b>{{ client.title }}</b>
+        
 
 
-        <div class="btn btn-success">
-            Access Token:
-            <a href="/oauth/auth/?client_id={{ client.identifier }}&response_type=token"/>{{ client.identifier }}</a>
-        </div>
+        
 
         <br/>
         <b>{{ client.user }}</b>
         <br/>
-        <b>{{ client.description }}</b><br/>
+        <b></b><br/>
         <b>{{ client.identifier }}</b><br/>
         <b>{{ client.date_registered }}</b><br/>
-    </div>
+    </div>-->
+	<hr/>
+{% empty %}
+<div class="row"><div class="span">
+		no data
+</div></div>
 {% endfor  %}
+<div class="row"><ul class="pager">
+{% if clients.has_previous %}<li class="previous"><a href="?page={{ clients.previous_page_number }}">Previous</a></li>{% endif %}
+{% if clients.has_next %}<li class="next"><a href="?page={{ clients.next_page_number }}">Next</a></li>{% endif %}
+</ul></div>
+</div></div>
+
 </div>
 {% endblock %}

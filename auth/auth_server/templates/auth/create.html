@@ -1,19 +1,19 @@
 {% extends 'base.html' %}
 {% block content %}
-    <form class="form-horizontal">
+    <form class="form-horizontal" method='post'>
 		<legend>Create Application Form</legend>
         <fieldset>
             <div class="control-group">
-                <label class="control-label" for="input01">Application Name</label>
+                <label class="control-label" for="title">Application Name</label>
                 <div class="controls">
-                    <input type="text" class="input-xlarge" id="name" name="name">
+                    <input type="text" class="input-xlarge" id="title" name="title">
                     <p class="help-block">Name of the client application</p>
                 </div>
             </div>
         </fieldset>
         <fieldset>
             <div class="control-group">
-                <label class="control-label" for="input01">Description</label>
+                <label class="control-label" for="description">Description</label>
                 <div class="controls">
                     <textarea class="input-xlarge" id="description" name="description"></textarea>
                 </div>
@@ -21,13 +21,17 @@
         </fieldset>
         <fieldset>
             <div class="control-group">
-                <label class="control-label" for="input01">URL</label>
+                <label class="control-label" for="link">URL</label>
                 <div class="controls">
-                    <input type="text" class="input-xlarge" id="input01">
+                    <input type="text" class="input-xlarge" name="link" id="link" />
                     <p class="help-block">Supporting help text</p>
                 </div>
             </div>
         </fieldset>
+		{% csrf_token %}
+		<div class="form-actions">
+			<button class="btn btn-primary" type="submit">Create</button>
+			<button class="btn" onclick="javascript:history.back();return false;" >Cancel</button>
+		</div>
     </form>
-
-{% endblock %}
+{% endblock %} 

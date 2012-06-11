@@ -22,7 +22,7 @@
         {% csrf_token %}
 
         <input type="submit" value="login"/>
-        <input type="hidden" name="next" value="{{ next }}"/>
+        <input type="hidden" name="next" value="/auth/list"/>
     </form>
 
     {% endblock %}

@@ -4,6 +4,8 @@
 
 access token: {{ token }}<br/>
 
-Test: <a href="/auth/test?access_token={{ token }}">Access API:Test Via Access Token</a>
-
+Test: <br/>
+{% for scope in scopes %}
+scope '{{scope.title}}':<a href="/auth/test?access_token={{ token }}&endpoint={{scope.title}}">validate</a><br/>
+{% endfor %}
 {% endblock %}
