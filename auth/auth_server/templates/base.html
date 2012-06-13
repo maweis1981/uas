@@ -45,6 +45,13 @@
                     <li><a href="#contact">Examples</a></li>
                 </ul>
             </div><!--/.nav-collapse -->
+			<p class="navbar-text pull-right">
+			{% if user.is_authenticated %}
+			Logged in as {{user.username}} <a href="/accounts/logout">logout</a>
+			{% else %}
+			<a href="/accounts/login">login</a>&nbsp;&nbsp;<a href="/auth/register">register</a>
+			{% endif %}
+			</p>
         </div>
     </div>
 </div>

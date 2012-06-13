@@ -17,18 +17,22 @@ from userRestHandler import UserRestHandler
 from userLookupRestHandler import UserLookupRestHandler
 from contactRestHandler import ContactRestHandler
 from inContactRestHandler import InContactRestHandler
+from friendRestHandler import FriendRestHandler
 from appRestHandler import AppRestHandler
 
-define("port", default=8000, help="API Server running on port", type=int)
+import logging
+
+define("port", default=8888, help="API Server running on port", type=int)
 
 class Application(tornado.web.Application):
   def __init__(self):
     handlers = [
-            (r'/user/([0-9]+)', UserRestHandler),
-            (r'/user/([0-9]+)/contacts', ContactRestHandler),
-            (r'/user/([0-9]+)/in_contacts', InContactRestHandler),
-            (r'/user/([0-9]+)/apps', AppRestHandler),
-            (r'/lookup/(.*)', UserLookupRestHandler),
+            (r'/api/v1/user/([0-9]+)', UserRestHandler),
+            (r'/api/v1/user/([0-9]+)/contacts', ContactRestHandler),
+            (r'/api/v1/user/([0-9]+)/in_contacts', InContactRestHandler),
+            (r'/api/v1/user/([0-9]+)/friends', FriendRestHandler),
+            (r'/api/v1/user/([0-9]+)/apps', AppRestHandler),
+            (r'/api/v1/lookup/(.*)', UserLookupRestHandler),
           ]
     settings = dict(
                 template_path=os.path.join(os.path.dirname(__file__), 'templates'),
@@ -48,4 +52,11 @@ def main():
 
 
 if __name__ == '__main__':
+  logging.basicConfig(
+          level = logging.DEBUG,
+          filename = 'api_server.log',
+          filemode = 'w',
+          )
+
+  logging.info('start api server')
   main()

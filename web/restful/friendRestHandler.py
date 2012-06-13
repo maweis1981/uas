@@ -2,7 +2,7 @@
 # coding: utf-8
 
 """
-userRestHandler.py
+friendRestHandler.py
 
 """
 
@@ -14,15 +14,15 @@ import simplejson
 
 
 
-class UserRestHandler(RESTHandler):
+class FriendRestHandler(RESTHandler):
     def get(self,id):
         up = self.instanceByName('user_processor')
-        userData = up.getUserDataById(id)
-        userObject = simplejson.dumps(userData)
+        param = {}
+        friends = up.getFriends(id,param)
+        friendsObject = simplejson.dumps(friends)
         code = 200
-        message = 'User Rest Handler Get Successful'
-        logging.info(message)
-        return self.render('user_get.json',code = code, message = message, data = userObject)
+        message = 'Friend Rest Handler Get Successful'
+        return self.render('friend_get.json',code = code, message = message, data = friendsObject)
     
     def post(self,id):
         data = self.instanceByName('user_show_processor').userData(id)

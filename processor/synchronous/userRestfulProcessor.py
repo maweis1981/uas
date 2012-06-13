@@ -5,6 +5,7 @@
 
 
 from baseProcessor import BaseProcessor
+import logging
 
 class UserProcessor(BaseProcessor):
 
@@ -13,14 +14,15 @@ class UserProcessor(BaseProcessor):
 
     # load user data
     def getUserDataById(self,id):
+        logging.info('query user data by id')
         return self.da.userBaseData(id)
 
     def getUserFullDataById(self,id):
-        return da.userFullData(id)
+        return self.da.userFullData(id)
 
     # lookup user
     def searchUserData(self,attribute):
-        return da.userLookup(attribute)
+        return self.da.userLookup(attribute)
 
     # load user's contacts
     def getContacts(self,id,param):
@@ -28,6 +30,9 @@ class UserProcessor(BaseProcessor):
 
     def getInContacts(self,id,param):
         return self.da.userInContacts(id, param)
+    
+    def getFriends(self,id,param):
+        return self.da.userFriends(id, param)
 
     def getUserApps(self,id,param):
         return self.da.userApps(id,param)

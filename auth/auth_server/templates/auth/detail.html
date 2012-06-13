@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div >
+    <div><b>{{ client.title }}</b></div>
+	<div>{{client.description}}</div>
+	<div>{{client.link}}</div>
+	<div>{{client.date_registered}}</div>
+	<div class="btn btn-success">
+		Access Token:
+		<a href="/oauth/auth/?client_id={{ client.identifier }}&response_type=token&redirect_uri={{uri.0.0}}"/>{{ client.identifier }}</a>
+	</div>
+</div>
+{%endblock%}

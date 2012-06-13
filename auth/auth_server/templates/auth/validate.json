@@ -1,6 +1,6 @@
 {
-    "code":200,
-    "message":"successful",
+    "code":{{code}},
+    "message":"{{message}}",
     "access_token":"{{ token }}",
     "scope":"{{ scope }}"
 }
