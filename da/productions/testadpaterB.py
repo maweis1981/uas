@@ -1,9 +1,16 @@
 import os,sys,inspect
 import logging
 import json
+import copy
+from sqlalchemy import *
+from datetime import *
+from types import *
 
-
+from init import *
 from dbWorker import DatabaseWorker
+from dbWorkerLib import *
+
+
 
 
 def printvalue(value,lev=0):
@@ -57,12 +64,12 @@ print '\n--------------------------------'
 #v = d.apiStruct('api-relation-info',True)
 #printJsonData(v)
 
-'''
-print '\n--------------------------------'
 
-v = d.userBaseData(12)
-printJsonData(v)
-'''
+#print '\n--------------------------------'
+
+#v = d.userBaseData(12)
+#printJsonData(v)
+
 
 #print '\n--------------------------------'
 
@@ -117,11 +124,43 @@ printJsonData(v)
 #v = d.userApps(12)
 #printJsonData(v)
 
+#print '\n--------------------------------'
+
 #v = d.userRelationDatas(userid=12,friend=1)
 #printJsonData(v)
 
-v = d.apiData(12,'api-user-friends')
-printJsonData(v)
+#v = d.apiData(12,'api-user-friends')
+#printJsonData(v)
+
+#print '\n--------------------------------'
+
+engine = create_engine('mysql://%s:%s@%s:%s/user_profile_m?charset=utf8'%(MYSQLUSER, MYSQLPWD, MYSQLADDR, MYSQLPORT))
+conn   = engine.connect()
+
+sql='replace into userinfo_data (info_id,data_field,data_value) values (%s,%s,%s)'
+rs = engine.execute(sql,20,"mail","e@sohu.com")
+print rs.context.statement
+#print rs.fetchall()
+
+print '\n--------------------------------'
+
+u = d.userFullData(12)
+printJsonData(u)
+
+print '\n--------------------------------'
+
+ufs = extractUserDataFields(u)
+printJsonData(ufs)
+
+for uf in ufs:
+    print 
+    sqlt = userFieldDataToExistsSql(12,2,uf)
+    print sqlt[0] % tuple(sqlt[1])
+    print
+    sqlt = userFieldDataToUpdateSql(12,2,6,uf)
+    print sqlt[0] % tuple(sqlt[1])
+    
+
 
 
 

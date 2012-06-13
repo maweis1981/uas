@@ -20,6 +20,7 @@ CONFPATH = DAROOT + "/conf"
 import socket
 import struct
 
+'''
 import fcntl
 def get_ip_address(ifname='eth0'):
 	s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -29,5 +30,6 @@ def get_ip_address(ifname='eth0'):
 	    struct.pack('256s', ifname[:15])
 	)[20:24])
 LOCALADDR = get_ip_address()
+'''
 
-#LOCALADDR = '127.0.0.1'
+LOCALADDR = '127.0.0.1'

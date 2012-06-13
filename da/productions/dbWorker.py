@@ -19,17 +19,7 @@ from datetime import *
 from init import *
 from types import *
 
-
-def fieldEncode(field):
-	tp = type(field)
-	if tp is NoneType :
-		return ''
-	elif (tp is str) or (tp is unicode) :
-		return field.encode('utf8')
-	elif (tp is date) or (tp is datetime) :
-		return str(field)
-	else :
-		return field
+from dbWorkerLib import *
 
 
 class DatabaseWorker(object):
@@ -99,6 +89,7 @@ ORDER BY key_level, key_order' % (userid,level,keylist)
 		## for user data
 		## user basic data
 		user_data = {}
+		userid = long(userid)
 
 		sql = 'select * from users where user_id= %s' % (userid)
 		#if debug : print sql
@@ -110,18 +101,20 @@ ORDER BY key_level, key_order' % (userid,level,keylist)
 			user_data['versign_phone'] = fieldEncode(row['phone'])
 			user_data['versign_email'] = fieldEncode(row['email'])
 
-		sql = 'select * from userinfo inner join userinfo_basic on userinfo.info_id=userinfo_basic.info_id \
-where user_id= %s and (selected=1) and (under=0) limit 1' % (userid)
+		sqlprf = 'select *, u.info_id as data_id from userinfo u inner join userinfo_%s d on u.info_id=d.info_id \
+where user_id= %u and (selected=1) and (under=0) %s' % ('%s', userid, '%s')
+		print sqlprf
+
+		sql = sqlprf % ('basic', 'limit 1')
 		rs = conn.execute(sql)
 		for row in rs:
-			user_data['birthday'] = fieldEncode(row['bday'])
-			user_data['gender']= fieldEncode(row['sex'])
+			user_data['birthday'] = fieldEncode(row['birthday'])
+			user_data['gender']= fieldEncode(row['gender'])
 			user_data['blood'] = fieldEncode(row['blood'])
 			user_data['marry'] = fieldEncode(row['marry'])
 
 		## user name data
-		sql = 'select * from userinfo inner join userinfo_name on userinfo.info_id=userinfo_name.info_id \
-where user_id= %s and (selected=1) and (under=0) limit 1' % (userid)
+		sql = sqlprf % ('name', 'limit 1')
 		rs = conn.execute(sql)
 		row_data = {}
 		for row in rs:
@@ -134,8 +127,7 @@ where user_id= %s and (selected=1) and (under=0) limit 1' % (userid)
 		if len(row_data)>0 : user_data['name'] = row_data
 
 		# user nick for user not for app if exist  
-		sql = 'select * from userinfo inner join userinfo_nick on userinfo.info_id=userinfo_nick.info_id \
-where user_id= %s and (selected=1) and (under=0) limit 1' % (userid)
+		sql = sqlprf % ('nick', 'limit 1')
 		rs = conn.execute(sql)
 		for row in rs:
 			user_data['nick']  = fieldEncode(row['nick'])
@@ -143,36 +135,35 @@ where user_id= %s and (selected=1) and (under=0) limit 1' % (userid)
 			user_data['sign']  = fieldEncode(row['sign'])
 
 		## user email data / mutiline
-		sql = 'select * from userinfo inner join userinfo_email on userinfo.info_id=userinfo_email.info_id \
-where user_id= %s and (selected=1) and (under=0) order by roword' % (userid)
+		sql = sqlprf % ('emails', 'order by row_ord')
 		rs = conn.execute(sql)
 		rows = []
 		for row in rs:
 			row_data = {}
 			rows.append(row_data)
+			row_data['data_id'] = fieldEncode(row['data_id'])
 			row_data['email_type'] = fieldEncode(row['email_type'])
 			row_data['email']  = fieldEncode(row['email'])
 			row_data['versign']  = fieldEncode(row['versign'])
 		if len(rows)>0 : user_data['emails'] = rows
 
 		## user tel data / mutiline
-		sql = 'select * from userinfo inner join userinfo_tel on userinfo.info_id=userinfo_tel.info_id \
-where user_id= %s and (selected=1) and (under=0) order by roword' % (userid)
+		sql = sqlprf % ('telephones', 'order by row_ord')
 		rs = conn.execute(sql)
 		rows = []
 		for row in rs:
 			row_data = {}
 			rows.append(row_data)
+			row_data['data_id'] = fieldEncode(row['data_id'])
 			row_data['tel_type'] = fieldEncode(row['tel_type'])
-			row_data['tel_number']  = fieldEncode(row['tel'])
+			row_data['tel_number']  = fieldEncode(row['tel_number'])
 			row_data['versign']  = fieldEncode(row['versign'])
 			#row_data['tel_city'] = fieldEncode(row['tel_city'])
 			#row_data['tel_region']  = fieldEncode(row['tel_region'])
 		if len(rows)>0 : user_data['telephones'] = rows
 
 		## user im list data / muti property / dict 
-		sql = 'select * from userinfo inner join userinfo_im on userinfo.info_id=userinfo_im.info_id \
-where user_id= %s and (selected=1) and (under=0)' % (userid)
+		sql = sqlprf % ('im', '')
 		rs = conn.execute(sql)
 		row_data = {}
 		for row in rs:
@@ -180,8 +171,7 @@ where user_id= %s and (selected=1) and (under=0)' % (userid)
 		if len(row_data)>0 : user_data['im'] = row_data
 
 		## user url list data / muti property / dict
-		sql = 'select * from userinfo inner join userinfo_url on userinfo.info_id=userinfo_url.info_id \
-where user_id= %s and (selected=1) and (under=0)' % (userid)
+		sql = sqlprf % ('url', '')
 		rs = conn.execute(sql)
 		row_data = {}
 		for row in rs:
@@ -189,27 +179,27 @@ where user_id= %s and (selected=1) and (under=0)' % (userid)
 		if len(row_data)>0 : user_data['url'] = row_data
 
 		## user photos data / mutiline
-		sql = 'select * from userinfo inner join userinfo_photo on userinfo.info_id=userinfo_photo.info_id \
-where user_id= %s and (selected=1) and (under=0) order by roword' % (userid)
+		sql = sqlprf % ('photos', 'order by row_ord')
 		rs = conn.execute(sql)
 		rows = []
 		for row in rs:
 			row_data = {}
 			rows.append(row_data)
+			row_data['data_id'] = fieldEncode(row['data_id'])
 			row_data['photo_class'] = fieldEncode(row['photo_class'])
 			row_data['photo_caption']  = fieldEncode(row['photo_caption'])
 			row_data['photo_url']  = fieldEncode(row['photo_url'])
 		if len(rows)>0 : user_data['photos'] = rows
 
 		## user adrress data / mutiline
-		sql = 'select * from userinfo inner join userinfo_adr on userinfo.info_id=userinfo_adr.info_id \
-where user_id= %s and (selected=1) and (under=0) order by roword' % (userid)
+		sql = sqlprf % ('addresses', 'order by row_ord')
 		rs = conn.execute(sql)
 		rows = []
 		for row in rs:
 			row_data = {}
 			rows.append(row_data)
-			row_data['address_type'] = fieldEncode(row['adr_type'])
+			row_data['data_id'] = fieldEncode(row['data_id'])
+			row_data['address_type'] = fieldEncode(row['address_type'])
 			row_data['post_office_address']  = fieldEncode(row['post_office_address'])
 			row_data['extended_address']  = fieldEncode(row['extended_address'])
 			row_data['street']   = fieldEncode(row['street'])
@@ -220,33 +210,33 @@ where user_id= %s and (selected=1) and (under=0) order by roword' % (userid)
 		if len(rows)>0 : user_data['addresses'] = rows
 
 		## user organization data / mutiline 
-		sql = 'select * from userinfo inner join userinfo_org on userinfo.info_id=userinfo_org.info_id \
-where user_id= %s and (selected=1) and (under=0) order by roword' % (userid)
+		sql = sqlprf % ('organizations', 'order by row_ord')
 		rs = conn.execute(sql)
 		rows = []
 		for row in rs:
 			row_data = {}
 			rows.append(row_data)
+			row_data['data_id'] = fieldEncode(row['data_id'])
 			row_data['org_name'] = fieldEncode(row['org_name'])
 			row_data['org_unit'] = fieldEncode(row['org_unit'])
-			row_data['org_subunit']  = fieldEncode(row['org_Unit_sub'])
+			row_data['org_subunit']  = fieldEncode(row['org_subunit'])
 			row_data['title'] = fieldEncode(row['title'])
 			row_data['role']  = fieldEncode(row['role'])
 			row_data['work_field']  = fieldEncode(row['work_field'])
-			row_data['org_logo']  = fieldEncode(row['logo'])
+			row_data['org_logo']  = fieldEncode(row['org_logo'])
 			row_data['org_into_date']  = fieldEncode(row['org_into_date'])
 			row_data['org_leave_date'] = fieldEncode(row['org_leave_date'])
 		if len(rows)>0 : user_data['organizations'] = rows
 
 		## user education data / mutiline
-		sql = 'select * from userinfo inner join userinfo_school on userinfo.info_id=userinfo_school.info_id \
-where user_id= %s and (selected=1) and (under=0) order by roword' % (userid)
+		sql = sqlprf % ('educations', 'order by row_ord')
 		rs = conn.execute(sql)
 		rows = []
 		for row in rs:
 			row_data = {}
 			rows.append(row_data)
-			row_data['education']  = fieldEncode(row['school_education'])
+			row_data['data_id'] = fieldEncode(row['data_id'])
+			row_data['education']  = fieldEncode(row['education'])
 			row_data['school_name'] = fieldEncode(row['school_name'])
 			row_data['school_city']  = fieldEncode(row['school_city'])
 			row_data['school_into_date']  = fieldEncode(row['school_into_date'])
@@ -254,13 +244,13 @@ where user_id= %s and (selected=1) and (under=0) order by roword' % (userid)
 		if len(rows)>0 : user_data['educations'] = rows
 		
 		## user sound data / mutiline
-		sql = 'select * from userinfo inner join userinfo_sound on userinfo.info_id=userinfo_sound.info_id \
-where user_id= %s and (selected=1) and (under=0) order by roword' % (userid)
+		sql = sqlprf % ('sounds', 'order by row_ord')
 		rs = conn.execute(sql)
 		rows = []
 		for row in rs:
 			row_data = {}
 			rows.append(row_data)
+			row_data['data_id'] = fieldEncode(row['data_id'])
 			row_data['sound_class'] = fieldEncode(row['sound_class'])
 			row_data['sound_caption'] = fieldEncode(row['sound_caption'])
 			row_data['sound_url']  = fieldEncode(row['sound_url'])
@@ -268,25 +258,25 @@ where user_id= %s and (selected=1) and (under=0) order by roword' % (userid)
 		if len(rows)>0 : user_data['sounds'] = rows
 
 		## user geo data / mutiline
-		sql = 'select * from userinfo inner join userinfo_geo on userinfo.info_id=userinfo_geo.info_id \
-where user_id= %s and (selected=1) and (under=0) order by roword' % (userid)
+		sql = sqlprf % ('geoes', 'order by row_ord')
 		rs = conn.execute(sql)
 		rows = []
 		for row in rs:
 			row_data = {}
 			rows.append(row_data)
+			row_data['data_id'] = fieldEncode(row['data_id'])
 			row_data['geo_type'] = fieldEncode(row['geo_type'])
 			row_data['tz']  = fieldEncode(row['tz'])
 			row_data['geo_lat']  = fieldEncode(row['geo_lat'])
 			row_data['geo_lng']  = fieldEncode(row['geo_lng'])
 			row_data['record_date']  = fieldEncode(row['record_date'])
-		if len(rows)>0 : user_data['geos'] = rows
+		if len(rows)>0 : user_data['geoes'] = rows
 
 
 		# user addition field and common data , 可兼容上面的格式
 		'''
-		data_class 1->n roword 1->1 info_id 
-		{                                                 data_class    roword -- info_id
+		data_class 1->n row_ord 1->1 info_id 
+		{                                                 data_class    row_ord -- info_id
 			data_field:data_value,                     <- null          null
 			data_class:{data_field:data_value,...},    <- not null      null
 			data_class:[{data_field:data_value,...}    <- not null      not null
@@ -296,7 +286,7 @@ where user_id= %s and (selected=1) and (under=0) order by roword' % (userid)
 		'''
 		sql = 'select *, userinfo.info_id as infoid from userinfo inner join userinfo_data on userinfo.info_id=userinfo_data.info_id \
 where user_id= %s and (selected=1) and (under=0) \
-order by user_id, data_class, roword, userinfo.info_id' % (userid)
+order by user_id, data_class, row_ord, userinfo.info_id' % (userid)
 		rs = conn.execute(sql)
 		dataclass = ''
 		infoid = 0
@@ -311,6 +301,7 @@ order by user_id, data_class, roword, userinfo.info_id' % (userid)
 					infoid = row['infoid']
 					row_data = {}
 					d = dataclass.encode('utf8')
+					row_data['data_id'] = fieldEncode(infoid)
 					if d in user_data :
 						if type(user_data[d]) is dict:
 							prevrow = user_data[d]
@@ -346,11 +337,11 @@ where user_id= %s ' % (userid)
 
 		# for application comm user data
 		'''
-		data_class 1->n roword 1->1 info_id 
+		data_class 1->n row_ord 1->1 info_id 
 		{
 			app_id:n
 			app_account:abcd
-		                                                  data_class    roword -- info_id
+		                                                  data_class    row_ord -- info_id
 			data_field:data_value,                     <- null          null
 			data_class:{data_field:data_value,...},    <- not null      null
 			data_class:[{data_field:data_value,...}    <- not null      not null
@@ -361,7 +352,7 @@ where user_id= %s ' % (userid)
 
 		sql = 'select *, userinfo.info_id as infoid from userinfo inner join userinfo_data on userinfo.info_id=userinfo_data.info_id \
 where (user_id= %s) and (selected=1) and (under=1) and (not isnull(app_id)) \
-order by app_id, user_id, data_class, roword, userinfo.info_id' % (userid)
+order by app_id, user_id, data_class, row_ord, userinfo.info_id' % (userid)
 		rs = conn.execute(sql)
 		dataclass = ''
 		infoid = 0
@@ -540,7 +531,7 @@ where user_relation.user_id = %s and ur.relation_user_id = %s order by contact_a
 
 		sql = 'select * from userinfo inner join userinfo_data on userinfo.info_id=userinfo_data.info_id \
 where (selected=1) and (under=2) and (rel_id in (%s)) \
-order by rel_id, data_class, roword, userinfo.info_id' % (idliststr)
+order by rel_id, data_class, row_ord, userinfo.info_id' % (idliststr)
 		rs = conn.execute(sql)
 		conn.close()
 		dataclass = ''
@@ -961,7 +952,6 @@ order by rel_id, data_class, roword, userinfo.info_id' % (idliststr)
 		return self.apiData(user_id,'api-user-friends',param)
 
 	## apps info
-
 	def userApps(self, user_id, param={}):
 		#r = self.apiData(user_id,'user-applications', param)
 		r = self.userData(user_id)
@@ -972,7 +962,7 @@ order by rel_id, data_class, roword, userinfo.info_id' % (idliststr)
 
 	###
 
-	def userBatchPut(self, userid, value):
+	def userBatchPut(self, user_id, value):
 		if userid == None:
 			return
 		engine = create_engine('mysql://%s:%s@%s:%s/user_profile?charset=utf8'%(MYSQLUSER, MYSQLPWD, MYSQLADDR, MYSQLPORT))
@@ -980,25 +970,20 @@ order by rel_id, data_class, roword, userinfo.info_id' % (idliststr)
 		conn.close()
 		result = conn.execute(sql)
 
-	def userPut(self, userid, userData):
+	def userPut(self, userData):
 		return
 
 	def userPatch(self, userid, userData):
 		return
 
+	## user addsl,
+	def userPost(self, app_id, user_id, userData):
+		if type(userData) is dict:
+			userData.clone()
 
-	def test_data(self):
-		engine = create_engine('mysql://root:idea@localhost/uas_test')
-		conn = engine.connect()
-		result = conn.execute('select * from t_user')
-		conn.close()
-		row_data = []
-		for row in result:
-			# print row
-			d = dict(row.items())
-			# print d
-			row_data.append(d)
-		return row_data
+			for (k,v) in userData.iteritems():
+				print k
+		return
 		
 if __name__ == '__main__':
 	d = DatabaseWorker()
