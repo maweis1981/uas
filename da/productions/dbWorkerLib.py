@@ -47,8 +47,8 @@ userFieldDefine = {
 	'organizations':'',
 	'geoes':''
 	},
-'userinfo':['versign','last_update','source_name','source_id','row_order','data_class'],
-'readonly':['versign_phone','uid','versign_email','user_id'],
+'userinfo':['versign','last_update','source_name','source_id','row_ord','data_class'],
+'readonly':['versign_phone','uid','versign_email','user_id','source_ident'],
 'realname':{
 	'source_name':'origin',
 	'source_id':'origin_id'
@@ -83,35 +83,53 @@ def extractUserDataFields(userData):
 	ud = userData
 	if ud==None:
 		return None
+
 	r  = []
 	ufs = userFieldDefine['_sys']
+	sourceIdent = {}
+	if 'source_ident' in userData:
+		if (type(userData['source_ident']) is dict) and ('source_id' in userData['source_ident']):
+			sourceIdent = userData['source_ident']
+		
+	udfs = {}
+	udls = {}
+	for k,v in ud.iteritems():
+		if type(v) in (str,unicode,int,long,float):
+			udfs[k]=v
+		else:
+			udls[k]=v
 	for f in ufs['fields']:
-		rd = extractUserFieldData(ud,userFieldDefine[f],f)
+		rd = extractUserFieldData(dict(udfs.items()+sourceIdent.items()),userFieldDefine[f],f)
 		if len(rd['data'])>0: 
 			r.append(rd)
-	for f,uf in ud.iteritems():
+	for f,uf in udls.iteritems():
 		if f in ufs['class-mutiline']:
 			if type(uf) is list: # 代表多行数据
+				i=0
 				for uitem in uf:
+					i = i + 1
+					uitem['row_ord']=i
 					r.append(extractUserFieldData(uitem,userFieldDefine[f],f))
-			if type(uf) is dict: # 代表此应用只有这一条数据
-				r.append(extractUserFieldData(uf,userFieldDefine[f],f))
-		elif f in ufs['class-oneline']:
-			r.append(extractUserFieldData(uf,userFieldDefine[f],f))
+			if type(uf) is dict: # 代表此应用此数据只有一条
+				r.append(extractUserFieldData(dict(uf.items()+sourceIdent.items()),userFieldDefine[f],f))
+		elif f in ufs['class-oneline']: # 肯定只有一条
+			r.append(extractUserFieldData(dict(uf.items()+sourceIdent.items()),userFieldDefine[f],f))
 		elif f in ufs['class-list']:
 			kn = ufs['mutiline-key'][f]
 			kf = userFieldDefine[f][1]
 			for k,v in uf.iteritems():
 				ul={kn:k,kf:v}
-				r.append(extractUserFieldData(ul,[kn,kf],f))
+				r.append(extractUserFieldData(dict(ul.items()+sourceIdent.items()),[kn,kf],f))
 		else:
-			if type(uf) is dict:
-				r.append(extractUserFieldData(uf,['*'],f))
+			if f in ufs['readonly']:
+				pass
+			elif type(uf) is dict:
+				r.append(extractUserFieldData(dict(uf.items()+sourceIdent.items()),['*'],f))
 			elif type(uf) is list:
 				for uitem in uf:
 					r.append(extractUserFieldData(uitem,['*'],f))
-			elif (type(uf) in (str,unicode,int,long)) and (f not in ufs['readonly']):
-				r.append(extractUserFieldData({f:uf},['*'],''))
+			elif type(uf) in (str,unicode,int,long):
+				r.append(extractUserFieldData(dict({f:uf}.items()+sourceIdent.items()),['*'],''))
 	return r
 
 
@@ -142,6 +160,7 @@ def userFieldDataToExistsSql(user_id, app_id, userFieldData):
 	param = []
 	if userFieldData==None:
 		return ('',[])
+
 	ufs = userFieldDefine['_sys']
 	ud  = userFieldData['data']
 	ui  = userFieldData['info']
@@ -157,10 +176,12 @@ def userFieldDataToExistsSql(user_id, app_id, userFieldData):
 			param = [user_id, app_id, ui['origin'],ui['origin_id']]
 			return (sql,param)
 		else: # 按照规则以字段逻辑的唯一性要求尝试匹配
-			if fieldClass in (ufs['fields']+ufs['class-oneline']): ## 单一记录的，查询之 userid/appid/class/one
+			if (fieldClass in (ufs['fields']+ufs['class-oneline'])) or (
+				fieldClass in ufs['class-mutiline'] and 'row_ord' not in ui ): ## 单一记录的，查询之 userid/appid/class/one
 				sql = sqlpf + " ;"
 				param = [user_id, app_id]
 				return (sql,param)
+				print '****', sql
 			elif fieldClass in (ufs['class-mutiline']+ufs['class-list']): #多行情况，再附加检查关键字段，
 				k = ufs['mutiline-key'][fieldClass]
 				if (k!='') and (k in ud):
@@ -245,11 +266,11 @@ def userFieldDataToInsertSql(user_id, app_id, userFieldData):
 	if fieldClass in (ufs['fields']+ufs['class-oneline']+ufs['class-mutiline']+ufs['class-list']):
 		if len(ud) >0:
 			sqld = "insert userinfo_"+fieldClass+" (info_id, "+', '.join(f for f in ud.keys()) \
-				+") select * from (select @dataid, "+', '.join('%s' for f in ud)+") d where @cnt=1;"
+				+") select * from (select @dataid, "+', '.join('%s as '+f for f in ud)+") d where @cnt=1;"
 			paramd = ud.values()
 	else:
 		for f in ud:
 			sqld=sqld+ "replace userinfo_data select * from (select @dataid,%s,%s) d where @cnt=1;"
 			paramd = paramd + [f, ud[f]]
-	return (sqli+sqld+' select @dataid;', parami+paramd)
+	return (sqli+sqld, parami+paramd)
 
