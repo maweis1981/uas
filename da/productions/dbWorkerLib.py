@@ -81,6 +81,8 @@ def userDataToSql(userData, user_id, app_id):
 
 def extractUserDataFields(userData):
 	ud = userData
+	if ud==None:
+		return None
 	r  = []
 	ufs = userFieldDefine['_sys']
 	for f in ufs['fields']:
@@ -114,13 +116,15 @@ def extractUserDataFields(userData):
 
 
 
-def extractUserFieldData(userDataField, fieldList, fieldClass): 
+def extractUserFieldData(userDataField, fieldList, fieldClass):
 	d = {'data':{},'info':{},'class':''}
 	u = userDataField;
+	if u==None:
+		return d
+
 	realname = userFieldDefine['_sys']['realname']
 	if 'data_id' in u:
 		d['data_id'] = u['data_id']
-
 
 	for k in u:
 		if k in userFieldDefine['_sys']['userinfo']:
@@ -136,6 +140,8 @@ def extractUserFieldData(userDataField, fieldList, fieldClass):
 def userFieldDataToExistsSql(user_id, app_id, userFieldData):
 	sql = ''
 	param = []
+	if userFieldData==None:
+		return ('',[])
 	ufs = userFieldDefine['_sys']
 	ud  = userFieldData['data']
 	ui  = userFieldData['info']
@@ -192,6 +198,8 @@ def userFieldDataToUpdateSql(user_id, app_id, data_id, userFieldData):
 	sqli = ''
 	parami = []
 	paramd = []
+	if userFieldData==None:
+		return ('',[])
 	ufs = userFieldDefine['_sys']
 	ud  = userFieldData['data']
 	ui  = userFieldData['info']
@@ -223,6 +231,8 @@ def userFieldDataToInsertSql(user_id, app_id, userFieldData):
 	sqli = ''
 	parami = []
 	paramd = []
+	if userFieldData==None:
+		return ('',[])
 	ufs = userFieldDefine['_sys']
 	ud  = userFieldData['data']
 	ui  = userFieldData['info']

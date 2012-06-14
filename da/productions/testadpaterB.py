@@ -81,9 +81,9 @@ print '\n--------------------------------'
 #v = d.userFullData(12)
 #printJsonData(v)
 
-v = d.userLookup('mawei02@snda.com','base')
-#v = d.userLookup('energy@sohu.com','base')
-printJsonData(v)
+#v = d.userLookup('mawei02@snda.com','base')
+#v = d.userLookup('13916969212','base')
+#printJsonData(v)
 
 #v = d.userRelationList(12)
 #printJsonData(v)
@@ -144,7 +144,7 @@ rs.rowcount
 print rs.context.statement
 #print rs.fetchall()
 
-'''
+
 print '\n--------------------------------'
 
 u = d.userFullData(12)
@@ -166,7 +166,6 @@ for uf in ufs:
     sqlt = userFieldDataToInsertSql(12,2,uf)
     print sqlt[0] % tuple(sqlt[1])
     
-'''
 
 
 

@@ -91,15 +91,20 @@ ORDER BY key_level, key_order' % (userid,level,keylist)
 		user_data = {}
 		userid = long(userid)
 
-		sql = 'select * from users where user_id= %s' % (userid)
+		sql = 'select * from users where user_id= %s'
 		#if debug : print sql
 		
-		rs = conn.execute(sql)
-		for row in rs:
+		rs = conn.execute(sql,userid)
+		if rs.rowcount==1:
+			row = rs.fetchone()
 			user_data['user_id'] = fieldEncode(row['user_id'])
 			user_data['uid']    = fieldEncode(row['guid'])
 			user_data['versign_phone'] = fieldEncode(row['phone'])
 			user_data['versign_email'] = fieldEncode(row['email'])
+		else:
+			conn.close()
+			return None
+		 
 
 		sqlprf = 'select *, u.info_id as data_id from userinfo u inner join userinfo_%s d on u.info_id=d.info_id \
 where user_id= %u and (selected=1) and (under=0) %s' % ('%s', userid, '%s')
