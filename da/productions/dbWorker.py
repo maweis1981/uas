@@ -77,7 +77,7 @@ ORDER BY key_level, key_order' % (userid,level,keylist)
 	
 
 	def userData(self, userid, param={}):
-		print 'userData'
+		#print 'userData'
 
 		#debug = True
 
@@ -103,7 +103,7 @@ ORDER BY key_level, key_order' % (userid,level,keylist)
 
 		sqlprf = 'select *, u.info_id as data_id from userinfo u inner join userinfo_%s d on u.info_id=d.info_id \
 where user_id= %u and (selected=1) and (under=0) %s' % ('%s', userid, '%s')
-		print sqlprf
+		#print sqlprf
 
 		sql = sqlprf % ('basic', 'limit 1')
 		rs = conn.execute(sql)
@@ -888,18 +888,18 @@ order by rel_id, data_class, row_ord, userinfo.info_id' % (idliststr)
 	def userFullData(self, user_id):
 		return self.apiData(user_id,'api-user-fullinfo')
 
-	def userLookup(self, TelOrEmail='', retType='full'):
+	def userLookup(self, TelOrEmail='', retType='full', guid=''):
 		#format tel
 		#format email
-		if TelOrEmail == '' : return None
+		if (TelOrEmail == '') and (guid=='') : return None
 		if self.isEMail(TelOrEmail):
-			sql = "select * from userinfo inner join userinfo_email on userinfo.info_id=userinfo_email.info_id where email like '%s' order by versign desc limit 1" % (TelOrEmail)
+			sql = "select * from userinfo u inner join userinfo_emails e on u.info_id=e.info_id where email like %s order by versign desc limit 1" 
 		if self.isTel(TelOrEmail):
-			sql = "select * from userinfo inner join userinfo_tel on userinfo.info_id=userinfo_tel.info_id where tel like '%s' order by versign desc limit 1" % (TelOrEmail)
+			sql = "select * from userinfo u inner join userinfo_telephones t on u.info_id=t.info_id where tel_number like %s order by versign desc limit 1"
 		#print sql
 		engine = create_engine('mysql://%s:%s@%s:%s/user_profile_m?charset=utf8'%(MYSQLUSER, MYSQLPWD, MYSQLADDR, MYSQLPORT))
 		conn   = engine.connect()
-		rs = conn.execute(sql)
+		rs = conn.execute(sql,TelOrEmail)
 		conn.close()
 		for row in rs:
 			if retType=='full':
@@ -981,8 +981,6 @@ order by rel_id, data_class, row_ord, userinfo.info_id' % (idliststr)
 		if type(userData) is dict:
 			userData.clone()
 
-			for (k,v) in userData.iteritems():
-				print k
 		return
 		
 if __name__ == '__main__':

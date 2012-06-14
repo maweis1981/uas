@@ -81,9 +81,9 @@ print '\n--------------------------------'
 #v = d.userFullData(12)
 #printJsonData(v)
 
-#v = d.userLookup('mawei02@snda.com','base')
+v = d.userLookup('mawei02@snda.com','base')
 #v = d.userLookup('energy@sohu.com','base')
-#printJsonData(v)
+printJsonData(v)
 
 #v = d.userRelationList(12)
 #printJsonData(v)
@@ -139,9 +139,12 @@ conn   = engine.connect()
 
 sql='replace into userinfo_data (info_id,data_field,data_value) values (%s,%s,%s)'
 rs = engine.execute(sql,20,"mail","e@sohu.com")
+rs.rowcount
+
 print rs.context.statement
 #print rs.fetchall()
 
+'''
 print '\n--------------------------------'
 
 u = d.userFullData(12)
@@ -153,14 +156,17 @@ ufs = extractUserDataFields(u)
 printJsonData(ufs)
 
 for uf in ufs:
-    print 
+    print '--------------------------------'
     sqlt = userFieldDataToExistsSql(12,2,uf)
     print sqlt[0] % tuple(sqlt[1])
-    print
+    print '--------'
     sqlt = userFieldDataToUpdateSql(12,2,6,uf)
     print sqlt[0] % tuple(sqlt[1])
+    print '--------'
+    sqlt = userFieldDataToInsertSql(12,2,uf)
+    print sqlt[0] % tuple(sqlt[1])
     
-
+'''
 
 
 
