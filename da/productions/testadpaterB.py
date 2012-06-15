@@ -133,6 +133,7 @@ print '\n--------------------------------'
 
 #print '\n--------------------------------'
 
+
 '''
 engine = create_engine('mysql://%s:%s@%s:%s/user_profile_m?charset=utf8'%(MYSQLUSER, MYSQLPWD, MYSQLADDR, MYSQLPORT))
 conn   = engine.connect()
@@ -176,11 +177,14 @@ for uf in ufs:
     print '--------'
     sqlt = userFieldDataToInsertSql(12,2,uf)
     print sqlt[0] % tuple(sqlt[1])
+
+u = d.userFullData(12)
+printJsonData(u)
+
 '''
 
 trans = DatabaseTrans()
 trans.ttcontactTrans()
-
 
 
 
