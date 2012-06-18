@@ -100,7 +100,7 @@ class DatabaseTrans(object):
         connstring = 'mysql://%s:%s@%s:%s/%s?charset=utf8'%(MYSQLUSER, MYSQLPWD, MYSQLADDR, MYSQLPORT, dbname)
         engine = create_engine(connstring)
         conn = engine.connect()
-        rs = conn.execute("select * from tt_user where registered_phone_number=mobile_phone limit 0")
+        rs = conn.execute("select * from tt_user where registered_phone_number=mobile_phone limit 200000")
         for row in rs:
             ud={'versign_phone':row['registered_phone_number'],
                 'uid':guidctoa(row['card_id']),
@@ -160,7 +160,7 @@ class DatabaseTrans(object):
                 sql = 'set @user_id = %s; set @contact_uid = %s; ' 
                 sql = sql+'insert into user_relation (user_id,relation_user_id,app_id) '      \
 +' select * from (select @user_id, @contact_uid, 2) d where (select count(*) from user_relation '  \
-+' where user_id = @user_id and relation_user_id = @contact_uid)=0; COMMIT; '
++" where user_id = @user_id and relation_user_id = @contact_uid and app_id=2 and relation_type='contact')=0; COMMIT; "
                 conn_u.execute(sql, user_id, contact_uid)
                 #conn_u.transaction.commit()
                 #print rsi.rowcount

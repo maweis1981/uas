@@ -112,17 +112,18 @@ def extractUserDataFields(userData):
     for f,uf in udls.iteritems():
         if f in ufs['class-mutiline']:
             kn = ufs['mutiline-key'][f]
+            #print 'kn:',kn,'f',f
             if type(uf) is list: # 代表多行数据
                 i=0
                 for uitem in uf:
                     i = i + 1
                     uitem['row_ord']=i
-                    if uitem.get(kn,None) in [None,'']:
+                    if kn!='' and uitem.get(kn,None) in [None,'']:
                         pass
                     else:
                         r.append(extractUserFieldData(uitem,userFieldDefine[f],f))
             if type(uf) is dict: # 代表此应用此数据只有一条
-                if uf.get(kn,None) in [None,'']:
+                if kn!='' and uf.get(kn,None) in [None,'']:
                     pass
                 else:
                     r.append(extractUserFieldData(dict(uf.items()+sourceIdent.items()),userFieldDefine[f],f))
