@@ -100,7 +100,7 @@ class DatabaseTrans(object):
         connstring = 'mysql://%s:%s@%s:%s/%s?charset=utf8'%(MYSQLUSER, MYSQLPWD, MYSQLADDR, MYSQLPORT, dbname)
         engine = create_engine(connstring)
         conn = engine.connect()
-        rs = conn.execute("select * from tt_user where registered_phone_number=mobile_phone limit 1")
+        rs = conn.execute("select * from tt_user where registered_phone_number=mobile_phone limit 0")
         for row in rs:
             ud={'versign_phone':row['registered_phone_number'],
                 'uid':guidctoa(row['card_id']),
@@ -124,16 +124,21 @@ class DatabaseTrans(object):
             #printJsonData(ud)
             self.userPut(ud,2)
         
-        rs = conn.execute("select * from tt_relation  limit 10")
         d = DatabaseWorker()
         engine_u = create_engine('mysql://%s:%s@%s:%s/user_profile_m?charset=utf8'%(MYSQLUSER, MYSQLPWD, MYSQLADDR, MYSQLPORT))
         conn_u = engine_u.connect()
+
+        rs = conn.execute("select * from tt_relation  limit 300000")
+        s = []
         for row in rs:
             phone= str(row['phone'])
             contact= str(row['contact'])
 
             user_id = d.userLookup(phone, 'id')
             contact_uid = d.userLookup(contact, 'id')
+
+            
+            s = s + [str(user_id),str(contact_uid),'\t']
 
             if contact_uid == None:
                 # add user
@@ -146,16 +151,27 @@ class DatabaseTrans(object):
             if user_id == None:
                 # add user
                 sql = 'insert into users (phone,user_state) values (%s,0); select @userid := LAST_INSERT_ID();'
-                rsi = conn_u.execute(sql,contact)
+                rsi = conn_u.execute(sql,phone)
                 if rsi.rowcount>0:
                     rsi = conn_u.execute('select @userid')
                     user_id=rsi.fetchone()[0]
 
             if (contact_uid != None) and (user_id != None):
-                sql = 'insert into user_relation (user_id,relation_user_id,app_id) values (%s,%s,2)'
+                sql = 'set @user_id = %s; set @contact_uid = %s; ' 
+                sql = sql+'insert into user_relation (user_id,relation_user_id,app_id) '      \
++' select * from (select @user_id, @contact_uid, 2) d where (select count(*) from user_relation '  \
++' where user_id = @user_id and relation_user_id = @contact_uid)=0; COMMIT; '
                 conn_u.execute(sql, user_id, contact_uid)
+                #conn_u.transaction.commit()
+                #print rsi.rowcount
 
-            print user_id,contact_uid
+            s = s + [str(user_id),str(contact_uid),'\n']
+            if len(s)>=60:
+                print ','.join(s)
+                s=[]
+        print ','.join(s)
+        #conn.close()
+        #conn_u.close()
         return
 
 if __name__ == '__main__':

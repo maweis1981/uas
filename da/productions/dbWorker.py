@@ -908,22 +908,41 @@ order by rel_id, data_class, row_ord, userinfo.info_id' % (idliststr)
         #format tel
         #format email
         if (TelOrEmail == '') and (guid=='') : return None
-        if self.isEMail(TelOrEmail):
-            sql = "select * from userinfo u inner join userinfo_emails e on u.info_id=e.info_id where email like %s order by versign desc limit 1" 
-        if self.isTel(TelOrEmail):
-            sql = "select * from userinfo u inner join userinfo_telephones t on u.info_id=t.info_id where tel_number like %s order by versign desc limit 1"
+        if TelOrEmail!='':
+            if self.isEMail(TelOrEmail):
+                sqlu = 'select user_id from users where email like %s'
+                sql = "select user_id from userinfo u inner join userinfo_emails e on u.info_id=e.info_id where email like %s order by versign desc limit 1" 
+                param = TelOrEmail
+            if self.isTel(TelOrEmail):
+                sqlu = 'select user_id from users where phone like %s'
+                sql = "select user_id from userinfo u inner join userinfo_telephones t on u.info_id=t.info_id where tel_number like %s order by versign desc limit 1"
+                param = TelOrEmail
+        elif guid!='':
+            sqlu = 'select user_id from users where guid like %s'
+            param = guid
+
         #print sql
         engine = create_engine('mysql://%s:%s@%s:%s/user_profile_m?charset=utf8'%(MYSQLUSER, MYSQLPWD, MYSQLADDR, MYSQLPORT))
         conn   = engine.connect()
-        rs = conn.execute(sql,TelOrEmail)
-        conn.close()
-        for row in rs:
+        
+        user_id = None
+        rs = conn.execute(sqlu,param)
+        if rs.rowcount>0:
+            user_id = rs.fetchone()[0]
+        else:
+            rs = conn.execute(sql,param)
+            if rs.rowcount>0:
+                user_id = rs.fetchone()[0]
+
+        if user_id != None:
             if retType=='full':
                 return self.userFullData(row['user_id'])
             elif retType=='base':
                 return self.userBaseData(row['user_id'])
             elif retType=='id':
-                return row['user_id']
+                return user_id
+
+        conn.close()
         return None
 
     ## user contacts info

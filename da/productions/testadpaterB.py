@@ -133,19 +133,19 @@ print '\n--------------------------------'
 
 #print '\n--------------------------------'
 
-
 '''
 engine = create_engine('mysql://%s:%s@%s:%s/user_profile_m?charset=utf8'%(MYSQLUSER, MYSQLPWD, MYSQLADDR, MYSQLPORT))
 conn   = engine.connect()
+sql="replace into users (guid,phone,email,user_state) values ('7c0dd3fa757211e1a5abf04da2086e9d','18618366320','',1); select @userid := LAST_INSERT_ID();"
+rs = conn.execute(sql)
 
-sql="insert into users (guid,phone,email,user_state) values ('7c0dd3fa757211e1a5abf04da2086e9d','18618366320','',1); select @userid := LAST_INSERT_ID();"
-rs = engine.execute(sql)
 print rs.rowcount
 print rs.context.cursor.fetchall()
 sql="select @userid"
 rs = engine.execute(sql)
 print rs.rowcount
 print rs.fetchall()
+
 
 '''
 
