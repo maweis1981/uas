@@ -933,17 +933,19 @@ order by rel_id, data_class, row_ord, userinfo.info_id' % (idliststr)
             rs = conn.execute(sql,param)
             if rs.rowcount>0:
                 user_id = rs.fetchone()[0]
+        rs.close()
+        conn.close()
 
+        result = None
         if user_id != None:
             if retType=='full':
-                return self.userFullData(row['user_id'])
+                result = self.userFullData(user_id)
             elif retType=='base':
-                return self.userBaseData(row['user_id'])
+                result = self.userBaseData(user_id)
             elif retType=='id':
-                return user_id
+                result = user_id
 
-        conn.close()
-        return None
+        return result
 
     ## user contacts info
     # return contacts with user base data

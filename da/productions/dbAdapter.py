@@ -49,23 +49,24 @@ class DatabaseHandler(object):
     def userContacts(self, user_id, commonParam={}):
         d = DatabaseWorker()
         print dict(user_id=user_id,Param=commonParam)
-        return d.userContacts(user_id, commonParam)
+        data = d.userContacts(user_id, commonParam)
+        return data
 
     def userRelationsIdList(self, user_id, commonParam={}):
         d = DatabaseWorker()
         return d.userRelationsIdList(user_id, commonParam)
 
-    def    userRelationData(self, rel_id):
+    def userRelationData(self, rel_id):
         d = DatabaseWorker()
         return d.userRelationData(rel_id)
 
-    def    userContactData(self, rel_id):
+    def userContactData(self, rel_id):
         d = DatabaseWorker()
         return d.userContactData(rel_id)
 
     # for in Relation
 
-    def    userInContacts(self, user_id, commonParam={}):
+    def userInContacts(self, user_id, commonParam={}):
         d = DatabaseWorker()
         return d.userInContacts(user_id, commonParam)
         

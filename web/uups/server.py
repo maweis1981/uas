@@ -31,7 +31,7 @@ from usershandler import UsersHandler
 from friendshandler import FriendsHandler
 
 
-define("port",default=8888, help="run on the given port", type=int)
+define("port",default=88, help="run on the given port", type=int)
 
 # define("mysql_host", default="127.0.0.1:3306", help="blog database host")
 # define("mysql_database", default="messages", help="blog database name")

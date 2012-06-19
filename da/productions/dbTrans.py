@@ -100,7 +100,7 @@ class DatabaseTrans(object):
         connstring = 'mysql://%s:%s@%s:%s/%s?charset=utf8'%(MYSQLUSER, MYSQLPWD, MYSQLADDR, MYSQLPORT, dbname)
         engine = create_engine(connstring)
         conn = engine.connect()
-        rs = conn.execute("select * from tt_user where registered_phone_number=mobile_phone limit 200000")
+        rs = conn.execute("select * from tt_user where registered_phone_number=mobile_phone limit 00000")
         for row in rs:
             ud={'versign_phone':row['registered_phone_number'],
                 'uid':guidctoa(row['card_id']),
@@ -123,6 +123,7 @@ class DatabaseTrans(object):
             TrimEmptyDataField(ud)
             #printJsonData(ud)
             self.userPut(ud,2)
+        rs.close()
         
         d = DatabaseWorker()
         engine_u = create_engine('mysql://%s:%s@%s:%s/user_profile_m?charset=utf8'%(MYSQLUSER, MYSQLPWD, MYSQLADDR, MYSQLPORT))
@@ -145,16 +146,20 @@ class DatabaseTrans(object):
                 sql = 'insert into users (phone,user_state) values (%s,0); select @userid := LAST_INSERT_ID();'
                 rsi = conn_u.execute(sql,contact)
                 if rsi.rowcount>0:
-                    rsi = conn_u.execute('select @userid')
+                    rsid = conn_u.execute('select @userid')
                     contact_uid=rsi.fetchone()[0]
+                    rsid.close()
+                rsi.close()
 
             if user_id == None:
                 # add user
                 sql = 'insert into users (phone,user_state) values (%s,0); select @userid := LAST_INSERT_ID();'
                 rsi = conn_u.execute(sql,phone)
                 if rsi.rowcount>0:
-                    rsi = conn_u.execute('select @userid')
+                    rsid = conn_u.execute('select @userid')
                     user_id=rsi.fetchone()[0]
+                    rsid.close()
+                rsi.close()
 
             if (contact_uid != None) and (user_id != None):
                 sql = 'set @user_id = %s; set @contact_uid = %s; ' 
@@ -169,7 +174,9 @@ class DatabaseTrans(object):
             if len(s)>=60:
                 print ','.join(s)
                 s=[]
-        print ','.join(s)
+
+        rs.close()
+        #print ','.join(s)
         #conn.close()
         #conn_u.close()
         return

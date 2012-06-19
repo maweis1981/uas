@@ -89,8 +89,8 @@ print '\n--------------------------------'
     
 #print '\n--------------------------------'
 
-#v = d.userContacts(12,dict(offset=0,limit=1))
-#printJsonData(v)
+v = d.userContacts(12,dict(offset=0,limit=1))
+printJsonData(v)
 
 #print '\n--------------------------------'
 
@@ -138,6 +138,10 @@ engine = create_engine('mysql://%s:%s@%s:%s/user_profile_m?charset=utf8'%(MYSQLU
 conn   = engine.connect()
 sql="replace into users (guid,phone,email,user_state) values ('7c0dd3fa757211e1a5abf04da2086e9d','18618366320','',1); select @userid := LAST_INSERT_ID();"
 rs = conn.execute(sql)
+rs.close()
+engine.raw_connection()
+engine.pool.recreate()
+print 'pool',engine.pool.size()
 
 print rs.rowcount
 print rs.context.cursor.fetchall()
@@ -147,10 +151,6 @@ print rs.rowcount
 print rs.fetchall()
 
 
-'''
-
-
-'''
 print rs.context.statement
 #print rs.fetchall()
 
@@ -181,10 +181,11 @@ for uf in ufs:
 u = d.userFullData(12)
 printJsonData(u)
 
-'''
+
 
 trans = DatabaseTrans()
 trans.ttcontactTrans()
+'''
 
 
 

@@ -8,8 +8,10 @@ import sys
 import os
 import copy
 import json
-import datetime
-import types
+
+from types import *
+from datetime import *
+
 
 from sqlalchemy import *
 
