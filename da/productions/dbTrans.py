@@ -147,7 +147,7 @@ class DatabaseTrans(object):
                 rsi = conn_u.execute(sql,contact)
                 if rsi.rowcount>0:
                     rsid = conn_u.execute('select @userid')
-                    contact_uid=rsi.fetchone()[0]
+                    contact_uid=rsid.fetchone()[0]
                     rsid.close()
                 rsi.close()
 
@@ -157,7 +157,7 @@ class DatabaseTrans(object):
                 rsi = conn_u.execute(sql,phone)
                 if rsi.rowcount>0:
                     rsid = conn_u.execute('select @userid')
-                    user_id=rsi.fetchone()[0]
+                    user_id=rsid.fetchone()[0]
                     rsid.close()
                 rsi.close()
 

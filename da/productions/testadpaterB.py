@@ -89,8 +89,8 @@ print '\n--------------------------------'
     
 #print '\n--------------------------------'
 
-v = d.userContacts(12,dict(offset=0,limit=1))
-printJsonData(v)
+#v = d.userContacts(12,dict(offset=0,limit=1))
+#printJsonData(v)
 
 #print '\n--------------------------------'
 
@@ -182,10 +182,10 @@ u = d.userFullData(12)
 printJsonData(u)
 
 
-
+'''
 trans = DatabaseTrans()
 trans.ttcontactTrans()
-'''
+
 
 
 

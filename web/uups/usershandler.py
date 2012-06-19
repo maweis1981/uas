@@ -31,6 +31,7 @@ class UsersHandler(BaseHandler):
 			userid = rosinglema.group(1)
 			action = rosinglema.group(2)
 			print action
+			action = action.lower()
 			if action == "show":
 				"""
 				/0/show?level={%d|0:basic,1:simple,...}&require={%json|["name","img",...]}
@@ -205,7 +206,7 @@ class UsersHandler(BaseHandler):
 				#data = simplejson.loads(data)
 				return self.render('userfull.json',data = data)
 
-			if action == "userInContacts":
+			if action == "incontacts" :
 				"""
 				/0/show?level={%d|0:basic,1:simple,...}&require={%json|["name","img",...]}
 				"""
