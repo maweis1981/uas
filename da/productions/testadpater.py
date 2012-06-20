@@ -16,7 +16,7 @@ else :
 ns = Pyro4.locateNS(host=PYRONSADDR, port=PYRONSPORT)
 uri = ns.lookup("database_handler")
 dbProcessor = Pyro4.Proxy(uri)
-data = dbProcessor.userShow(userid, level, None)
+data = dbProcessor.userLookup('13916969212')
 
 print(data)
  

@@ -11,47 +11,8 @@ from dbWorker import DatabaseWorker
 from dbWorkerLib import *
 from dbTrans import *
 
-
-def printvalue(value,lev=0):
-
-    lev = lev + 1
-    if type(value) is list :
-        print
-        print '['.rjust(lev*4)
-        for v in value :
-            #print ''.ljust(lev*4+4),
-            printvalue(v,lev)
-            print ','
-        print ']'.rjust(lev*4),
-    elif type(value) is dict :
-        print
-        print '{'.rjust(lev*4)
-        for (k,v) in value.iteritems() :
-            print ''.ljust(lev*4),
-            print k , ':', 
-            printvalue(v,lev)
-            print ','
-        print '}'.rjust(lev*4),
-    elif type(value) is tuple :
-        #print ''
-        print '('.rjust(lev*4),
-        #print ''.ljust(lev*4+4),
-        for v in value :
-            #print ''.ljust(lev*4+4),
-            printvalue(v,lev)
-            print ',',
-        #print ')'.rjust(lev*4),
-        print ')',
-    else :
-       # print ''.rjust(lev*4), value
-        #print  type(value),str(value),
-        print  value,
-        
 def printJsonData(v):
     print json.dumps(v, ensure_ascii=False, indent=4, encoding='utf8')
-
-
-
 
 d = DatabaseWorker()
 #v = d.userData(12)
@@ -134,15 +95,39 @@ print '\n--------------------------------'
 #print '\n--------------------------------'
 
 '''
-engine = create_engine('mysql://%s:%s@%s:%s/user_profile_m?charset=utf8'%(MYSQLUSER, MYSQLPWD, MYSQLADDR, MYSQLPORT))
+engine = create_engine('mysql://%s:%s@%s:%s/user_profile_m?charset=utf8'%(MYSQLUSER, MYSQLPWD, MYSQLADDR, MYSQLPORT), pool_size=10)
 conn   = engine.connect()
-sql="replace into users (guid,phone,email,user_state) values ('7c0dd3fa757211e1a5abf04da2086e9d','18618366320','',1); select @userid := LAST_INSERT_ID();"
-rs = conn.execute(sql)
+sql="select * from users where user_id = %s;"
+rs = conn.execute(sql,12)
 rs.close()
 engine.raw_connection()
-engine.pool.recreate()
 print 'pool',engine.pool.size()
+#engine.dispose()
+conn.close()
+print conn.closed
 
+'''
+'''
+x = 10
+for j  in range(0,10):
+    engine.dispose()
+    ls= []
+    for i in range(0,x):
+        print i
+        ls.append(engine.connect())
+    rsls = []
+    print
+    for i in range(0,x):
+        print i ,'\t',
+        rsls.append(ls[i].execute(sql,100+i))
+        print rsls[i].fetchone()['phone']
+    for i in range(0,x):
+        rsls[i].close()
+        ls[i].close()
+engine.dispose()    
+
+'''
+'''
 print rs.rowcount
 print rs.context.cursor.fetchall()
 sql="select @userid"
@@ -181,12 +166,19 @@ for uf in ufs:
 u = d.userFullData(12)
 printJsonData(u)
 
+'''
+import time
+
+trans = DatabaseTrans()
+
+t1 = time.time()
+trans.ttcontactTrans()
+t2 = time.time()
+
+print t1,t2, t2-t1
+
 
 '''
-trans = DatabaseTrans()
-trans.ttcontactTrans()
-
-
-
+'''
 
 

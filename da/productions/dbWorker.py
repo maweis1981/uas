@@ -2,9 +2,6 @@
 # encoding: utf-8
 """
 dbworker.py
-
-Created by Peter Ma on 2012-03-13.
-Copyright (c) 2012 Maven Studio. All rights reserved.
 """
 
 import sys
@@ -20,6 +17,7 @@ from init import *
 from types import *
 
 from dbWorkerLib import *
+from dbConnections import *
 
 '''
 数据库及数据结构中关于NULL值的说明和约定
@@ -35,27 +33,18 @@ null值在输出时字段会被清除，有值的才会被输出，空串为有�
 
 class DatabaseWorker(object):
 
+    dbconns = None
+
+    def __init__(self, dbconns=None):
+        self.dbconns = dbconns
+        if dbconns == None:
+            dbconns = DatabaseConnections()
+    
     def create_table(self):
-        engine = create_engine('mysql://root:idea@localhost/uas_test')
-        conn = engine.connect()
-        metadata = MetaData()
-        user = Table('t_user', metadata, 
-            Column('id', Integer, primary_key=True, autoincrement=True),
-            Column('name', String(30)),
-            Column('address', String(100)))
-        metadata.create_all(engine)
-        conn.close()
+        pass
     
     def generate_data(self):
-        engine = create_engine('mysql://root:idea@localhost/uas_test')
-        conn = engine.connect()
-        metadata = MetaData()
-        metadata.bind=engine
-        t_user = Table('t_user', metadata, autoload=True)
-        ins = t_user.insert().values(name="wenzw", address="shanghai")
-        print str(ins)
-        result = conn.execute(ins)
-        print result
+        pass
 
     def userShow(self, userid, level=2, require=None):
         engine = create_engine('mysql://%s:%s@%s:%s/user_profile?charset=utf8'%(MYSQLUSER, MYSQLPWD, MYSQLADDR, MYSQLPORT))
@@ -91,10 +80,7 @@ ORDER BY key_level, key_order' % (userid,level,keylist)
         #print 'userData'
 
         #debug = True
-
-        engine = create_engine('mysql://%s:%s@%s:%s/user_profile_m?charset=utf8'%(MYSQLUSER, MYSQLPWD, MYSQLADDR, MYSQLPORT))
-        conn = engine.connect()
-        
+     
         ## 1 cache 2 db //todo cache /base
 
         ## for user data
@@ -105,15 +91,15 @@ ORDER BY key_level, key_order' % (userid,level,keylist)
         sql = 'select * from users where user_id= %s'
         #if debug : print sql
         
-        rs = conn.execute(sql,userid)
+        rs = self.dbconns.execute(sql,userid)
         if rs.rowcount==1:
             row = rs.fetchone()
             user_data['user_id'] = fieldEncode(row['user_id'])
             user_data['uid']    = fieldEncode(row['guid'])
             user_data['versign_phone'] = fieldEncode(row['phone'])
             user_data['versign_email'] = fieldEncode(row['email'])
+            rs.close()
         else:
-            conn.close()
             return None
          
 
@@ -122,7 +108,7 @@ where user_id= %u and (selected=1) and (under=0) %s' % ('%s', userid, '%s')
         #print sqlprf
 
         sql = sqlprf % ('basic', 'limit 1')
-        rs = conn.execute(sql)
+        rs = self.dbconns.execute(sql)
         for row in rs:
             user_data['birthday'] = fieldEncode(row['birthday'])
             user_data['gender']= fieldEncode(row['gender'])
@@ -131,7 +117,7 @@ where user_id= %u and (selected=1) and (under=0) %s' % ('%s', userid, '%s')
 
         ## user name data
         sql = sqlprf % ('name', 'limit 1')
-        rs = conn.execute(sql)
+        rs = self.dbconns.execute(sql)
         row_data = {}
         for row in rs:
             row_data['FN'] = fieldEncode(row['FN'])
@@ -144,7 +130,7 @@ where user_id= %u and (selected=1) and (under=0) %s' % ('%s', userid, '%s')
 
         # user nick for user not for app if exist  
         sql = sqlprf % ('nick', 'limit 1')
-        rs = conn.execute(sql)
+        rs = self.dbconns.execute(sql)
         for row in rs:
             user_data['nick']  = fieldEncode(row['nick'])
             user_data['avatar']= fieldEncode(row['avatar'])
@@ -152,7 +138,7 @@ where user_id= %u and (selected=1) and (under=0) %s' % ('%s', userid, '%s')
 
         ## user email data / mutiline
         sql = sqlprf % ('emails', 'order by row_ord')
-        rs = conn.execute(sql)
+        rs = self.dbconns.execute(sql)
         rows = []
         for row in rs:
             row_data = {}
@@ -165,7 +151,7 @@ where user_id= %u and (selected=1) and (under=0) %s' % ('%s', userid, '%s')
 
         ## user tel data / mutiline
         sql = sqlprf % ('telephones', 'order by row_ord')
-        rs = conn.execute(sql)
+        rs = self.dbconns.execute(sql)
         rows = []
         for row in rs:
             row_data = {}
@@ -180,7 +166,7 @@ where user_id= %u and (selected=1) and (under=0) %s' % ('%s', userid, '%s')
 
         ## user im list data / muti property / dict 
         sql = sqlprf % ('im', '')
-        rs = conn.execute(sql)
+        rs = self.dbconns.execute(sql)
         row_data = {}
         for row in rs:
             row_data[fieldEncode(row['im_name'])] = fieldEncode(row['im'])
@@ -188,7 +174,7 @@ where user_id= %u and (selected=1) and (under=0) %s' % ('%s', userid, '%s')
 
         ## user url list data / muti property / dict
         sql = sqlprf % ('url', '')
-        rs = conn.execute(sql)
+        rs = self.dbconns.execute(sql)
         row_data = {}
         for row in rs:
             row_data[fieldEncode(row['url_name'])] = fieldEncode(row['url'])
@@ -196,7 +182,7 @@ where user_id= %u and (selected=1) and (under=0) %s' % ('%s', userid, '%s')
 
         ## user photos data / mutiline
         sql = sqlprf % ('photos', 'order by row_ord')
-        rs = conn.execute(sql)
+        rs = self.dbconns.execute(sql)
         rows = []
         for row in rs:
             row_data = {}
@@ -209,7 +195,7 @@ where user_id= %u and (selected=1) and (under=0) %s' % ('%s', userid, '%s')
 
         ## user adrress data / mutiline
         sql = sqlprf % ('addresses', 'order by row_ord')
-        rs = conn.execute(sql)
+        rs = self.dbconns.execute(sql)
         rows = []
         for row in rs:
             row_data = {}
@@ -227,7 +213,7 @@ where user_id= %u and (selected=1) and (under=0) %s' % ('%s', userid, '%s')
 
         ## user organization data / mutiline 
         sql = sqlprf % ('organizations', 'order by row_ord')
-        rs = conn.execute(sql)
+        rs = self.dbconns.execute(sql)
         rows = []
         for row in rs:
             row_data = {}
@@ -246,7 +232,7 @@ where user_id= %u and (selected=1) and (under=0) %s' % ('%s', userid, '%s')
 
         ## user education data / mutiline
         sql = sqlprf % ('educations', 'order by row_ord')
-        rs = conn.execute(sql)
+        rs = self.dbconns.execute(sql)
         rows = []
         for row in rs:
             row_data = {}
@@ -261,7 +247,7 @@ where user_id= %u and (selected=1) and (under=0) %s' % ('%s', userid, '%s')
         
         ## user sound data / mutiline
         sql = sqlprf % ('sounds', 'order by row_ord')
-        rs = conn.execute(sql)
+        rs = self.dbconns.execute(sql)
         rows = []
         for row in rs:
             row_data = {}
@@ -275,7 +261,7 @@ where user_id= %u and (selected=1) and (under=0) %s' % ('%s', userid, '%s')
 
         ## user geo data / mutiline
         sql = sqlprf % ('geoes', 'order by row_ord')
-        rs = conn.execute(sql)
+        rs = self.dbconns.execute(sql)
         rows = []
         for row in rs:
             row_data = {}
@@ -303,7 +289,7 @@ where user_id= %u and (selected=1) and (under=0) %s' % ('%s', userid, '%s')
         sql = 'select *, userinfo.info_id as infoid from userinfo inner join userinfo_data on userinfo.info_id=userinfo_data.info_id \
 where user_id= %s and (selected=1) and (under=0) \
 order by user_id, data_class, row_ord, userinfo.info_id' % (userid)
-        rs = conn.execute(sql)
+        rs = self.dbconns.execute(sql)
         dataclass = ''
         infoid = 0
         for row in rs:
@@ -337,7 +323,7 @@ order by user_id, data_class, row_ord, userinfo.info_id' % (userid)
         appdata = {}
         sql = 'select *,apps.app_id as appid from user_account inner join apps on user_account.app_id = apps.app_id \
 where user_id= %s ' % (userid)
-        rs = conn.execute(sql)
+        rs = self.dbconns.execute(sql)
         for row in rs:
             app_id = row['appid']
             if app_id not in appdata :
@@ -369,7 +355,7 @@ where user_id= %s ' % (userid)
         sql = 'select *, userinfo.info_id as infoid from userinfo inner join userinfo_data on userinfo.info_id=userinfo_data.info_id \
 where (user_id= %s) and (selected=1) and (under=1) and (not isnull(app_id)) \
 order by app_id, user_id, data_class, row_ord, userinfo.info_id' % (userid)
-        rs = conn.execute(sql)
+        rs = self.dbconns.execute(sql)
         dataclass = ''
         infoid = 0
         appid  = None
@@ -413,8 +399,6 @@ order by app_id, user_id, data_class, row_ord, userinfo.info_id' % (userid)
                 appdatas.append(v)
             user_data['applications']=appdatas
         
-        
-        conn.close()
         return user_data
 
     def toLimitString(self,param):
@@ -476,9 +460,6 @@ order by app_id, user_id, data_class, row_ord, userinfo.info_id' % (userid)
 
 
     def userRelationDatas(self, userid=0, relUserid=0, relid=0, param={}, friend=0):
-        engine = create_engine('mysql://%s:%s@%s:%s/user_profile_m?charset=utf8'%(MYSQLUSER, MYSQLPWD, MYSQLADDR, MYSQLPORT))
-        conn   = engine.connect()
-        
         ## 1 cache 2 db
 
         ## for user data
@@ -521,7 +502,7 @@ where user_relation.user_id = %s and ur.relation_user_id = %s order by contact_a
 
 
         idlist = []
-        rs = conn.execute(sql)
+        rs = self.dbconns.execute(sql)
         for row in rs:
             relrow = {}
             idlist.append(str(row['rel_id']))
@@ -548,8 +529,7 @@ where user_relation.user_id = %s and ur.relation_user_id = %s order by contact_a
         sql = 'select * from userinfo inner join userinfo_data on userinfo.info_id=userinfo_data.info_id \
 where (selected=1) and (under=2) and (rel_id in (%s)) \
 order by rel_id, data_class, row_ord, userinfo.info_id' % (idliststr)
-        rs = conn.execute(sql)
-        conn.close()
+        rs = self.dbconns.execute(sql)
         dataclass = ''
         infoid = 0
         rel_id = 0
@@ -617,8 +597,7 @@ order by rel_id, data_class, row_ord, userinfo.info_id' % (idliststr)
             print 'userRelationList,',param
             sql = 'select * from user_relation where (%s = %s) and (deleted=0) order by contact_alias %s' % (f,i,limit)
             print sql
-            rs = conn.execute(sql)
-            conn.close()
+            rs = self.dbconns.execute(sql)
             r = []
             for row in rs:
                 r.append(row['rel_id'])
@@ -630,13 +609,12 @@ order by rel_id, data_class, row_ord, userinfo.info_id' % (idliststr)
         conn   = engine.connect()
 
         sql = 'select * from apps where (app_id = %s) ' % (app_id)
-        rs = conn.execute(sql)
+        rs = self.dbconns.execute(sql)
         appInfo = {}
         for row in rs:
             appInfo['app_id'] = fieldEncode(row['app_id'])
             appInfo['app_name'] = fieldEncode(row['app_name'])
             appInfo['app_type'] = fieldEncode(row['app_type'])
-        conn.close()
         return appInfo
 
 
@@ -647,7 +625,7 @@ order by rel_id, data_class, row_ord, userinfo.info_id' % (idliststr)
         limit = self.toLimitString(param)
 
         sql = 'select * from apps ' + limit
-        rs = conn.execute(sql)
+        rs = self.dbconns.execute(sql)
         apps = []
         for row in rs:
             appInfo = {}
@@ -655,7 +633,6 @@ order by rel_id, data_class, row_ord, userinfo.info_id' % (idliststr)
             appInfo['app_name'] = fieldEncode(row['app_name'])
             appInfo['app_type'] = fieldEncode(row['app_type'])
             apps.append(appinfo)
-        conn.close()
         return apps
 
 
@@ -696,8 +673,7 @@ order by rel_id, data_class, row_ord, userinfo.info_id' % (idliststr)
             sql = "select * from apis_struct where struct_name = '%s' and field_ord = 0 " % (dataStructName)
         else :
             sql = "select * from apis_struct where struct_name = '%s' order by field_ord " % (dataStructName)
-        rs = conn.execute(sql)
-        conn.close()
+        rs = self.dbconns.execute(sql)
         for row in rs :
             field = {}
             apiDefine.append(field)
@@ -710,7 +686,7 @@ order by rel_id, data_class, row_ord, userinfo.info_id' % (idliststr)
                 field['struct'] = self.apiStruct(row['field_struct'],False)
             else :
                 field['struct'] = fieldEncode(row['field_struct'])
-        conn.close()
+        rs.close()
         if root :
             if len(apiDefine)>0 :
                 return apiDefine[0]
@@ -909,32 +885,30 @@ order by rel_id, data_class, row_ord, userinfo.info_id' % (idliststr)
         #format email
         if (TelOrEmail == '') and (guid=='') : return None
         if TelOrEmail!='':
-            if self.isEMail(TelOrEmail):
-                sqlu = 'select user_id from users where email like %s'
-                sql = "select user_id from userinfo u inner join userinfo_emails e on u.info_id=e.info_id where email like %s order by versign desc limit 1" 
-                param = TelOrEmail
             if self.isTel(TelOrEmail):
                 sqlu = 'select user_id from users where phone like %s'
                 sql = "select user_id from userinfo u inner join userinfo_telephones t on u.info_id=t.info_id where tel_number like %s order by versign desc limit 1"
+                param = TelOrEmail
+            if self.isEMail(TelOrEmail):
+                sqlu = 'select user_id from users where email like %s'
+                sql = "select user_id from userinfo u inner join userinfo_emails e on u.info_id=e.info_id where email like %s order by versign desc limit 1" 
                 param = TelOrEmail
         elif guid!='':
             sqlu = 'select user_id from users where guid like %s'
             param = guid
 
         #print sql
-        engine = create_engine('mysql://%s:%s@%s:%s/user_profile_m?charset=utf8'%(MYSQLUSER, MYSQLPWD, MYSQLADDR, MYSQLPORT))
-        conn   = engine.connect()
-        
+       
         user_id = None
-        rs = conn.execute(sqlu,param)
+        rs = self.dbconns.execute(sqlu,param)
         if rs.rowcount>0:
             user_id = rs.fetchone()[0]
         else:
-            rs = conn.execute(sql,param)
+            rs.close()
+            rs = self.dbconns.execute(sql,param)
             if rs.rowcount>0:
                 user_id = rs.fetchone()[0]
         rs.close()
-        conn.close()
 
         result = None
         if user_id != None:
@@ -1002,10 +976,6 @@ order by rel_id, data_class, row_ord, userinfo.info_id' % (idliststr)
     def userBatchPut(self, user_id, value):
         if userid == None:
             return
-        engine = create_engine('mysql://%s:%s@%s:%s/user_profile?charset=utf8'%(MYSQLUSER, MYSQLPWD, MYSQLADDR, MYSQLPORT))
-        conn = engine.connect()
-        conn.close()
-        result = conn.execute(sql)
 
     def userPut(self, userData):
         return
@@ -1019,7 +989,4 @@ order by rel_id, data_class, row_ord, userinfo.info_id' % (idliststr)
             userData.clone()
 
         return
-        
-if __name__ == '__main__':
-    d = DatabaseWorker()
-    print d.userShow(123874646464646)
+

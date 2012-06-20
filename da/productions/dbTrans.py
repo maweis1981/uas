@@ -2,9 +2,6 @@
 # encoding: utf-8
 """
 dbTrans.py
-
-Created by Peter Ma on 2012-03-13.
-Copyright (c) 2012 Maven Studio. All rights reserved.
 """
 
 import sys
@@ -18,19 +15,12 @@ from types import *
 
 from dbWorkerLib import *
 from dbWorker import *
+from dbConnections import *
 
 
 class DatabaseTrans(object):
 
-    def userData(self, userid, param={}):
-        print 'userData'
-
-        #debug = True
-
-        engine = create_engine('mysql://%s:%s@%s:%s/user_profile_m?charset=utf8'%(MYSQLUSER, MYSQLPWD, MYSQLADDR, MYSQLPORT))
-        conn = engine.connect()
-        sql = 'select * from apps where (app_id = %s) ' % (app_id)
-        rs = conn.execute(sql)
+    dbconns = DatabaseConnections()
 
     # userData必须是符合修改记录标准的数据，否则可能会引起重复记录。
     def userPut(self, userData, app_id): 
@@ -41,8 +31,7 @@ class DatabaseTrans(object):
         4. not exists -> add new
         5. check selected, z
         '''
-        engine = create_engine('mysql://%s:%s@%s:%s/user_profile_m?charset=utf8'%(MYSQLUSER, MYSQLPWD, MYSQLADDR, MYSQLPORT))
-        conn = engine.connect()
+        conn = self.dbconns.conn_begin()
 
         user_id = userData.get('user_id', None);
         if user_id == None:
@@ -92,7 +81,7 @@ class DatabaseTrans(object):
         # 5. todo
             if info_id>0:
                 conn.execute('update userinfo set selected=1 where info_id=%s',info_id)
-        conn.close()
+        self.dbconns.conn_end(conn)
         return
 
 
@@ -125,9 +114,7 @@ class DatabaseTrans(object):
             self.userPut(ud,2)
         rs.close()
         
-        d = DatabaseWorker()
-        engine_u = create_engine('mysql://%s:%s@%s:%s/user_profile_m?charset=utf8'%(MYSQLUSER, MYSQLPWD, MYSQLADDR, MYSQLPORT))
-        conn_u = engine_u.connect()
+        d = DatabaseWorker(self.dbconns)
 
         rs = conn.execute("select * from tt_relation  limit 300000")
         s = []
@@ -138,15 +125,14 @@ class DatabaseTrans(object):
             user_id = d.userLookup(phone, 'id')
             contact_uid = d.userLookup(contact, 'id')
 
-            
             s = s + [str(user_id),str(contact_uid),'\t']
 
             if contact_uid == None:
                 # add user
                 sql = 'insert into users (phone,user_state) values (%s,0); select @userid := LAST_INSERT_ID();'
-                rsi = conn_u.execute(sql,contact)
+                rsi = self.dbconns.execute(sql,contact)
                 if rsi.rowcount>0:
-                    rsid = conn_u.execute('select @userid')
+                    rsid = self.dbconns.execute('select @userid')
                     contact_uid=rsid.fetchone()[0]
                     rsid.close()
                 rsi.close()
@@ -154,9 +140,9 @@ class DatabaseTrans(object):
             if user_id == None:
                 # add user
                 sql = 'insert into users (phone,user_state) values (%s,0); select @userid := LAST_INSERT_ID();'
-                rsi = conn_u.execute(sql,phone)
+                rsi = self.dbconns.execute(sql,phone)
                 if rsi.rowcount>0:
-                    rsid = conn_u.execute('select @userid')
+                    rsid = self.dbconns.execute('select @userid')
                     user_id=rsid.fetchone()[0]
                     rsid.close()
                 rsi.close()
@@ -166,13 +152,14 @@ class DatabaseTrans(object):
                 sql = sql+'insert into user_relation (user_id,relation_user_id,app_id) '      \
 +' select * from (select @user_id, @contact_uid, 2) d where (select count(*) from user_relation '  \
 +" where user_id = @user_id and relation_user_id = @contact_uid and app_id=2 and relation_type='contact')=0; COMMIT; "
-                conn_u.execute(sql, user_id, contact_uid)
+                self.dbconns.execute(sql, user_id, contact_uid)
                 #conn_u.transaction.commit()
                 #print rsi.rowcount
 
             s = s + [str(user_id),str(contact_uid),'\n']
-            if len(s)>=60:
-                print ','.join(s)
+            if len(s)>=240:
+                #print ','.join(s)
+                print user_id, contact_uid
                 s=[]
 
         rs.close()
@@ -181,6 +168,3 @@ class DatabaseTrans(object):
         #conn_u.close()
         return
 
-if __name__ == '__main__':
-    d = DatabaseWorker()
-    print d.userShow(123874646464646)
