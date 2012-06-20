@@ -45,19 +45,23 @@ def register(request):
 @login_required	
 def create(request):
     if request.method == "POST":
-	    client = Client.objects.create(title=request.POST['title'],
-			description=request.POST['description'],
-			user=request.user,
-			link=request.POST['link'])
-	    RedirectionEndpoint.objects.create(client=client,uri='/auth/token?')
-	    return redirect("/auth/list")
+        client = Client.objects.create(title=request.POST['title'],
+    		description=request.POST['description'],
+    		user=request.user,
+    		link=request.POST['link'],
+            certification=0)
+        RedirectionEndpoint.objects.create(client=client,uri='/auth/token?')
+        return redirect("/auth/list")
     else:
         return render_to_response('auth/create.html',context_instance=RequestContext(request))
         
 @login_required
 def clients(request):
-    client_list = Client.objects.filter(user=request.user).order_by('-date_registered')
-    paginator = Paginator(client_list, 2)
+    clients = Client.objects
+    if(not request.user.is_staff):
+        clients = clients.filter(user=request.user)
+    client_list = clients.order_by('-date_registered')
+    paginator = Paginator(client_list, 5)
     page = request.GET.get('page')
     try:
         clients = paginator.page(page)
@@ -69,9 +73,13 @@ def clients(request):
 
 @login_required
 def detail(request,id):
-	client = Client.objects.get(id=int(id))
-	uri = client.redirectionendpoint_set.values_list('uri')
-	return render_to_response('auth/detail.html', locals(),context_instance=RequestContext(request))
+    client = Client.objects.get(id=int(id))
+    if('certification' in request.GET):
+        client.certification = int(request.GET['certification'])
+        client.save()
+        return redirect("/auth/detail/"+id)
+    uri = client.redirectionendpoint_set.values_list('uri')
+    return render_to_response('auth/detail.html', locals(),context_instance=RequestContext(request))
 
 def token(request):
     token = request.GET['access_token']
