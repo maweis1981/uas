@@ -55,9 +55,10 @@ userFieldDefine = {
     'organizations':'',
     'geoes':''
     },
-'userinfo':['versign','last_update','source_name','source_id','row_ord','data_class'],
+'userinfo':['versign','last_update','source_name','source_id','order','data_class','serial'],
 'readonly':['versign_phone','uid','versign_email','user_id','source_ident'],
 'realname':{
+    'order':'row_ord',
     'source_name':'origin',
     'source_id':'origin_id'
     }
@@ -118,7 +119,7 @@ def extractUserDataFields(userData):
                 i=0
                 for uitem in uf:
                     i = i + 1
-                    uitem['row_ord']=i
+                    uitem['row_ord']=uitem.get('serial',uitem.get('row_ord',i))
                     if kn!='' and uitem.get(kn,None) in [None,'']:
                         pass
                     else:
@@ -202,10 +203,13 @@ def userFieldDataToExistsSql(user_id, app_id, userFieldData):
             elif fieldClass in (ufs['class-mutiline']+ufs['class-list']): #多行情况，再附加检查关键字段，
                 k = ufs['mutiline-key'][fieldClass]
                 if (k!='') and (k in ud):
-                    sql =sqlpf + " and "+k+"=%s ;"
+                    sql = sqlpf + " and "+k+"=%s ;"
                     param = [user_id, app_id, ud[k]]
                     return (sql,param)
-                else:
+                elif 'serial' in ud: #多行，且没有可用以区别的关键字段，附加检验系列号
+                    sql = sqlpf + " and u.row_ord = %s ;"
+                    param = [user_id, app_id, ud['serial']]
+                else: #这种情况会速度很慢，导入因尽一切可能避免
                     sql = " and ".join(str(f)+"<=>%s" for f in userFieldDefine[fieldClass])
                     sql = sqlpf + " and " + sql +';'
                     param = [user_id, app_id] + [ud.get(f,None) for f in userFieldDefine[fieldClass]] 
@@ -244,6 +248,8 @@ def userFieldDataToUpdateSql(user_id, app_id, data_id, userFieldData):
     fieldClass = userFieldData['class']
     # 有字段定义的
     sqli = "update userinfo set last_update=now() "
+    if 'serial' in ui:
+        del ui['serial']
     if len(ui) >0:
         sqli = sqli +', '+ ', '.join(f+"=%s" for f in ui.keys())
         parami = ui.values()

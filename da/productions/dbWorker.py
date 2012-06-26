@@ -33,12 +33,14 @@ null值在输出时字段会被清除，有值的才会被输出，空串为有�
 
 class DatabaseWorker(object):
 
-    dbconns = None
+    dbConns = None
+    apiStructs = {}
 
-    def __init__(self, dbconns=None):
-        self.dbconns = dbconns
-        if dbconns == None:
-            dbconns = DatabaseConnections()
+    def __init__(self, dbConns=None):
+        if dbConns == None:
+            dbConns = DatabaseConnections()
+        self.dbConns = dbConns
+        self.apiStructsFromDB()
     
     def create_table(self):
         pass
@@ -91,7 +93,7 @@ ORDER BY key_level, key_order' % (userid,level,keylist)
         sql = 'select * from users where user_id= %s'
         #if debug : print sql
         
-        rs = self.dbconns.execute(sql,userid)
+        rs = self.dbConns.execute(sql,userid)
         if rs.rowcount==1:
             row = rs.fetchone()
             user_data['user_id'] = fieldEncode(row['user_id'])
@@ -108,7 +110,7 @@ where user_id= %u and (selected=1) and (under=0) %s' % ('%s', userid, '%s')
         #print sqlprf
 
         sql = sqlprf % ('basic', 'limit 1')
-        rs = self.dbconns.execute(sql)
+        rs = self.dbConns.execute(sql)
         for row in rs:
             user_data['birthday'] = fieldEncode(row['birthday'])
             user_data['gender']= fieldEncode(row['gender'])
@@ -117,7 +119,7 @@ where user_id= %u and (selected=1) and (under=0) %s' % ('%s', userid, '%s')
 
         ## user name data
         sql = sqlprf % ('name', 'limit 1')
-        rs = self.dbconns.execute(sql)
+        rs = self.dbConns.execute(sql)
         row_data = {}
         for row in rs:
             row_data['FN'] = fieldEncode(row['FN'])
@@ -130,7 +132,7 @@ where user_id= %u and (selected=1) and (under=0) %s' % ('%s', userid, '%s')
 
         # user nick for user not for app if exist  
         sql = sqlprf % ('nick', 'limit 1')
-        rs = self.dbconns.execute(sql)
+        rs = self.dbConns.execute(sql)
         for row in rs:
             user_data['nick']  = fieldEncode(row['nick'])
             user_data['avatar']= fieldEncode(row['avatar'])
@@ -138,7 +140,7 @@ where user_id= %u and (selected=1) and (under=0) %s' % ('%s', userid, '%s')
 
         ## user email data / mutiline
         sql = sqlprf % ('emails', 'order by row_ord')
-        rs = self.dbconns.execute(sql)
+        rs = self.dbConns.execute(sql)
         rows = []
         for row in rs:
             row_data = {}
@@ -151,7 +153,7 @@ where user_id= %u and (selected=1) and (under=0) %s' % ('%s', userid, '%s')
 
         ## user tel data / mutiline
         sql = sqlprf % ('telephones', 'order by row_ord')
-        rs = self.dbconns.execute(sql)
+        rs = self.dbConns.execute(sql)
         rows = []
         for row in rs:
             row_data = {}
@@ -166,7 +168,7 @@ where user_id= %u and (selected=1) and (under=0) %s' % ('%s', userid, '%s')
 
         ## user im list data / muti property / dict 
         sql = sqlprf % ('im', '')
-        rs = self.dbconns.execute(sql)
+        rs = self.dbConns.execute(sql)
         row_data = {}
         for row in rs:
             row_data[fieldEncode(row['im_name'])] = fieldEncode(row['im'])
@@ -174,7 +176,7 @@ where user_id= %u and (selected=1) and (under=0) %s' % ('%s', userid, '%s')
 
         ## user url list data / muti property / dict
         sql = sqlprf % ('url', '')
-        rs = self.dbconns.execute(sql)
+        rs = self.dbConns.execute(sql)
         row_data = {}
         for row in rs:
             row_data[fieldEncode(row['url_name'])] = fieldEncode(row['url'])
@@ -182,7 +184,7 @@ where user_id= %u and (selected=1) and (under=0) %s' % ('%s', userid, '%s')
 
         ## user photos data / mutiline
         sql = sqlprf % ('photos', 'order by row_ord')
-        rs = self.dbconns.execute(sql)
+        rs = self.dbConns.execute(sql)
         rows = []
         for row in rs:
             row_data = {}
@@ -195,7 +197,7 @@ where user_id= %u and (selected=1) and (under=0) %s' % ('%s', userid, '%s')
 
         ## user adrress data / mutiline
         sql = sqlprf % ('addresses', 'order by row_ord')
-        rs = self.dbconns.execute(sql)
+        rs = self.dbConns.execute(sql)
         rows = []
         for row in rs:
             row_data = {}
@@ -213,7 +215,7 @@ where user_id= %u and (selected=1) and (under=0) %s' % ('%s', userid, '%s')
 
         ## user organization data / mutiline 
         sql = sqlprf % ('organizations', 'order by row_ord')
-        rs = self.dbconns.execute(sql)
+        rs = self.dbConns.execute(sql)
         rows = []
         for row in rs:
             row_data = {}
@@ -232,7 +234,7 @@ where user_id= %u and (selected=1) and (under=0) %s' % ('%s', userid, '%s')
 
         ## user education data / mutiline
         sql = sqlprf % ('educations', 'order by row_ord')
-        rs = self.dbconns.execute(sql)
+        rs = self.dbConns.execute(sql)
         rows = []
         for row in rs:
             row_data = {}
@@ -247,7 +249,7 @@ where user_id= %u and (selected=1) and (under=0) %s' % ('%s', userid, '%s')
         
         ## user sound data / mutiline
         sql = sqlprf % ('sounds', 'order by row_ord')
-        rs = self.dbconns.execute(sql)
+        rs = self.dbConns.execute(sql)
         rows = []
         for row in rs:
             row_data = {}
@@ -261,7 +263,7 @@ where user_id= %u and (selected=1) and (under=0) %s' % ('%s', userid, '%s')
 
         ## user geo data / mutiline
         sql = sqlprf % ('geoes', 'order by row_ord')
-        rs = self.dbconns.execute(sql)
+        rs = self.dbConns.execute(sql)
         rows = []
         for row in rs:
             row_data = {}
@@ -289,7 +291,7 @@ where user_id= %u and (selected=1) and (under=0) %s' % ('%s', userid, '%s')
         sql = 'select *, userinfo.info_id as infoid from userinfo inner join userinfo_data on userinfo.info_id=userinfo_data.info_id \
 where user_id= %s and (selected=1) and (under=0) \
 order by user_id, data_class, row_ord, userinfo.info_id' % (userid)
-        rs = self.dbconns.execute(sql)
+        rs = self.dbConns.execute(sql)
         dataclass = ''
         infoid = 0
         for row in rs:
@@ -323,7 +325,7 @@ order by user_id, data_class, row_ord, userinfo.info_id' % (userid)
         appdata = {}
         sql = 'select *,apps.app_id as appid from user_account inner join apps on user_account.app_id = apps.app_id \
 where user_id= %s ' % (userid)
-        rs = self.dbconns.execute(sql)
+        rs = self.dbConns.execute(sql)
         for row in rs:
             app_id = row['appid']
             if app_id not in appdata :
@@ -355,7 +357,7 @@ where user_id= %s ' % (userid)
         sql = 'select *, userinfo.info_id as infoid from userinfo inner join userinfo_data on userinfo.info_id=userinfo_data.info_id \
 where (user_id= %s) and (selected=1) and (under=1) and (not isnull(app_id)) \
 order by app_id, user_id, data_class, row_ord, userinfo.info_id' % (userid)
-        rs = self.dbconns.execute(sql)
+        rs = self.dbConns.execute(sql)
         dataclass = ''
         infoid = 0
         appid  = None
@@ -502,7 +504,7 @@ where user_relation.user_id = %s and ur.relation_user_id = %s order by contact_a
 
 
         idlist = []
-        rs = self.dbconns.execute(sql)
+        rs = self.dbConns.execute(sql)
         for row in rs:
             relrow = {}
             idlist.append(str(row['rel_id']))
@@ -529,7 +531,7 @@ where user_relation.user_id = %s and ur.relation_user_id = %s order by contact_a
         sql = 'select * from userinfo inner join userinfo_data on userinfo.info_id=userinfo_data.info_id \
 where (selected=1) and (under=2) and (rel_id in (%s)) \
 order by rel_id, data_class, row_ord, userinfo.info_id' % (idliststr)
-        rs = self.dbconns.execute(sql)
+        rs = self.dbConns.execute(sql)
         dataclass = ''
         infoid = 0
         rel_id = 0
@@ -597,7 +599,7 @@ order by rel_id, data_class, row_ord, userinfo.info_id' % (idliststr)
             print 'userRelationList,',param
             sql = 'select * from user_relation where (%s = %s) and (deleted=0) order by contact_alias %s' % (f,i,limit)
             print sql
-            rs = self.dbconns.execute(sql)
+            rs = self.dbConns.execute(sql)
             r = []
             for row in rs:
                 r.append(row['rel_id'])
@@ -609,7 +611,7 @@ order by rel_id, data_class, row_ord, userinfo.info_id' % (idliststr)
         conn   = engine.connect()
 
         sql = 'select * from apps where (app_id = %s) ' % (app_id)
-        rs = self.dbconns.execute(sql)
+        rs = self.dbConns.execute(sql)
         appInfo = {}
         for row in rs:
             appInfo['app_id'] = fieldEncode(row['app_id'])
@@ -625,7 +627,7 @@ order by rel_id, data_class, row_ord, userinfo.info_id' % (idliststr)
         limit = self.toLimitString(param)
 
         sql = 'select * from apps ' + limit
-        rs = self.dbconns.execute(sql)
+        rs = self.dbConns.execute(sql)
         apps = []
         for row in rs:
             appInfo = {}
@@ -634,7 +636,6 @@ order by rel_id, data_class, row_ord, userinfo.info_id' % (idliststr)
             appInfo['app_type'] = fieldEncode(row['app_type'])
             apps.append(appinfo)
         return apps
-
 
     '''
     # struct name : user.full,base,ext ; contact.base
@@ -665,15 +666,14 @@ order by rel_id, data_class, row_ord, userinfo.info_id' % (idliststr)
     '''
     #    todo: struct list and first struct
     #
+    '''
     def apiStruct(self, dataStructName, root=True):
-        engine = create_engine('mysql://%s:%s@%s:%s/user_profile_m?charset=utf8'%(MYSQLUSER, MYSQLPWD, MYSQLADDR, MYSQLPORT))
-        conn   = engine.connect()
         apiDefine = []
         if root :
             sql = "select * from apis_struct where struct_name = '%s' and field_ord = 0 " % (dataStructName)
         else :
             sql = "select * from apis_struct where struct_name = '%s' order by field_ord " % (dataStructName)
-        rs = self.dbconns.execute(sql)
+        rs = self.dbConns.execute(sql)
         for row in rs :
             field = {}
             apiDefine.append(field)
@@ -694,7 +694,39 @@ order by rel_id, data_class, row_ord, userinfo.info_id' % (idliststr)
                 return None
         else :
             return apiDefine
+    '''
+    def apiStruct(self, dataStructName, root=True):
+        if dataStructName in self.apiStructs:
+            if root:
+                return self.apiStructs[dataStructName][0]
+            else:
+                return self.apiStructs[dataStructName]
 
+    def apiStructsFromDB(self):
+        self.apiStructs = {}
+        sql = 'select * from apis_struct order by struct_name, field_ord'
+        rs = self.dbConns.execute(sql)
+        for row in rs:
+            structname = row['struct_name']
+            if structname not in self.apiStructs:
+                self.apiStructs[structname] = []
+            field = {}
+            self.apiStructs[structname].append(field)
+            field['caption']= fieldEncode(row['field_caption'])
+            field['type']   = fieldEncode(row['field_type'])
+            field['source'] = fieldEncode(row['field_source'])
+            field['rel_id_field'] = fieldEncode(row['rel_id_field'])
+            field['rel_rec_name'] = fieldEncode(row['rel_rec_name'])
+            field['struct'] = fieldEncode(row['field_struct'])
+        for structname, structvalue in self.apiStructs.iteritems():
+            for structdata in structvalue:
+                if structdata['type'] in ('list','record','class','classlist'):
+                    field_struct = structdata['struct']
+                    if field_struct in self.apiStructs:
+                        structdata['struct'] = self.apiStructs[field_struct]
+                    else:
+                        structdata['struct'] = None
+        return self.apiStructs
 
 
     
@@ -732,13 +764,13 @@ order by rel_id, data_class, row_ord, userinfo.info_id' % (idliststr)
         if caption == None : caption = ''
         if caption == '*' : caption = field['source']
         caption = fieldEncode(caption)
-        if field['type']=='field' :
+        if field['type']=='field':
             if type(record) is dict:
                 if (field['struct'] in record):
                     c = record[field['struct']]
                     if (type(c) is list) and (len(c)>0) :
                         c = c[0]
-                else :
+                else:
                     c = record
                 if type(c) is dict:
                     if field['source'] == '*':
@@ -900,12 +932,12 @@ order by rel_id, data_class, row_ord, userinfo.info_id' % (idliststr)
         #print sql
        
         user_id = None
-        rs = self.dbconns.execute(sqlu,param)
+        rs = self.dbConns.execute(sqlu,param)
         if rs.rowcount>0:
             user_id = rs.fetchone()[0]
         else:
             rs.close()
-            rs = self.dbconns.execute(sql,param)
+            rs = self.dbConns.execute(sql,param)
             if rs.rowcount>0:
                 user_id = rs.fetchone()[0]
         rs.close()

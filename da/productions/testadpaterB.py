@@ -11,15 +11,20 @@ from dbWorker import DatabaseWorker
 from dbWorkerLib import *
 from dbTrans import *
 
+import time
+
 def printJsonData(v):
     print json.dumps(v, ensure_ascii=False, indent=4, encoding='utf8')
 
+
+print '*********************************'
+tt_start = time.time()
 d = DatabaseWorker()
 #v = d.userData(12)
 #printJsonData(v)
 
 
-print '\n--------------------------------'
+#print '\n--------------------------------'
 
 #v = d.apiStruct('api-relation-info',True)
 #printJsonData(v)
@@ -167,8 +172,7 @@ u = d.userFullData(12)
 printJsonData(u)
 
 '''
-import time
-
+'''
 trans = DatabaseTrans()
 
 t1 = time.time()
@@ -178,7 +182,118 @@ t2 = time.time()
 print t1,t2, t2-t1
 
 
+
 '''
+
+'''
+t_start = time.time()
+engine = create_engine('mysql://%s:%s@%s:%s/user_profile_m?charset=utf8'%('root', 'idea', 'localhost', '3306'))
+conn = engine.connect()
+#'delete from users where user_id = 1'
+rs = conn.execute('select * from users limit 0,40000')
+conn.connection.connection.commit()
+print rs.returns_rows
+rs = rs.fetchall()
+for row in rs:
+    #s = str(row['user_id']) + str(row['phone'])
+    s = str(row[0]) + str(row[1])
+t_end = time.time()
+data = [t_start,t_end,t_end-t_start]
+print data
 '''
 
 
+'''
+import MySQLdb
+t_start = time.time()
+conn = MySQLdb.connect(host="localhost",user="root",passwd="idea",
+    db="user_profile_m",charset='utf8',cursorclass=MySQLdb.cursors.DictCursor)
+cur = conn.cursor()
+cur.execute('select * from users limit 0,40000')
+print conn.set_sql_mode
+conn.commit()
+print cur.rowcount
+conn.close()
+print conn.sqlstate()
+
+
+rs = cur.fetchall()
+#cur.execute('delete from users where user_id = 1')
+#print cur.rowcount
+#rs = cur.fetchall()
+#print rs
+for row in rs:
+    s = str(row['user_id']) + str(row['phone'])
+    #s = str(row[0]) + str(row[1])
+t_end = time.time()
+data = [t_start,t_end,t_end-t_start]
+print data
+'''
+
+
+'''
+engine = create_engine('mysql://%s:%s@%s:%s/user_profile_m?charset=utf8'%('root', 'idea', 'localhost', '3306'))
+conn = engine.connect()
+rs = conn.execute('select * from users limit 0,1; set @id = 12 ;select * from users limit 3,2')
+print rs.cursor.description
+for i in range(0,3):
+    print 'rownumber=%s, returns_rows=%s, rowcount=%s' % (rs.cursor.rownumber , rs.returns_rows, rs.cursor.rowcount)
+    print 'next',rs.cursor.nextset()
+
+'''
+
+'''
+rs = d.dbConns.execute('select * from users limit 0,1; set @id = 12 ;select * from users limit 3,2')
+for i in range(0,4):
+    print 'rownumber=%s, returns_rows=%s, rowcount=%s' % (rs.cursor.rownumber , rs.returns_rows, rs.cursor.rowcount)
+    print 'next',rs.cursor.nextset()
+'''
+
+'''
+print '\n--------------------------------'
+
+for i in range(23,1000):
+    #u = d.userData(i)
+    u = d.userFullData(i)
+    #printJsonData(u)
+print '\n--------------------------------'
+print [tt_start,time.time(),time.time()-tt_start]
+tt_start = time.time()
+'''
+
+sql = ' select @uid := %s; \
+select * from users where user_id= @uid; \
+select *, u.info_id as data_id from userinfo u inner join userinfo_basic d on u.info_id=d.info_id where user_id= @uid and (selected=1) and (under=0) limit 1; \
+select *, u.info_id as data_id from userinfo u inner join userinfo_name d on u.info_id=d.info_id where user_id= @uid and (selected=1) and (under=0) limit 1; \
+select *, u.info_id as data_id from userinfo u inner join userinfo_nick d on u.info_id=d.info_id where user_id= @uid and (selected=1) and (under=0) limit 1; \
+select *, u.info_id as data_id from userinfo u inner join userinfo_emails d on u.info_id=d.info_id where user_id= @uid and (selected=1) and (under=0) order by row_ord; \
+select *, u.info_id as data_id from userinfo u inner join userinfo_telephones d on u.info_id=d.info_id where user_id= @uid and (selected=1) and (under=0) order by row_ord; \
+select *, u.info_id as data_id from userinfo u inner join userinfo_im d on u.info_id=d.info_id where user_id= @uid and (selected=1) and (under=0) ; \
+select *, u.info_id as data_id from userinfo u inner join userinfo_url d on u.info_id=d.info_id where user_id= @uid and (selected=1) and (under=0) ; \
+select *, u.info_id as data_id from userinfo u inner join userinfo_photos d on u.info_id=d.info_id where user_id= @uid and (selected=1) and (under=0) order by row_ord; \
+select *, u.info_id as data_id from userinfo u inner join userinfo_addresses d on u.info_id=d.info_id where user_id= @uid and (selected=1) and (under=0) order by row_ord; \
+select *, u.info_id as data_id from userinfo u inner join userinfo_organizations d on u.info_id=d.info_id where user_id= @uid and (selected=1) and (under=0) order by row_ord; \
+select *, u.info_id as data_id from userinfo u inner join userinfo_educations d on u.info_id=d.info_id where user_id= @uid and (selected=1) and (under=0) order by row_ord; \
+select *, u.info_id as data_id from userinfo u inner join userinfo_sounds d on u.info_id=d.info_id where user_id= @uid and (selected=1) and (under=0) order by row_ord; \
+select *, u.info_id as data_id from userinfo u inner join userinfo_geoes d on u.info_id=d.info_id where user_id= @uid and (selected=1) and (under=0) order by row_ord; \
+select *, userinfo.info_id as infoid from userinfo inner join userinfo_data on userinfo.info_id=userinfo_data.info_id where user_id= @uid and (selected=1) and (under=0) order by user_id, data_class, row_ord, userinfo.info_id; \
+select *, apps.app_id as appid from user_account inner join apps on user_account.app_id = apps.app_id where user_id= @uid ; \
+select *, userinfo.info_id as infoid from userinfo inner join userinfo_data on userinfo.info_id=userinfo_data.info_id where (user_id= @uid) and (selected=1) and (under=1) and (not isnull(app_id)) order by app_id, user_id, data_class, row_ord, userinfo.info_id; \
+'
+
+
+for i in range(23,1000):
+    #print sql % (i)
+    rs = d.dbConns.execute(sql % (i))
+    for j in range(0,18):
+        if rs.cursor.rowcount > 0:
+            rs.cursor.fetchall()
+        #for row in rs:
+        #    print row[0]
+        #print 'rownumber=%s, returns_rows=%s, rowcount=%s' % (rs.cursor.rownumber , rs.returns_rows, rs.cursor.rowcount)
+        #print 'next',
+        rs.context.cursor.nextset()
+'''    
+'''
+
+print [tt_start,time.time(),time.time()-tt_start]

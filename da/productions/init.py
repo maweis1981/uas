@@ -31,6 +31,9 @@ logger.setLevel(logging.DEBUG)
 logging.basicConfig(filename = conf.daconf.LOGPATH + "/da.log", format='%(name)-12s %(asctime)s %(levelname)-8s %(message)s', level=logging.DEBUG)
 
 from conf.daconf import LOCALADDR
+from conf.daconf import DAROOT
+from conf.daconf import LOGPATH
+from conf.daconf import CONFPATH
 
 
 # init Pyro

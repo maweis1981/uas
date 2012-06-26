@@ -20,7 +20,8 @@ from dbConnections import *
 
 class DatabaseTrans(object):
 
-    dbconns = DatabaseConnections()
+    def __init__(self):
+        self.dbconns = DatabaseConnections()
 
     # userData必须是符合修改记录标准的数据，否则可能会引起重复记录。
     def userPut(self, userData, app_id): 
@@ -94,8 +95,8 @@ class DatabaseTrans(object):
             ud={'versign_phone':row['registered_phone_number'],
                 'uid':guidctoa(row['card_id']),
                 'name':{'FN':row['display_name']},
-                'telephones':[  {'tel_type':'mobile','tel_number':trim(row['mobile_phone'])},
-                                {'tel_type':'work','tel_number':row['work_phone']}],
+                'telephones':[  {'tel_type':'mobile','tel_number':trim(row['mobile_phone']),'serial':1},
+                                {'tel_type':'work','tel_number':trim(row['work_phone']),'serial':1}],
                 'emails':{'email_type':'person','email':trim(row['email'])},
                 'organizations':{'org_name':trim(row['company']),'org_unit':trim(row['department']),'role':trim(row['position'])},
                 'educations':{'school_name':trim(row['school'])},
