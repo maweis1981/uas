@@ -7,25 +7,33 @@ dbworkerlib.py
 import sys
 import os
 import copy
+import json
+
+from types import *
+from datetime import *
 
 from sqlalchemy import *
-from datetime import *
-from types import *
 
 
-
-
+def printJsonData(v):
+    print json.dumps(v, ensure_ascii=False, indent=4, encoding='utf8')
 
 def fieldEncode(field):
-	tp = type(field)
-	if tp is NoneType :
-		return ''
-	elif (tp is str) or (tp is unicode) :
-		return field.encode('utf8')
-	elif (tp is date) or (tp is datetime) :
-		return str(field)
-	else :
-		return field
+    tp = type(field)
+    if tp is NoneType :
+        return ''
+    elif (tp is str) or (tp is unicode) :
+        return field.encode('utf8')
+    elif (tp is date) or (tp is datetime) :
+        return str(field)
+    else :
+        return field
+ 
+def trim(s):
+    if type(s) in [str,unicode]:
+        return s.lstrip()
+    else:
+        return s
 
 #### consts
 
@@ -36,23 +44,24 @@ userFieldDefine = {
 'class-oneline':['name','ident'],
 'class-list':['im','url'],
 'mutiline-key':{
-	'telephones':'tel_number',
-	'emails':'email',
-	'photos':'photo_url',
-	'sounds':'sound_url',
-	'educations':'education',
-	'im':'im_name',
-	'url':'url_name',
-	'addresses':'',
-	'organizations':'',
-	'geoes':''
-	},
-'userinfo':['versign','last_update','source_name','source_id','row_order','data_class'],
-'readonly':['versign_phone','uid','versign_email','user_id'],
+    'telephones':'tel_number',
+    'emails':'email',
+    'photos':'photo_url',
+    'sounds':'sound_url',
+    'im':'im_name',
+    'url':'url_name',
+    'educations':'',
+    'addresses':'',
+    'organizations':'',
+    'geoes':''
+    },
+'userinfo':['versign','last_update','source_name','source_id','order','data_class','serial'],
+'readonly':['versign_phone','uid','versign_email','user_id','source_ident'],
 'realname':{
-	'source_name':'origin',
-	'source_id':'origin_id'
-	}
+    'order':'row_ord',
+    'source_name':'origin',
+    'source_id':'origin_id'
+    }
 },
 
 'basic':['birthday','gender','blood','marry'],
@@ -63,7 +72,7 @@ userFieldDefine = {
 
 'telephones':['tel_type','tel_number'],
 'emails':['email_type','email'],
-'addresses':['adr_type','post_office_address','extended_address','street','locality','region','postal_code','country'],
+'addresses':['address_type','post_office_address','extended_address','street','locality','region','postal_code','country'],
 'geoes':['geo_type','record_date','tz','geo_lat','geo_lng'],
 'organizations':['org_name','org_unit','org_subunit','title','role','work_field','org_logo','org_into_date','org_leave_date'],
 'photos':['photo_class','photo_caption','photo_url'],
@@ -76,170 +85,247 @@ userFieldDefine = {
 
 
 def userDataToSql(userData, user_id, app_id):
-	d = extractUserData(userData, userDataFields['basic'])
-	sql = userFieldDataToSql(d, 'basic', appid)
+    d = extractUserData(userData, userDataFields['basic'])
+    sql = userFieldDataToSql(d, 'basic', appid)
 
 def extractUserDataFields(userData):
-	ud = userData
-	r  = []
-	ufs = userFieldDefine['_sys']
-	for f in ufs['fields']:
-		rd = extractUserFieldData(ud,userFieldDefine[f],f)
-		if len(rd['data'])>0: 
-			r.append(rd)
-	for f,uf in ud.iteritems():
-		if f in ufs['class-mutiline']:
-			if type(uf) is list: # ´ú±í¶àĞĞÊı¾İ
-				for uitem in uf:
-					r.append(extractUserFieldData(uitem,userFieldDefine[f],f))
-			if type(uf) is dict: # ´ú±í´ËÓ¦ÓÃÖ»ÓĞÕâÒ»ÌõÊı¾İ
-				r.append(extractUserFieldData(uf,userFieldDefine[f],f))
-		elif f in ufs['class-oneline']:
-			r.append(extractUserFieldData(uf,userFieldDefine[f],f))
-		elif f in ufs['class-list']:
-			kn = ufs['mutiline-key'][f]
-			kf = userFieldDefine[f][1]
-			for k,v in uf.iteritems():
-				ul={kn:k,kf:v}
-				r.append(extractUserFieldData(ul,[kn,kf],f))
-		else:
-			if type(uf) is dict:
-				r.append(extractUserFieldData(uf,['*'],f))
-			elif type(uf) is list:
-				for uitem in uf:
-					r.append(extractUserFieldData(uitem,['*'],f))
-			elif (type(uf) in (str,unicode,int,long)) and (f not in ufs['readonly']):
-				r.append(extractUserFieldData({f:uf},['*'],''))
-	return r
+    ud = userData
+    if ud==None:
+        return None
+
+    r  = []
+    ufs = userFieldDefine['_sys']
+    sourceIdent = {}
+    if 'source_ident' in userData:
+        if (type(userData['source_ident']) is dict) and ('source_id' in userData['source_ident']):
+            sourceIdent = userData['source_ident']
+        
+    udfs = {}
+    udls = {}
+    for k,v in ud.iteritems():
+        if type(v) in (list,dict):
+            udls[k]=v
+        else:
+            udfs[k]=v
+    for f in ufs['fields']:
+        rd = extractUserFieldData(dict(udfs.items()+sourceIdent.items()),userFieldDefine[f],f)
+        if len(rd['data'])>0: 
+            r.append(rd)
+    for f,uf in udls.iteritems():
+        if f in ufs['class-mutiline']:
+            kn = ufs['mutiline-key'][f]
+            #print 'kn:',kn,'f',f
+            if type(uf) is list: # ä»£è¡¨å¤šè¡Œæ•°æ®
+                i=0
+                for uitem in uf:
+                    i = i + 1
+                    uitem['row_ord']=uitem.get('serial',uitem.get('row_ord',i))
+                    if kn!='' and uitem.get(kn,None) in [None,'']:
+                        pass
+                    else:
+                        r.append(extractUserFieldData(uitem,userFieldDefine[f],f))
+            if type(uf) is dict: # ä»£è¡¨æ­¤åº”ç”¨æ­¤æ•°æ®åªæœ‰ä¸€æ¡
+                if kn!='' and uf.get(kn,None) in [None,'']:
+                    pass
+                else:
+                    r.append(extractUserFieldData(dict(uf.items()+sourceIdent.items()),userFieldDefine[f],f))
+        elif f in ufs['class-oneline']: # è‚¯å®šåªæœ‰ä¸€æ¡
+            r.append(extractUserFieldData(dict(uf.items()+sourceIdent.items()),userFieldDefine[f],f))
+        elif f in ufs['class-list']:
+            kn = ufs['mutiline-key'][f]
+            kf = userFieldDefine[f][1]
+            for k,v in uf.iteritems():
+                if v != None:
+                    ul={kn:k,kf:v}
+                    r.append(extractUserFieldData(dict(ul.items()+sourceIdent.items()),[kn,kf],f))
+        else:
+            if f in ufs['readonly']:
+                pass
+            elif type(uf) is dict:
+                r.append(extractUserFieldData(dict(uf.items()+sourceIdent.items()),['*'],f))
+            elif type(uf) is list:
+                for uitem in uf:
+                    r.append(extractUserFieldData(uitem,['*'],f))
+            elif type(uf) in (str,unicode,int,long):
+                r.append(extractUserFieldData(dict({f:uf}.items()+sourceIdent.items()),['*'],''))
+    return r
 
 
 
-def extractUserFieldData(userDataField, fieldList, fieldClass): 
-	d = {'data':{},'info':{},'class':''}
-	u = userDataField;
-	realname = userFieldDefine['_sys']['realname']
-	if 'data_id' in u:
-		d['data_id'] = u['data_id']
+def extractUserFieldData(userDataField, fieldList, fieldClass):
+    d = {'data':{},'info':{},'class':''}
+    u = userDataField;
+    if u==None:
+        return d
 
+    realname = userFieldDefine['_sys']['realname']
+    if 'data_id' in u:
+        d['data_id'] = u['data_id']
 
-	for k in u:
-		if k in userFieldDefine['_sys']['userinfo']:
-			d['info'][realname.get(k,k)] = u[k]
-		if '*' in fieldList:
-			d['data'][k] = u[k]
-		elif k in fieldList:
-			d['data'][realname.get(k,k)] = u[k]
-	d['class']=fieldClass
-	return d
-	
+    for k in u:
+        if k in userFieldDefine['_sys']['userinfo']:
+            d['info'][realname.get(k,k)] = u[k]
+        if '*' in fieldList:
+            d['data'][k] = u[k]
+        elif k in fieldList:
+            d['data'][realname.get(k,k)] = u[k]
+    d['class']=fieldClass
+    return d
+    
 
 def userFieldDataToExistsSql(user_id, app_id, userFieldData):
-	sql = ''
-	param = []
-	ufs = userFieldDefine['_sys']
-	ud  = userFieldData['data']
-	ui  = userFieldData['info']
-	fieldClass = userFieldData['class']
-	if 'data_id' in userFieldData: # ÒÑ¾­Ö¸¶¨ÌØ¶¨Êı¾İ¼ÇÂ¼ /Í¬Ê±Ğ£ÑéÓÃ»§ºÍÓ¦ÓÃµÄ¹éÊôµÄºÏ·¨ĞÔ
-		sql = "select info_id from userinfo where user_id=%s  and app_id=%s and info_id=%s ;"
-		param = [user_id, app_id, userFieldData['data_id']]
-		return (sql,param)
-	if fieldClass in userFieldDefine:
-		sqlpf = "select u.info_id from userinfo u inner join userinfo_"+fieldClass+" d on u.info_id=d.info_id where user_id=%s and app_id=%s "
-		if 'source_id' in ui: # Ö¸¶¨ºÍÍâ²¿Êı¾İÏàÆ¥ÅäµÄ¼ÇÂ¼/Í¬Ê±Ğ£ÑéÓÃ»§£¬Ó¦ÓÃ£¬Êı¾İ¹éÀà£¬
-			sql = sqlpf + " and origin=%s and origin_id=%s ;"
-			param = [user_id, app_id, ui['origin'],ui['origin_id']]
-			return (sql,param)
-		else: # °´ÕÕ¹æÔòÒÔ×Ö¶ÎÂß¼­µÄÎ¨Ò»ĞÔÒªÇó³¢ÊÔÆ¥Åä
-			if fieldClass in (ufs['fields']+ufs['class-oneline']): ## µ¥Ò»¼ÇÂ¼µÄ£¬²éÑ¯Ö® userid/appid/class/one
-				sql = sqlpf + " ;"
-				param = [user_id, app_id]
-				return (sql,param)
-			elif fieldClass in (ufs['class-mutiline']+ufs['class-list']): #¶àĞĞÇé¿ö£¬ÔÙ¸½¼Ó¼ì²é¹Ø¼ü×Ö¶Î£¬
-				k = ufs['mutiline-key'][fieldClass]
-				if (k!='') and (k in ud):
-					sql =sqlpf + " and "+k+"=%s ;"
-					param = [user_id, app_id, ud[k]]
-					return (sql,param)
-				else:
-					sql = " and ".join(str(f)+"=%s" for f in userFieldDefine[fieldClass])
-					sql = sqlpf + " and " + sql +';'
-					param = [user_id, app_id] + [ud.get(f,'') for f in userFieldDefine[fieldClass]] 
-					return (sql,param)
-	else:  # userinfo_data data
-		sqlpf = "select u.info_id from userinfo u inner join userinfo_data d on u.info_id=d.info_id where user_id=%s and app_id=%s and data_class=%s "
-		param = [user_id, app_id, fieldClass]
-		if 'source_id' in ui: # Ö¸¶¨ºÍÍâ²¿Êı¾İÏàÆ¥ÅäµÄ¼ÇÂ¼/Í¬Ê±Ğ£ÑéÓÃ»§£¬Ó¦ÓÃ£¬Êı¾İ¹éÀà£¬
-			sql =  sqlpf + " and origin=%s and origin_id=%s ;"
-			param = param + [ui['source_name'],ui['source_id']]
-			return (sql,param)
-		else: 
-			if (fieldClass!=''):
-				return (sqlpf+" limit 1 ;", param)
-			else:
-				if len(ud)==1: 
-					sql   = sqlpf + " and "+ud.keys()[0]+"=%s ;"
-					param = param + [ud.values()[0]]
-					return (sql, param)
+    sql = ''
+    param = []
+    if userFieldData==None:
+        return ('',[])
+
+    ufs = userFieldDefine['_sys']
+    ud  = userFieldData['data']
+    ui  = userFieldData['info']
+    fieldClass = userFieldData['class']
+    if 'data_id' in userFieldData: # å·²ç»æŒ‡å®šç‰¹å®šæ•°æ®è®°å½• /åŒæ—¶æ ¡éªŒç”¨æˆ·å’Œåº”ç”¨çš„å½’å±çš„åˆæ³•æ€§
+        sql = "select info_id from userinfo where user_id=%s  and app_id=%s and info_id=%s ;"
+        param = [user_id, app_id, userFieldData['data_id']]
+        return (sql,param)
+    if fieldClass in userFieldDefine:
+        sqlpf = "select u.info_id from userinfo u inner join userinfo_"+fieldClass+" d on u.info_id=d.info_id where user_id=%s and app_id=%s "
+        if 'source_id' in ui: # æŒ‡å®šå’Œå¤–éƒ¨æ•°æ®ç›¸åŒ¹é…çš„è®°å½•/åŒæ—¶æ ¡éªŒç”¨æˆ·ï¼Œåº”ç”¨ï¼Œæ•°æ®å½’ç±»ï¼Œ
+            sql = sqlpf + " and origin=%s and origin_id=%s ;"
+            param = [user_id, app_id, ui['origin'],ui['origin_id']]
+            return (sql,param)
+        else: # æŒ‰ç…§è§„åˆ™ä»¥å­—æ®µé€»è¾‘çš„å”¯ä¸€æ€§è¦æ±‚å°è¯•åŒ¹é…
+            if (fieldClass in (ufs['fields']+ufs['class-oneline'])) or (
+                fieldClass in ufs['class-mutiline'] and 'row_ord' not in ui ): ## å•ä¸€è®°å½•çš„ï¼ŒæŸ¥è¯¢ä¹‹ userid/appid/class/one
+                sql = sqlpf + " ;"
+                param = [user_id, app_id]
+                return (sql,param)
+                print '****', sql
+            elif fieldClass in (ufs['class-mutiline']+ufs['class-list']): #å¤šè¡Œæƒ…å†µï¼Œå†é™„åŠ æ£€æŸ¥å…³é”®å­—æ®µï¼Œ
+                k = ufs['mutiline-key'][fieldClass]
+                if (k!='') and (k in ud):
+                    sql = sqlpf + " and "+k+"=%s ;"
+                    param = [user_id, app_id, ud[k]]
+                    return (sql,param)
+                elif 'serial' in ud: #å¤šè¡Œï¼Œä¸”æ²¡æœ‰å¯ç”¨ä»¥åŒºåˆ«çš„å…³é”®å­—æ®µï¼Œé™„åŠ æ£€éªŒç³»åˆ—å·
+                    sql = sqlpf + " and u.row_ord = %s ;"
+                    param = [user_id, app_id, ud['serial']]
+                else: #è¿™ç§æƒ…å†µä¼šé€Ÿåº¦å¾ˆæ…¢ï¼Œå¯¼å…¥å› å°½ä¸€åˆ‡å¯èƒ½é¿å…
+                    sql = " and ".join(str(f)+"<=>%s" for f in userFieldDefine[fieldClass])
+                    sql = sqlpf + " and " + sql +';'
+                    param = [user_id, app_id] + [ud.get(f,None) for f in userFieldDefine[fieldClass]] 
+                    return (sql,param)
+    else:  # userinfo_data data
+        sqlpf = "select u.info_id from userinfo u inner join userinfo_data d on u.info_id=d.info_id where user_id=%s and app_id=%s and data_class=%s "
+        param = [user_id, app_id, fieldClass]
+        if 'source_id' in ui: # æŒ‡å®šå’Œå¤–éƒ¨æ•°æ®ç›¸åŒ¹é…çš„è®°å½•/åŒæ—¶æ ¡éªŒç”¨æˆ·ï¼Œåº”ç”¨ï¼Œæ•°æ®å½’ç±»ï¼Œ
+            sql =  sqlpf + " and origin=%s and origin_id=%s ;"
+            param = param + [ui['source_name'],ui['source_id']]
+            return (sql,param)
+        else: 
+            if (fieldClass!=''):
+                return (sqlpf+" limit 1 ;", param)
+            else:
+                if len(ud)==1: 
+                    sql   = sqlpf + " and "+ud.keys()[0]+"=%s ;"
+                    param = param + [ud.values()[0]]
+                    return (sql, param)
 
 
-	return (sql,param)
+    return (sql,param)
 
 
-# ¸üĞÂ±ØĞëÕÒµ½ info_id, 
+# æ›´æ–°å¿…é¡»æ‰¾åˆ° info_id, 
 def userFieldDataToUpdateSql(user_id, app_id, data_id, userFieldData):
-	sqld = ''
-	sqli = ''
-	parami = []
-	paramd = []
-	ufs = userFieldDefine['_sys']
-	ud  = userFieldData['data']
-	ui  = userFieldData['info']
-	fieldClass = userFieldData['class']
-	# ÓĞ×Ö¶Î¶¨ÒåµÄ
-	sqli = "update userinfo set last_update=now() "
-	if len(ui) >0:
-		sqli = sqli +', '+ ', '.join(f+"=%s" for f in ui.keys())
-		parami = ui.values()
-	sqli = sqli + " where info_id=%s and user_id=%s and app_id=%s ; set @cnt=row_count();"
-	parami = parami + [data_id, user_id, app_id]
-	if fieldClass in (ufs['fields']+ufs['class-oneline']+ufs['class-mutiline']+ufs['class-list']):
-		if len(ud) >0:
-			sqld = "update userinfo_"+fieldClass+" set "
-			sqld = sqld + ','.join(f+"=%s" for f in ud.keys())
-			paramd = ud.values() 
-			sqld = sqld + " where info_id=%s and @cnt=1;"  # ÔÙ´Î±£Ö¤¼ÇÂ¼µÄÓĞĞ§ĞÔ
-			paramd = paramd + [data_id]
-	# ÎŞ×Ö¶Î¶¨ÒåµÄ
-	else :
-		for f in ud:
-			sqld=sqld+ "replace userinfo_data values (%s,%s,%s) where @cnt=1;"
-			paramd = paramd + [data_id, f, ud[f]]
-	return (sqli+sqld, parami+paramd)
-	
+    sqld = ''
+    sqli = ''
+    parami = []
+    paramd = []
+    if userFieldData==None:
+        return ('',[])
+    ufs = userFieldDefine['_sys']
+    ud  = userFieldData['data']
+    ui  = userFieldData['info']
+    fieldClass = userFieldData['class']
+    # æœ‰å­—æ®µå®šä¹‰çš„
+    sqli = "update userinfo set last_update=now() "
+    if 'serial' in ui:
+        del ui['serial']
+    if len(ui) >0:
+        sqli = sqli +', '+ ', '.join(f+"=%s" for f in ui.keys())
+        parami = ui.values()
+    sqli = sqli + " where info_id=%s and user_id=%s and app_id=%s ; set @cnt=row_count();"
+    parami = parami + [data_id, user_id, app_id]
+    if fieldClass in (ufs['fields']+ufs['class-oneline']+ufs['class-mutiline']+ufs['class-list']):
+        if len(ud) >0:
+            sqld = "update userinfo_"+fieldClass+" set "
+            sqld = sqld + ','.join(f+"=%s" for f in ud.keys())
+            paramd = ud.values() 
+            sqld = sqld + " where info_id=%s and @cnt=1;"  # å†æ¬¡ä¿è¯è®°å½•çš„æœ‰æ•ˆæ€§
+            paramd = paramd + [data_id]
+    # æ— å­—æ®µå®šä¹‰çš„
+    else :
+        for f in ud:
+            sqld=sqld+ "replace userinfo_data values (%s,%s,%s) where @cnt=1;"
+            paramd = paramd + [data_id, f, ud[f]]
+    return (sqli+sqld, parami+paramd)
+    
 
 def userFieldDataToInsertSql(user_id, app_id, userFieldData):
-	sqld = ''
-	sqli = ''
-	parami = []
-	paramd = []
-	ufs = userFieldDefine['_sys']
-	ud  = userFieldData['data']
-	ui  = userFieldData['info']
-	fieldClass = userFieldData['class']
+    sqld = ''
+    sqli = ''
+    parami = []
+    paramd = []
+    if userFieldData==None:
+        return ('',[])
+    ufs = userFieldDefine['_sys']
+    ud  = userFieldData['data']
+    ui  = userFieldData['info']
+    fieldClass = userFieldData['class']
 
-	#if len(ui)>0:
-	sqli = "insert into userinfo (" +", ".join(f for f in ['user_id', 'app_id']+ ui.keys()) +") values (" \
-		+ ", ".join('%s' for f in ['','']+ui.keys())+"); set @cnt=row_count();  set @dataid = LAST_INSERT_ID(); "
-	parami = [user_id, app_id]+ui.values()
-	if fieldClass in (ufs['fields']+ufs['class-oneline']+ufs['class-mutiline']+ufs['class-list']):
-		if len(ud) >0:
-			sqld = "insert userinfo_"+fieldClass+" (info_id, "+', '.join(f for f in ud.keys()) \
-				+") select * from (select @dataid, "+', '.join('%s' for f in ud)+") d where @cnt=1;"
-			paramd = ud.values()
-	else:
-		for f in ud:
-			sqld=sqld+ "replace userinfo_data select * from (select @dataid,%s,%s) d where @cnt=1;"
-			paramd = paramd + [f, ud[f]]
-	return (sqli+sqld+' select @dataid;', parami+paramd)
+    #if len(ui)>0:
+    sqli = "insert into userinfo (" +", ".join(f for f in ['user_id', 'app_id']+ ui.keys()) +") values (" \
+        + ", ".join('%s' for f in ['','']+ui.keys())+"); set @cnt=row_count();  set @dataid = LAST_INSERT_ID(); "
+    parami = [user_id, app_id]+ui.values()
+    if fieldClass in (ufs['fields']+ufs['class-oneline']+ufs['class-mutiline']+ufs['class-list']):
+        if len(ud) >0:
+            sqld = "insert userinfo_"+fieldClass+" (info_id, "+', '.join(f for f in ud.keys()) \
+                +") select * from (select @dataid, "+', '.join('%s as '+f for f in ud)+") d where @cnt=1;"
+            paramd = ud.values()
+    else:
+        for f in ud:
+            sqld=sqld+ "replace userinfo_data select * from (select @dataid,%s,%s) d where @cnt=1;"
+            paramd = paramd + [f, ud[f]]
+    return (sqli+sqld, parami+paramd)
 
+'''
+# æ¸…ç†æ•°æ®ç»“æ„å¯¹è±¡ï¼ŒæŠŠå†…å®¹ä¸ºç©ºçš„åˆ é™¤æ‰
+'''
+def TrimEmptyDataField(d,emptys=[None,'']):
+    if type(d) is dict:
+        for (f,v) in d.items():
+            if v in emptys:
+                del d[f]
+            elif type(v) in [list,dict]:
+                TrimEmptyDataField(v)
+                if len(v)==0:
+                    del d[f]
+    elif type(d) is list:
+        for i in range(0,len(d)):
+            v=d[i]
+            if type(v) in [list,dict]:
+                TrimEmptyDataField(v)
+                if len(v)==0:
+                    del d[i]
+    return
+     
+
+def guidctoa(guid):
+    #8bfe7d904b5711e1a05ff04da2086e9d
+    #8BFE7D90-4B57-11E1-A05F-F04DA2086E9D
+    if len(guid)==32:
+        g = guid.upper()
+        g = '-'.join([g[0:8],g[8:12],g[12:16],g[16:20],g[20:32]])
+        return g
+    else:
+        return guid
+     

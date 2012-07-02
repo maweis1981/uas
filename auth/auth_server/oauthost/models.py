@@ -46,7 +46,7 @@ class Client(models.Model):
        choices=TYPE_CHOICES, default=TYPE_CONFIDENTIAL)
     scopes = models.ManyToManyField(Scope, verbose_name=_('Scopes'), help_text=_('The scopes client is restricted to ask for tokens. <i>All scopes are available for client if none selected.</i>'), null=True, blank=True)
     hash_sign_supported = models.BooleanField(_('Supports # in "Location"'), help_text=_('Should be checked if th client supports fragment component (#) in the HTTP "Location" response header field'), default=True)
-
+    certification  = models.IntegerField(_('Certification '),help_text=_('certification status.0:new;1:accepted;2:rejected;'))
     class Meta:
         verbose_name = _('Client')
         verbose_name_plural = _('Clients')

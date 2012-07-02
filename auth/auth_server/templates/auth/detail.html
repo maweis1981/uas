@@ -1,14 +1,36 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div >
-    <div><b>{{ client.title }}</b></div>
-	<div>{{client.description}}</div>
-	<div>{{client.link}}</div>
-	<div>{{client.date_registered}}</div>
-	<div class="btn btn-success">
-		Access Token:
-		<a href="/oauth/auth/?client_id={{ client.identifier }}&response_type=token&redirect_uri={{uri.0.0}}"/>{{ client.identifier }}</a>
-	</div>
-</div>
+<table class="table">
+	<colgroup>
+	<col class="span2">
+	</colgroup>
+	<tbody>
+		<tr><th>title:</th><td>{{ client.title }}</td></tr>
+		<tr><th>description:</th><td>{{ client.description }}</td></tr>
+		<tr><th>link:</th><td>{{ client.link }}</td></tr>
+		<tr><th>certification:</th><td>
+		{% if user.is_staff %}
+		<div class="btn-group" data-toggle="buttons-radio">
+		<button class="btn {% ifequal client.certification 0 %}btn-primary{% endifequal %}" onclick="javascript:location.href='?certification=0';return false;">new</button>
+		<button class="btn {% ifequal client.certification 1 %}btn-primary{% endifequal %}" onclick="javascript:location.href='?certification=1';return false;">accept</button>
+		<button class="btn {% ifequal client.certification 2 %}btn-primary{% endifequal %}" onclick="javascript:location.href='?certification=2';return false;">reject</button>
+		</div>
+		{% else %}
+			{% ifequal client.certification 0 %}
+			pending
+			{% else %}
+			{% ifequal client.certification 1 %}
+			<div class="btn btn-success">
+			<a href="/oauth/auth/?client_id={{ client.identifier }}&response_type=token&redirect_uri={{uri.0.0}}"/>Access Token</a></div>
+			{% else %}
+			rejected
+			{% endifequal %}
+			{% endifequal %}
+		{% endif %}
+		</td></tr>
+		<tr><th>date:</th><td>{{ client.date_registered }}</td></tr>
+		<tr><th><button class="btn" onclick="javascript:history.back();return false;" >back</button></th><td></td></tr>
+	</tbody>
+</table>
 {%endblock%}

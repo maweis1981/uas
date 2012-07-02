@@ -37,6 +37,10 @@
 *.sqlite
 log
 
+# config  #
+######################
+*.conf
+
 # OS generated files #
 ######################
 .DS_Store*
