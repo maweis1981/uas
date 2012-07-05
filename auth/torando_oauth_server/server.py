@@ -20,7 +20,7 @@ from user_server import MainHandler,RegistHandler,LoginHandler,LogoutHandler,App
 from tornado_server import RequestTokenHandler,AccessTokenHandler,AuthorizationHandler
 from dobject import DObjectHandler,DObjectManager
 
-define("port", default=80, help="User Auth Server running on port", type=int)
+define("port", default=8081, help="User Auth Server running on port", type=int)
 
 class Application(tornado.web.Application):
   def __init__(self):
