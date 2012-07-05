@@ -41,7 +41,7 @@ userFieldDefine = {
 '_sys':{
 'fields':['basic','nick'],
 'class-mutiline':['telephones','emails','addresses','organizations','photos','sounds','educations','geoes'],
-'class-oneline':['name','ident'],
+'class-oneline':['name','ident','account'],
 'class-list':['im','url'],
 'mutiline-key':{
     'telephones':'tel_number',
@@ -53,6 +53,7 @@ userFieldDefine = {
     'educations':'',
     'addresses':'',
     'organizations':'',
+    'account':'',
     'geoes':''
     },
 'userinfo':['versign','last_update','source_name','source_id','order','data_class','serial'],
@@ -78,6 +79,7 @@ userFieldDefine = {
 'photos':['photo_class','photo_caption','photo_url'],
 'educations':['school_name','school_city','education','school_into_date','school_leave_date'],
 'sounds':['sound_class','sound_caption','sound_url'],
+'account':['user_id','app_id','app_account','app_nick','app_avatar','app_last_status','app_last_date'],
 
 'im':['im_name','im'],
 'url':['url_name','url']
@@ -120,11 +122,11 @@ def extractUserDataFields(userData):
                 for uitem in uf:
                     i = i + 1
                     uitem['row_ord']=uitem.get('serial',uitem.get('row_ord',i))
-                    if kn!='' and uitem.get(kn,None) in [None,'']:
+                    if kn!='' and uitem.get(kn,None) in [None,'',u'']: # 应该有关键数据，没有则忽略
                         pass
                     else:
                         r.append(extractUserFieldData(uitem,userFieldDefine[f],f))
-            if type(uf) is dict: # 代表此应用此数据只有一条
+            elif type(uf) is dict: # 代表此应用此数据只有一条
                 if kn!='' and uf.get(kn,None) in [None,'']:
                     pass
                 else:
@@ -188,8 +190,8 @@ def userFieldDataToExistsSql(user_id, app_id, userFieldData):
         param = [user_id, app_id, userFieldData['data_id']]
         return (sql,param)
     if fieldClass in userFieldDefine:
-        sqlpf = "select u.info_id from userinfo u inner join userinfo_"+fieldClass+" d on u.info_id=d.info_id where user_id=%s and app_id=%s "
-        if 'source_id' in ui: # 指定和外部数据相匹配的记录/同时校验用户，应用，数据归类，
+        sqlpf = "select u.info_id from userinfo u inner join userinfo_"+fieldClass+" d on u.info_id=d.info_id where u.user_id=%s and u.app_id=%s "
+        if 'origin_id' in ui: # 指定和外部数据相匹配的记录/同时校验用户，应用，数据归类，
             sql = sqlpf + " and origin=%s and origin_id=%s ;"
             param = [user_id, app_id, ui['origin'],ui['origin_id']]
             return (sql,param)
@@ -202,13 +204,13 @@ def userFieldDataToExistsSql(user_id, app_id, userFieldData):
                 print '****', sql
             elif fieldClass in (ufs['class-mutiline']+ufs['class-list']): #多行情况，再附加检查关键字段，
                 k = ufs['mutiline-key'][fieldClass]
-                if (k!='') and (k in ud):
+                if 'serial' in ud: #多行，且没有可用以区别的关键字段，附加检验系列号
+                    sql = sqlpf + " and u.row_ord = %s ;"
+                    param = [user_id, app_id, ud['serial']]
+                elif (k!='') and (k in ud):
                     sql = sqlpf + " and "+k+"=%s ;"
                     param = [user_id, app_id, ud[k]]
                     return (sql,param)
-                elif 'serial' in ud: #多行，且没有可用以区别的关键字段，附加检验系列号
-                    sql = sqlpf + " and u.row_ord = %s ;"
-                    param = [user_id, app_id, ud['serial']]
                 else: #这种情况会速度很慢，导入因尽一切可能避免
                     sql = " and ".join(str(f)+"<=>%s" for f in userFieldDefine[fieldClass])
                     sql = sqlpf + " and " + sql +';'
@@ -217,9 +219,9 @@ def userFieldDataToExistsSql(user_id, app_id, userFieldData):
     else:  # userinfo_data data
         sqlpf = "select u.info_id from userinfo u inner join userinfo_data d on u.info_id=d.info_id where user_id=%s and app_id=%s and data_class=%s "
         param = [user_id, app_id, fieldClass]
-        if 'source_id' in ui: # 指定和外部数据相匹配的记录/同时校验用户，应用，数据归类，
+        if 'origin_id' in ui: # 指定和外部数据相匹配的记录/同时校验用户，应用，数据归类，
             sql =  sqlpf + " and origin=%s and origin_id=%s ;"
-            param = param + [ui['source_name'],ui['source_id']]
+            param = param + [ui['origin'],ui['origin_id']]
             return (sql,param)
         else: 
             if (fieldClass!=''):
@@ -260,12 +262,12 @@ def userFieldDataToUpdateSql(user_id, app_id, data_id, userFieldData):
             sqld = "update userinfo_"+fieldClass+" set "
             sqld = sqld + ','.join(f+"=%s" for f in ud.keys())
             paramd = ud.values() 
-            sqld = sqld + " where info_id=%s and @cnt=1;"  # 再次保证记录的有效性
+            sqld = sqld + " where info_id=%s and @cnt=1; commit;"  # 再次保证记录的有效性
             paramd = paramd + [data_id]
     # 无字段定义的
     else :
         for f in ud:
-            sqld=sqld+ "replace userinfo_data values (%s,%s,%s) where @cnt=1;"
+            sqld=sqld+ "replace userinfo_data values (%s,%s,%s) where @cnt=1; commit; "
             paramd = paramd + [data_id, f, ud[f]]
     return (sqli+sqld, parami+paramd)
     
@@ -281,6 +283,8 @@ def userFieldDataToInsertSql(user_id, app_id, userFieldData):
     ud  = userFieldData['data']
     ui  = userFieldData['info']
     fieldClass = userFieldData['class']
+    if 'serial' in ui:
+        del ui['serial']
 
     #if len(ui)>0:
     sqli = "insert into userinfo (" +", ".join(f for f in ['user_id', 'app_id']+ ui.keys()) +") values (" \
@@ -289,18 +293,18 @@ def userFieldDataToInsertSql(user_id, app_id, userFieldData):
     if fieldClass in (ufs['fields']+ufs['class-oneline']+ufs['class-mutiline']+ufs['class-list']):
         if len(ud) >0:
             sqld = "insert userinfo_"+fieldClass+" (info_id, "+', '.join(f for f in ud.keys()) \
-                +") select * from (select @dataid, "+', '.join('%s as '+f for f in ud)+") d where @cnt=1;"
+                +") select * from (select @dataid, "+', '.join('%s as '+f for f in ud)+") d where @cnt=1; commit;"
             paramd = ud.values()
     else:
         for f in ud:
-            sqld=sqld+ "replace userinfo_data select * from (select @dataid,%s,%s) d where @cnt=1;"
+            sqld=sqld+ "replace userinfo_data select * from (select @dataid,%s,%s) d where @cnt=1; commit;"
             paramd = paramd + [f, ud[f]]
     return (sqli+sqld, parami+paramd)
 
 '''
 # 清理数据结构对象，把内容为空的删除掉
 '''
-def TrimEmptyDataField(d,emptys=[None,'']):
+def TrimEmptyDataField(d,emptys=[None,'',u'']):
     if type(d) is dict:
         for (f,v) in d.items():
             if v in emptys:
@@ -329,3 +333,6 @@ def guidctoa(guid):
     else:
         return guid
      
+# todo : delete invalid data
+def TrimInvalidData(d):
+    pass

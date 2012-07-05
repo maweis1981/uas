@@ -131,7 +131,7 @@ class DatabaseConnections(object):
             self.__conn = self.engine().connect()
             self.__connused = False
         if self.__connused:
-            print 'conn open'
+            #print 'conn open'
             conn = self.engine().connect()
         else:
             conn = self.__conn
@@ -147,9 +147,10 @@ class DatabaseConnections(object):
                     if commit:
                         conn.execute('commit;')
                 self.__connused = False
+                #print ' __conn end'
             else:
                 if not conn.closed:
-                    print 'conn close'
+                    #print 'conn close'
                     if commit:
                         conn.execute('commit;')
                     conn.close()

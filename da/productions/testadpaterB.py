@@ -231,15 +231,62 @@ print data
 '''
 
 
-'''
-engine = create_engine('mysql://%s:%s@%s:%s/user_profile_m?charset=utf8'%('root', 'idea', 'localhost', '3306'))
-conn = engine.connect()
-rs = conn.execute('select * from users limit 0,1; set @id = 12 ;select * from users limit 3,2')
-print rs.cursor.description
-for i in range(0,3):
-    print 'rownumber=%s, returns_rows=%s, rowcount=%s' % (rs.cursor.rownumber , rs.returns_rows, rs.cursor.rowcount)
-    print 'next',rs.cursor.nextset()
 
+tt_start = time.time()
+engine = create_engine('mysql://%s:%s@%s:%s/user_profile_m?charset=utf8'%('root', 'idea', '192.168.91.48', '3306'))
+conn = engine.connect() # commit; select @id := LAST_INSERT_ID();
+#rs = conn.execute("select @c:=1; set @a=1; select @b:=2; insert into data_dict (data_name) values (111); commit;") 
+rs = conn.execute("SELECT * FROM  `data_dict` LIMIT 0 , 1") 
+for i in range(0,1):
+    cursor = rs.context.cursor
+    print dict(rownumber=cursor.rownumber,
+               lastrowid=cursor.lastrowid, 
+               returns_rows=rs.returns_rows,
+               rowcount=cursor.rowcount,
+               arraysize=cursor.arraysize,
+               description=cursor.description,
+##               rslastrowid=rs.lastrowid,
+##               is_crud  =rs.context.is_crud,
+##               isddl    =rs.context.isddl,
+##               isdelete =rs.context.isdelete,
+##               isupdate =rs.context.isupdate,
+##               isinsert =rs.context.isinsert,
+##               lastrow_has_defaults =rs.context.lastrow_has_defaults()
+               description_flags= cursor.description_flags
+               )
+    #if rs.returns_rows:
+    d = cursor.fetchall()
+    print d
+    a= d[0][8]
+    print 'next',cursor.nextset()
+
+#conn.execute('update userinfo_emails set  userinfo_emails.hashs = 0')
+tt_start = time.time()
+rs = conn.execute("SELECT * FROM  userinfo_emails limit 0,100000")
+data = rs.cursor.fetchall()
+
+tt_start = time.time()
+for i in range(0,len(data)):
+    h = hash(data[i][2])
+    conn.execute("update userinfo_emails set hashs=%s where info_id=%s",h,data[i][0])
+print [tt_start,time.time(),time.time()-tt_start]
+
+#conn.execute('update userinfo_emails set  userinfo_emails.hashs = 0')
+tt_start = time.time()
+v = ', '.join( '(%s, %s)' % (f[0],hash(f[2])) for f in data)
+#print v 
+sql = "select @a=1; CREATE TEMPORARY TABLE tmp(id BIGINT,n INT,KEY id( id )); \
+INSERT INTO tmp VALUES %s ;\
+UPDATE userinfo_emails u,tmp SET u.hashs = tmp.n WHERE u.info_id = tmp.id; \
+commit;" % v
+#print sql
+rs = conn.execute(sql)
+for i in range(0,5):
+    rs.context.cursor.nextset()
+    print rs.context.cursor.description
+print [tt_start,time.time(),time.time()-tt_start]
+
+'''
 '''
 
 '''
@@ -281,11 +328,12 @@ select *, apps.app_id as appid from user_account inner join apps on user_account
 select *, userinfo.info_id as infoid from userinfo inner join userinfo_data on userinfo.info_id=userinfo_data.info_id where (user_id= @uid) and (selected=1) and (under=1) and (not isnull(app_id)) order by app_id, user_id, data_class, row_ord, userinfo.info_id; \
 '
 
-
-for i in range(23,1000):
+'''
+for i in range(23,24):
     #print sql % (i)
     rs = d.dbConns.execute(sql % (i))
     for j in range(0,18):
+        #print rs.cursor.description
         if rs.cursor.rowcount > 0:
             rs.cursor.fetchall()
         #for row in rs:
@@ -293,7 +341,57 @@ for i in range(23,1000):
         #print 'rownumber=%s, returns_rows=%s, rowcount=%s' % (rs.cursor.rownumber , rs.returns_rows, rs.cursor.rowcount)
         #print 'next',
         rs.context.cursor.nextset()
-'''    
+    
 '''
 
+'''
+def t1():
+    print 't1'
+    return {1:2}
+
+class foo(object):
+    f = t1()
+    def t2(self):
+        print self.f
+
+ff = foo()
+f2 = foo()
+print ff.f
+print f2.f
+f2.f[1]=3
+print ff.f
+print f2.f
+print f2.t2()
+'''
+
+'''
+import redis
+
+
+tt_start = time.time()
+for i in range(0,10):
+    d.userFullData(12)
+    d.userFullData(15)
+    d.userFullData(16)
 print [tt_start,time.time(),time.time()-tt_start]
+
+import dbRedis
+rd = dbRedis.dbRedis('192.168.91.48')
+rd.UserFull.set(12,d.userFullData(12))
+rd.UserFull.set(16,d.userFullData(15))
+rd.UserFull.set(16,d.userFullData(16))
+printJsonData(d.userFullData(24))
+rd.UserFull.set(24,d.userFullData(24))
+
+printJsonData((rd.UserFull.get(12)))
+
+tt_start = time.time()
+for i in range(0,10):
+    (rd.UserFull.get(12))
+    (rd.UserFull.get(15))
+    (rd.UserFull.get(16))
+
+print [tt_start,time.time(),time.time()-tt_start]
+'''
+
+
