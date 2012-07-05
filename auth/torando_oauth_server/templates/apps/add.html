@@ -1,0 +1,23 @@
+{% extends "../base.html" %}
+
+{% block body %}
+
+
+    <h1 id="user">user: {{ name }}</h1>
+    <form action="/app" method="post" accept-charset="utf-8">
+        <p>
+        <label for="Title">Title</label><input type="text" name="title" value=""
+        id="title">
+        </p>
+
+        <p>
+        <label for="Description">Description</label>
+        <textarea name="description" rows="8" cols="40"></textarea>
+        </p>
+        
+        <p> 
+        <input type="submit" name="submit" value="Create">
+        </p>
+    </form>
+
+{% end %}

@@ -1,0 +1,14 @@
+{% extends "../base.html" %}
+
+{% block body %}
+
+
+    <h1 id="user">user: {{ name }}</h1>
+	<p>Application Title : {{ app['title'] }}</p>
+	<p>Application Description : {{ app['description'] }}</p>
+	<p>Consumer Key : {{ data['consumer_key'] }}</p>
+  	<p>Consumer Secret : {{ data['consumer_secret'] }}</p>
+	<p>Access Key : {{ data['access_key'] }}</p>
+	<p>Access Secret : {{ data['access_secret'] }}</p>
+
+{% end %}

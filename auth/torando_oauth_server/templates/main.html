@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block body %}
+
+
+Current User: {{ user }}
+    {% for d in applications %}
+    <p> {{ d['title'] }} </p>
+    <p> {{ d['developer'] }} </p>
+    <p> {{ d['description'] }} </p>
+    <p>Consumer Key: {{ d['consumer_key'] }}</p>
+    <p>Consumer Secret: {{ d['consumer_secret'] }} </p>
+	<a href="/accessToken?consumer_key={{ d['consumer_key'] }}&consumer_secret={{ d['consumer_secret'] }}">Access Token</a>
+    <hr/>
+    {% end %}
+
+{% end %}
