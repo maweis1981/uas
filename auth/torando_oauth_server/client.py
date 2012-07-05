@@ -40,7 +40,7 @@ ACCESS_TOKEN_URL = 'http://localhost/access_token'
 AUTHORIZATION_URL = 'http://localhost/authorize'
 CALLBACK_URL = 'http://localhost/request_token_ready'
 
-RESOURCE_URL = 'http://localhost/do/custom_object'
+RESOURCE_URL = 'http://localhost/photos'
 
 CONSUMER_KEY = '2760f88ab453261db9818c4065f900ca0501c1ab8f96e456cfc7facc'
 CONSUMER_SECRET = '10fd99f5e870c4bbff7605b2ad84bb4baf42f807753cc0637896ef9b'
@@ -110,6 +110,16 @@ def run_example():
     print vo
     print vo_str
     
+    
+
+    # Consumer Key : 2760f88ab453261db9818c4065f900ca0501c1ab8f96e456cfc7facc
+    # 
+    # Consumer Secret : 10fd99f5e870c4bbff7605b2ad84bb4baf42f807753cc0637896ef9b
+
+    # Access Key : 9b4fdb2d09eb89b6ec2934302f90862a64a79ec950280e4f5bed055714c78a25
+    # 
+    # Access Secret : 35f595fac16cb80edaf20fcf8ecca88f4672827585b594acf7ebc86b03ad38c0
+
     # parameters = {'user_id': 12} # resource specific params
     token = oauth.OAuthToken(
             '9b4fdb2d09eb89b6ec2934302f90862a64a79ec950280e4f5bed055714c78a25', 
