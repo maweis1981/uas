@@ -21,12 +21,12 @@ from tornado.options import define,options
 
 import simplejson
 from bson.objectid import ObjectId
-
 from shortcuts import handle_mongo_result
 import oauth.oauth as oauth
 from tornado_server import OAuthDataStore
 
 from bson.json_util import default
+
 
 class DObjectHandler(BaseHandler):
 
@@ -85,3 +85,21 @@ class DObjectHandler(BaseHandler):
         
     def delete(self, _objectId):
         self.write('delete')
+        
+        
+
+class DObjectManager(BaseHandler):
+
+    @tornado.web.asynchronous
+    @tornado.gen.engine
+    def get(self, objectName=None):
+        
+        collections = handle_mongo_result((yield gen.Task(self.db.stores.find)))
+        if objectName is not None:
+            response = handle_mongo_result((yield gen.Task(
+                    self.db.connection(collectionname=objectName).find
+                        )))
+        else:
+            response = handle_mongo_result((yield gen.Task(self.db.testObj.find)))
+            
+        self.render('object_list.html', data = response,collections = collections)

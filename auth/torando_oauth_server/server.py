@@ -18,7 +18,7 @@ import logging
 from user_server import MainHandler,RegistHandler,LoginHandler,LogoutHandler,ApplicationHandler,GenAccessTokenHandler,ResourceHandler
 
 from tornado_server import RequestTokenHandler,AccessTokenHandler,AuthorizationHandler
-from dobject import DObjectHandler
+from dobject import DObjectHandler,DObjectManager
 
 define("port", default=80, help="User Auth Server running on port", type=int)
 
@@ -36,6 +36,8 @@ class Application(tornado.web.Application):
             (r'^/photos$', ResourceHandler), 
             (r'^/do/([^/]+)$', DObjectHandler),
             (r'^/do$', DObjectHandler),
+            (r'^/admin/do/([^/]+)$', DObjectManager), #custom object rest
+            (r'^/admin/do$', DObjectManager), #custom object rest
             (r"^/$", MainHandler),
           ]
     settings = dict(
