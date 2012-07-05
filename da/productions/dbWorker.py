@@ -26,10 +26,21 @@ from dbConnections import *
 一般字段 值分两义 1、有值   2、无值 -> null
 改写时候 值为null,'',... 均属于明确值，不给出的取默认
 null值在输出时字段会被清除，有值的才会被输出，空串为有值，会被输出
-
 '''
 
+dataStyle_strip_null = 0
+dataStyle_strip_nullandempty = 1
+dataStyle_strip_invalid = 2
 
+contact_style_phone_1_1 = 1
+contact_style_phone_1_n = 2
+contact_style_email_1_1 = 3
+contact_style_email_1_n = 4
+contact_style_ident_1_1 = 5
+contact_style_ident_1_n = 6
+contact_style_user_id = 7
+contact_style_user_id = 8
+contact_style_mix   = 9
 
 class DatabaseWorker(object):
 
@@ -323,7 +334,7 @@ order by user_id, data_class, row_ord, userinfo.info_id' % (userid)
         # for application user data
         # application nick
         appdata = {}
-        sql = 'select *,apps.app_id as appid from user_account inner join apps on user_account.app_id = apps.app_id \
+        sql = 'select *,d.info_id as infoid, a.app_id as appid from userinfo_account d inner join apps a on d.app_id = a.app_id \
 where user_id= %s ' % (userid)
         rs = self.dbConns.execute(sql)
         for row in rs:
@@ -917,13 +928,13 @@ order by rel_id, data_class, row_ord, userinfo.info_id' % (idliststr)
         #format email
         if (TelOrEmail == '') and (guid=='') : return None
         if TelOrEmail!='':
-            if self.isTel(TelOrEmail):
-                sqlu = 'select user_id from users where phone like %s'
-                sql = "select user_id from userinfo u inner join userinfo_telephones t on u.info_id=t.info_id where tel_number like %s order by versign desc limit 1"
-                param = TelOrEmail
             if self.isEMail(TelOrEmail):
                 sqlu = 'select user_id from users where email like %s'
                 sql = "select user_id from userinfo u inner join userinfo_emails e on u.info_id=e.info_id where email like %s order by versign desc limit 1" 
+                param = TelOrEmail
+            elif self.isTel(TelOrEmail):
+                sqlu = 'select user_id from users where phone like %s'
+                sql = "select user_id from userinfo u inner join userinfo_telephones t on u.info_id=t.info_id where tel_number like %s order by versign desc limit 1"
                 param = TelOrEmail
         elif guid!='':
             sqlu = 'select user_id from users where guid like %s'
@@ -936,10 +947,11 @@ order by rel_id, data_class, row_ord, userinfo.info_id' % (idliststr)
         if rs.rowcount>0:
             user_id = rs.fetchone()[0]
         else:
-            rs.close()
-            rs = self.dbConns.execute(sql,param)
-            if rs.rowcount>0:
-                user_id = rs.fetchone()[0]
+            if TelOrEmail != '':
+                rs2 = self.dbConns.execute(sql,param)
+                if rs2.rowcount>0:
+                    user_id = rs2.fetchone()[0]
+                rs2.close()
         rs.close()
 
         result = None
@@ -1022,3 +1034,230 @@ order by rel_id, data_class, row_ord, userinfo.info_id' % (idliststr)
 
         return
 
+
+    # userData必须是符合修改记录标准的数据，否则可能会引起重复记录。
+    # userData结构和输出结构相同，增加若干指示字段
+    # 每块记录里可以加入以下字段
+    # versign, last_update, source_name, source_id, order, data_class, serial
+    #
+    #
+    def userPut(self, userPutData, app_id, dataStyle = dataStyle_strip_nullandempty): 
+        '''
+        1. check exists user
+        2. check exists fields
+        3. exists -> update
+        4. not exists -> add new
+        5. check selected, z
+        '''
+        userData = copy.deepcopy(userPutData)
+        if dataStyle == dataStyle_strip_null:
+            emptys=[None]
+        elif dataStyle in [dataStyle_strip_nullandempty, dataStyle_strip_invalid]:
+            emptys=[None, '', u'']
+        TrimEmptyDataField(userData,emptys)
+        if dataStyle == dataStyle_strip_invalid:
+            TrimInvalidData(userData)
+        #printJsonData(userData)
+
+        user_id = userData.get('user_id', None);
+        if user_id == None:
+            user_accounts =[]
+            if 'versign_phone' in userData:
+                user_account = userData['versign_phone']
+                user_id = self.userLookup(user_account, 'id')
+                user_accounts.append(user_account)
+            if (user_id == None) and 'versign_email' in userData:
+                user_account = userData['versign_email']
+                user_id = self.userLookup(user_account, 'id')
+                user_accounts.append(user_account)
+            if (user_id == None) and 'uid' in userData:
+                user_account = userData['uid']
+                user_id = self.userLookup('', 'id', user_account)
+                user_accounts.append(user_account)
+        apps = userData.get("applications",{"app_id": app_id, 'app_account':user_accounts[0]})
+        if type(apps) is dict:
+            apps = [apps]
+        app_data = None
+        if type(apps) is list:
+            for app in apps:
+                if app.get('app_id',-1) == app_id:
+                    app_data=app
+                    break
+        if 'applications' in userData:
+            del userData['applications']
+
+        conn = self.dbConns.conn_begin()
+
+        if user_id == None:
+            # add user
+            phone = userData.get('versign_phone',None)
+            email = userData.get('versign_email',None)
+            uguid = userData.get('uid',None)
+            sql = 'insert into users (guid,phone,email,user_state) values (%s,%s,%s,1); select @userid := LAST_INSERT_ID();'
+            rs = conn.execute(sql,uguid,phone,email)
+            if rs.rowcount>0:
+                rs = conn.execute('select @userid')
+                user_id=rs.fetchone()[0]
+            #print user_id
+            do_insert = True #==None 直接新增
+        else:
+            do_insert = False
+
+        if app_data != None:
+            app_data['user_id'] = user_id
+            app_data['app_id'] = app_id
+            userData['account'] = app_data
+
+        udf = extractUserDataFields(userData)
+        for uf in udf:
+            if not do_insert:
+                fieldInsert = False
+                #print uf
+                sqlt = userFieldDataToExistsSql(user_id,app_id,uf)
+                #print sqlt[0] % tuple(sqlt[1]) , user_id, app_id, uf
+                rs = conn.execute(sqlt[0],sqlt[1])
+                if rs.rowcount>0:
+                    row = rs.fetchone()
+                    info_id = row['info_id']
+                    sqlt = userFieldDataToUpdateSql(user_id,app_id,info_id,uf)
+                    #print sqlt[0] % tuple(sqlt[1])
+                    conn.execute(sqlt[0],sqlt[1])
+                    fieldInsert = False
+                else:
+                    fieldInsert = True
+            if do_insert or fieldInsert:
+                sqlt = userFieldDataToInsertSql(user_id,app_id,uf)
+                #print sqlt[0] % tuple(sqlt[1])
+                rs = conn.execute(sqlt[0],sqlt[1])
+                if rs.rowcount>0:
+                    rs = conn.execute('select @dataid')
+                    info_id = rs.fetchone()[0]
+        # 5. todo: select role
+            if info_id>0:
+                conn.execute('update userinfo set selected=1 where info_id=%s',info_id)
+        self.dbConns.conn_end(conn)
+        return
+
+    def userAddBlank(self, userData, user_state=0):
+        # add user
+        sql = 'insert into users (phone, email, guid, user_state) values (%s,%s,%s,%s);'
+        rsi = self.dbConns.execute(sql,(
+                    userData.get('phone',None),
+                    userData.get('email',None),
+                    userData.get('guid' ,None), 0))
+        if rsi.context.cursor.rowcount >0:
+            user_id = rsi.context.cursor.lastrowid
+        rsi.close()
+        return user_id
+
+    def _contactAdd(self, app_id, contactData):
+        user = contactData[0]
+        contact = contactData[1]
+        relationData = contactData[2]
+        def getid(user):
+            user_id = user.get('user_id',None)
+            if user_id == None and 'email' in user:
+                user_id = self.userLookup(user['email'], 'id')
+            if user_id == None and 'phone' in user:
+                user_id = self.userLookup(user['phone'], 'id')
+            if user_id == None and 'guid' in user:
+                self.userLookup('', 'id', user['guid'])
+            if user_id == None:
+                user_id = self.userAddBlank(user,0)
+            return user_id
+
+        user_id = getid(user)
+        contact_id = getid(contact)
+        if (contact_id != None) and (user_id != None):
+            if type(relationData) is not dict:
+                relationData = {}
+            relationData['relation_type']=relationData.get('relation_type','contact')
+            vl = []
+            ks = ''
+            vs = ''
+            for r in relationData:
+                if r in ['relation_type','contact_alias','contact_group','contact_note','contact_lastdate']:
+                    ks = ks + ', ' + r
+                    vs = vs + ',%s '
+                    vl.append(relationData[r]) 
+            sql = 'set @user_id = %s; set @contact_uid = %s; set @app_id = %s; ' 
+            sql = sql+'insert into user_relation (user_id,relation_user_id,app_id'+ks+') ' \
++' select * from (select @user_id, @contact_uid, @app_id '+vs+') d where (select count(*) from user_relation '  \
++" where user_id = @user_id and relation_user_id = @contact_uid and app_id=@app_id and relation_type=%s)=0; COMMIT; "
+            self.dbConns.execute(sql, [user_id, contact_id, app_id]+vl+[relationData['relation_type']])
+        return [user_id, contact_id] 
+
+    '''
+    contactData
+    style 1:
+        [[user phone, contact phone, relation data],[user phone, contact phone, relation data],...]
+    style 2:
+        [[user phone, [[contact phone, relation data], [contact phone, relation data], ...]]...]
+    style 3:
+        [[user email, contact email, relation data],[user email, contact email, relation data],...]
+    style 4:
+        [[user email, [[contact email, relation data], [contact email, relation data], ...]]...]
+    style 5:
+        [[user account, contact account, relation data],[user account, contact account, relation data],...]
+    style 6:
+        [[user account, [[contact account, relation data], [contact account, relation data], ...]]...]
+    style 7:
+        [[user user_id, contact user_id, relation data],[user user_id, contact user_id, relation data],...]
+    style 8:
+        [[user user_id, [[contact user_id, relation data], [contact user_id, relation data], ...]]...]
+    style 9 [{user object},{user object},{relation data}],[{},{}],...
+        [[{email|phone|user_id|user ident: value,...},{email|phone|user_id|user ident: value,...},relation data],[{},{},{}],...]
+    '''
+    def contactPut(self, app_id, contactDataList, dataStyle=contact_style_phone_1_1):
+        def extractData_1_1(data, key):
+            if type(data) is list and len(data)>=2:# 对结构容错
+                if type(data[0]) in (int,str,unicode,float) and type(data[1]) in (int,str,unicode,float):
+                    r = [{key:str(data[0])},{key:str(data[1])}]
+                    if len(data)==3 and type(data[2]) is dict:
+                        r.append(data[2])
+                    else:
+                        r.append({})
+                    return r
+
+        def add_contract_list_1(data, name):
+            r = []
+            for item in data:
+                contactData = extractData_1_1(item, 'phone')
+                if contactData != None:
+                    r.append(self._contactAdd(app_id, contactData))
+            return r
+        
+        def add_contract_list_n(data, name):
+            r = []
+            for item in data:
+                user = str(item[0])
+                if type(item[1]) is list:
+                    for contact in item[1]:
+                        if type(contact) is list:
+                            contactData = extractData_1_1([user] + copy.deepcopy(contact), 'phone')
+                            if contactData != None:
+                                r.append(self._contactAdd(app_id, contactData))
+            return r
+
+        if type(contactDataList) is not list or len(contactDataList) == 0:
+            return
+        if dataStyle == contact_style_phone_1_1:
+            r = add_contract_list_1(contactDataList, 'phone')
+        elif dataStyle == contact_style_phone_1_n:
+            r = add_contract_list_n(contactDataList, 'phone')
+        elif dataStyle == contact_style_email_1_1:
+            r = add_contract_list_1(contactDataList, 'email')
+        elif dataStyle == contact_style_email_1_n:
+            r = add_contract_list_n(contactDataList, 'email')
+        elif dataStyle == contact_style_ident_1_1:
+            r = add_contract_list_1(contactDataList, 'account')
+        elif dataStyle == contact_style_ident_1_n:
+            r = add_contract_list_n(contactDataList, 'account')
+        elif dataStyle == contact_style_user_id_1_1:
+            r = add_contract_list_1(contactDataList, 'account')
+        elif dataStyle == contact_style_user_id_1_n:
+            r = add_contract_list_n(contactDataList, 'account')
+        elif dataStyle == contact_style_mix:
+            pass
+
+        return r

@@ -16,8 +16,8 @@ from dbConnections import *
 class DatabaseHandler(object):
 
     def __init__(self):
-        self.dbconns = DatabaseConnections()
-        self.Worker = DatabaseWorker(self.dbconns)
+        self.dbConns = DatabaseConnections()
+        self.Worker = DatabaseWorker(self.dbConns)
     
     def info(self,url):
         return self.Worker.test_data()

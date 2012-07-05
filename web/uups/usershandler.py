@@ -49,6 +49,7 @@ class UsersHandler(BaseHandler):
                 data = usProcessor.show(userid, level=level, require=require)
                 data = simplejson.loads(data)
                 return self.render('usershow.json',data = data)
+                
 
             elif action == "base":
                 """
