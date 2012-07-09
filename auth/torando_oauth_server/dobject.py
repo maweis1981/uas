@@ -42,7 +42,12 @@ class DObjectHandler(BaseHandler):
     def prepare(self):
         print self.request.uri
         print self.request.method
-        v_oauth_request = oauth.OAuthRequest.from_request(self.request.method, self.request.uri ,headers = self.request.headers, query_string=self.request.body)
+        url = ''
+        if not self.request.uri.startswith("http://"):
+       		url = "%s://%s%s" % (self.request.protocol,self.request.host,self.request.uri)
+       	else:
+       	    url = self.request.uri
+        v_oauth_request = oauth.OAuthRequest.from_request(self.request.method, url ,headers = self.request.headers, query_string=self.request.body)
         consumer, token, params = self.oauth_server.verify_request(v_oauth_request)
         self.params = params
         
