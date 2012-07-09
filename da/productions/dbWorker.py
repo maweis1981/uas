@@ -28,9 +28,10 @@ from dbConnections import *
 null值在输出时字段会被清除，有值的才会被输出，空串为有值，会被输出
 '''
 
-dataStyle_strip_null = 0
-dataStyle_strip_nullandempty = 1
-dataStyle_strip_invalid = 2
+strip_mode_no = 0
+strip_mode_null = 0
+strip_mode_nullandempty = 1
+strip_mode_invalid = 2
 
 contact_style_phone_1_1 = 1
 contact_style_phone_1_n = 2
@@ -108,7 +109,7 @@ ORDER BY key_level, key_order' % (userid,level,keylist)
         if rs.rowcount==1:
             row = rs.fetchone()
             user_data['user_id'] = fieldEncode(row['user_id'])
-            user_data['uid']    = fieldEncode(row['guid'])
+            user_data['guid']    = fieldEncode(row['guid'])
             user_data['versign_phone'] = fieldEncode(row['phone'])
             user_data['versign_email'] = fieldEncode(row['email'])
             rs.close()
@@ -739,7 +740,6 @@ order by rel_id, data_class, row_ord, userinfo.info_id' % (idliststr)
                         structdata['struct'] = None
         return self.apiStructs
 
-
     
     # 解析api返回结构定义
     '''
@@ -926,7 +926,7 @@ order by rel_id, data_class, row_ord, userinfo.info_id' % (idliststr)
     def userLookup(self, TelOrEmail='', retType='full', guid=''):
         #format tel
         #format email
-        if (TelOrEmail == '') and (guid=='') : return None
+        if (TelOrEmail in ['',u'',None]) and (guid in ['',u'',None]) : return None
         if TelOrEmail!='':
             if self.isEMail(TelOrEmail):
                 sqlu = 'select user_id from users where email like %s'
@@ -1015,14 +1015,22 @@ order by rel_id, data_class, row_ord, userinfo.info_id' % (idliststr)
         else :
             return []
 
+    
+    ###
+    def userExists(self, user_id):
+        rs = self.dbConns.execute('select user_id from users where user_id=%s',user_id)
+        cnt = rs.cursor.rowcount
+        rs.close
+        if cnt == 1:
+            return user_id
+        else:
+            return None
+    
     ###
 
     def userBatchPut(self, user_id, value):
         if userid == None:
             return
-
-    def userPut(self, userData):
-        return
 
     def userPatch(self, userid, userData):
         return
@@ -1041,7 +1049,7 @@ order by rel_id, data_class, row_ord, userinfo.info_id' % (idliststr)
     # versign, last_update, source_name, source_id, order, data_class, serial
     #
     #
-    def userPut(self, userPutData, app_id, dataStyle = dataStyle_strip_nullandempty): 
+    def userPut(self, userPutData, app_id, stripMode = strip_mode_nullandempty, checkValid=False): 
         '''
         1. check exists user
         2. check exists fields
@@ -1049,35 +1057,59 @@ order by rel_id, data_class, row_ord, userinfo.info_id' % (idliststr)
         4. not exists -> add new
         5. check selected, z
         '''
+        #需要改变传递过来的数据，拷贝一份
         userData = copy.deepcopy(userPutData)
-        if dataStyle == dataStyle_strip_null:
+        #清理数据时的规则，
+        #保留所有数据，不清除，认可空数据
+        #f stripMode == strip_mode_no: 
+        emptys=[]
+        #数据为空时清除（数据库内为NULL，json为null)
+        if stripMode == strip_mode_null: 
             emptys=[None]
-        elif dataStyle in [dataStyle_strip_nullandempty, dataStyle_strip_invalid]:
+        #数据为空或空串时清除
+        elif stripMode == strip_mode_nullandempty:
             emptys=[None, '', u'']
+        #清理数据，不存储不需要存储的数据
         TrimEmptyDataField(userData,emptys)
-        if dataStyle == dataStyle_strip_invalid:
+        #清理数据，剔除无效数据， todo
+        if checkValid:
             TrimInvalidData(userData)
         #printJsonData(userData)
 
+        #putMode = None # insert, update, replace, ? 放参数里准备批量更新
+
+        #存在用户则获取user_id,进入update模式，否则进入创建模式，并生成创建时需要的信息。
+        #是否传递了系统中的用户编号
         user_id = userData.get('user_id', None);
-        if user_id == None:
-            user_accounts =[]
-            if 'versign_phone' in userData:
-                user_account = userData['versign_phone']
-                user_id = self.userLookup(user_account, 'id')
-                user_accounts.append(user_account)
-            if (user_id == None) and 'versign_email' in userData:
-                user_account = userData['versign_email']
-                user_id = self.userLookup(user_account, 'id')
-                user_accounts.append(user_account)
-            if (user_id == None) and 'uid' in userData:
-                user_account = userData['uid']
-                user_id = self.userLookup('', 'id', user_account)
-                user_accounts.append(user_account)
-        apps = userData.get("applications",{"app_id": app_id, 'app_account':user_accounts[0]})
+        if user_id != None:
+            user_id = self.userExists(user_id)
+        user_accounts =[]
+        #有认证的phone就取phone，并检查是否已经有这个用户了，有则进入update模式，没有则记录phone为默认账号
+        if user_id == None and 'versign_phone' in userData:
+            user_id = self.userLookup(userData['versign_phone'], 'id')
+            if user_id == None:
+                user_accounts.append(userData['versign_phone'])
+        #有认证的email就取phone，并检查是否已经有这个用户了，有则进入update模式，没有则记录email为默认账号
+        if user_id == None and 'versign_email' in userData:
+            user_id = self.userLookup(userData['versign_email'], 'id')
+            if user_id == None:
+                user_accounts.append(userData['versign_email'])
+        #没有有认证的phone,email就取guid，并检查是否已经有这个用户了，有则进入update模式，没有则记录guid为默认账号
+        #这个是为外部使用者添加用户时方便标识用户设置的。可以由对方设置标识，而不是我们返回。
+        if (user_id == None) and 'uid' in userData:
+            user_id = self.userLookup('', 'id', userData['uid'])
+            if user_id == None:
+                user_accounts.append(userData['uid'])
+                
+        if user_id == None and len(user_accounts)>0: # 如果找到user，则不会再次自动创建account
+            apps = userData.get("applications",{"app_id": app_id, 'app_account':user_accounts[0]})
+        else:
+            apps = userData.get("applications",None)
+        #如果这个传递的数据为单一对象，则转换成列表，和列表形式一起处理。
         if type(apps) is dict:
             apps = [apps]
         app_data = None
+        #如果取到了列表，则取出和appid相应的记录
         if type(apps) is list:
             for app in apps:
                 if app.get('app_id',-1) == app_id:
@@ -1086,13 +1118,15 @@ order by rel_id, data_class, row_ord, userinfo.info_id' % (idliststr)
         if 'applications' in userData:
             del userData['applications']
 
+        #获取连接，成串传送sql。
         conn = self.dbConns.conn_begin()
 
+        #新用户
         if user_id == None:
             # add user
             phone = userData.get('versign_phone',None)
             email = userData.get('versign_email',None)
-            uguid = userData.get('uid',None)
+            uguid = userData.get('guid',None)
             sql = 'insert into users (guid,phone,email,user_state) values (%s,%s,%s,1); select @userid := LAST_INSERT_ID();'
             rs = conn.execute(sql,uguid,phone,email)
             if rs.rowcount>0:
@@ -1108,8 +1142,10 @@ order by rel_id, data_class, row_ord, userinfo.info_id' % (idliststr)
             app_data['app_id'] = app_id
             userData['account'] = app_data
 
+        # 分解用户数据为可更新数据结构
         udf = extractUserDataFields(userData)
         for uf in udf:
+            #如果不是新增，则先查找记录
             if not do_insert:
                 fieldInsert = False
                 #print uf
@@ -1222,7 +1258,7 @@ order by rel_id, data_class, row_ord, userinfo.info_id' % (idliststr)
         def add_contract_list_1(data, name):
             r = []
             for item in data:
-                contactData = extractData_1_1(item, 'phone')
+                contactData = extractData_1_1(item, name)
                 if contactData != None:
                     r.append(self._contactAdd(app_id, contactData))
             return r
@@ -1234,7 +1270,7 @@ order by rel_id, data_class, row_ord, userinfo.info_id' % (idliststr)
                 if type(item[1]) is list:
                     for contact in item[1]:
                         if type(contact) is list:
-                            contactData = extractData_1_1([user] + copy.deepcopy(contact), 'phone')
+                            contactData = extractData_1_1([user] + copy.deepcopy(contact), name)
                             if contactData != None:
                                 r.append(self._contactAdd(app_id, contactData))
             return r
@@ -1254,9 +1290,9 @@ order by rel_id, data_class, row_ord, userinfo.info_id' % (idliststr)
         elif dataStyle == contact_style_ident_1_n:
             r = add_contract_list_n(contactDataList, 'account')
         elif dataStyle == contact_style_user_id_1_1:
-            r = add_contract_list_1(contactDataList, 'account')
+            r = add_contract_list_1(contactDataList, 'user_id')
         elif dataStyle == contact_style_user_id_1_n:
-            r = add_contract_list_n(contactDataList, 'account')
+            r = add_contract_list_n(contactDataList, 'user_id')
         elif dataStyle == contact_style_mix:
             pass
 

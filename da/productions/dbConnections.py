@@ -109,7 +109,7 @@ class DBPool:
 class DatabaseConnections(object):
     __engine = None
     __conn = None
-    __connused = False
+    __connUsed = False
 
     def __init__(self):
         # 创建默认定义的数据库
@@ -126,16 +126,16 @@ class DatabaseConnections(object):
             #self.__engine = DBPool.getInstance('user_profile_m')
         return self.__engine
         
-    def conn_begin(self):
+    def conn_begin(self, new=False):
         if (self.__conn == None) or (self.__conn.closed):
             self.__conn = self.engine().connect()
-            self.__connused = False
-        if self.__connused:
+            self.__connUsed = False
+        if self.__connUsed or new:
             #print 'conn open'
             conn = self.engine().connect()
         else:
             conn = self.__conn
-            self.__connused = True
+            self.__connUsed = True
         return conn
     
     def conn_end(self, conn, commit=False):
@@ -146,7 +146,7 @@ class DatabaseConnections(object):
                 else:
                     if commit:
                         conn.execute('commit;')
-                self.__connused = False
+                self.__connUsed = False
                 #print ' __conn end'
             else:
                 if not conn.closed:

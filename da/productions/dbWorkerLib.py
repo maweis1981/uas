@@ -57,7 +57,7 @@ userFieldDefine = {
     'geoes':''
     },
 'userinfo':['versign','last_update','source_name','source_id','order','data_class','serial'],
-'readonly':['versign_phone','uid','versign_email','user_id','source_ident'],
+'readonly':['versign_phone','guid','versign_email','user_id','source_ident'],
 'realname':{
     'order':'row_ord',
     'source_name':'origin',
@@ -334,5 +334,5 @@ def guidctoa(guid):
         return guid
      
 # todo : delete invalid data
-def TrimInvalidData(d):
+def TrimInvalidData(data):
     pass

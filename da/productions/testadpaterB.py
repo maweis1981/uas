@@ -231,7 +231,7 @@ print data
 '''
 
 
-
+'''
 tt_start = time.time()
 engine = create_engine('mysql://%s:%s@%s:%s/user_profile_m?charset=utf8'%('root', 'idea', '192.168.91.48', '3306'))
 conn = engine.connect() # commit; select @id := LAST_INSERT_ID();
@@ -286,15 +286,17 @@ for i in range(0,5):
     print rs.context.cursor.description
 print [tt_start,time.time(),time.time()-tt_start]
 
-'''
-'''
 
 '''
-rs = d.dbConns.execute('select * from users limit 0,1; set @id = 12 ;select * from users limit 3,2')
-for i in range(0,4):
-    print 'rownumber=%s, returns_rows=%s, rowcount=%s' % (rs.cursor.rownumber , rs.returns_rows, rs.cursor.rowcount)
-    print 'next',rs.cursor.nextset()
-'''
+
+
+rs = d.dbConns.execute('SELECT uid FROM  user_ident')
+uid = rs.fetchone()[0]
+#d.dbConns.execute('UPDATE user_ident SET uid = 0x123456789ABCDEF0123456789ABCDEF1 where uid = %s',uid)
+
+print type(uid), uid, hex(long(uid))
+
+''' '''
 
 '''
 print '\n--------------------------------'
