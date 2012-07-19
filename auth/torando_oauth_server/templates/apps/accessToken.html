@@ -8,7 +8,11 @@
 	<p>Application Description : {{ app['description'] }}</p>
 	<p>Consumer Key : {{ data['consumer_key'] }}</p>
   	<p>Consumer Secret : {{ data['consumer_secret'] }}</p>
+	{% if data.has_key('access_key') %}
 	<p>Access Key : {{ data['access_key'] }}</p>
 	<p>Access Secret : {{ data['access_secret'] }}</p>
+	{% else %}
+	verifying...
+	{% end %}
 
 {% end %}

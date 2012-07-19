@@ -15,7 +15,7 @@ from tornado.options import define, options
 
 import logging
 
-from user_server import MainHandler,RegistHandler,LoginHandler,LogoutHandler,ApplicationHandler,GenAccessTokenHandler,ResourceHandler
+from user_server import MainHandler,RegistHandler,AdminRegistHandler,LoginHandler,LogoutHandler,ApplicationHandler,GenAccessTokenHandler,ResourceHandler
 
 from tornado_server import RequestTokenHandler,AccessTokenHandler,AuthorizationHandler
 from dobject import DObjectHandler
@@ -29,6 +29,7 @@ class Application(tornado.web.Application):
             (r'^/access_token$', AccessTokenHandler),
             (r'^/authorize$', AuthorizationHandler),
             (r"^/regist$", RegistHandler),
+            (r"^/adminregist$", AdminRegistHandler),
             (r"^/login$", LoginHandler),
             (r"^/logout$", LogoutHandler),
             (r"^/app$", ApplicationHandler),

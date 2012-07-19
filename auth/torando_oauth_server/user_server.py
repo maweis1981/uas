@@ -50,12 +50,14 @@ class MainHandler(BaseHandler):
     @tornado.gen.engine
     def get(self):
         name = tornado.escape.xhtml_escape(self.current_user)
+        user = yield gen.Task(self.db.developers.find, {'name':name})
         vo = {}
-        vo['developer'] = name
+        if not user[0][0][0].has_key('admin') or not user[0][0][0]['admin']:
+            vo['developer'] = name
         response = yield gen.Task(self.db.applications.find, vo)
         data = response[0][0]
         print data
-        self.render('main.html', name=name, applications = data, user = name)
+        self.render('main.html', name=name, applications = data, user = user[0][0][0])
 
 
 class GenAccessTokenHandler(BaseHandler):
@@ -64,6 +66,9 @@ class GenAccessTokenHandler(BaseHandler):
     @tornado.web.asynchronous
     @tornado.gen.engine
     def get(self):
+        name = tornado.escape.xhtml_escape(self.current_user)
+        user = yield gen.Task(self.db.developers.find, {'name':name})
+        
         vo = {}
         vo['consumer_key'] = self.get_argument('consumer_key')
         vo['consumer_secret'] = self.get_argument('consumer_secret')
@@ -76,9 +81,11 @@ class GenAccessTokenHandler(BaseHandler):
             accessTokenVO['consumer_secret'] = data[0]['consumer_secret']
             records = yield gen.Task(self.db.access_tokens.find, accessTokenVO)
             if len(records[0][0]) == 0:
-                accessTokenVO['access_key'] = hashlib.sha256(data[0]['title']+'key').hexdigest()
-                accessTokenVO['access_secret'] = hashlib.sha256(data[0]['title'] +'secret').hexdigest()
-                response = yield gen.Task(self.db.access_tokens.save,accessTokenVO)
+                if len(user[0][0]) > 0 and user[0][0][0].has_key('admin') and user[0][0][0]['admin']:
+                    accessTokenVO['access_key'] = hashlib.sha256(data[0]['title']+'key').hexdigest()
+                    accessTokenVO['access_secret'] = hashlib.sha256(data[0]['title'] +'secret').hexdigest()
+                    response = yield gen.Task(self.db.access_tokens.save,accessTokenVO)
+                    yield gen.Task(self.db.applications.update,{'_id':data[0]['_id']},{'$set':{'access':1}})
                 self.render('apps/accessToken.html', data = accessTokenVO, app=data[0], name=tornado.escape.xhtml_escape(self.current_user))
             elif len(records[0][0]) == 1:
                 self.render('apps/accessToken.html', data = records[0][0][0], app=data[0], name=tornado.escape.xhtml_escape(self.current_user))
@@ -127,6 +134,24 @@ class RegistHandler(BaseHandler):
             response = yield gen.Task(self.db.developers.insert, vo)
             self.render('profile.html', data = response[0][0])
 
+class AdminRegistHandler(RegistHandler):
+    def get(self):
+        self.render("adminregist.html")
+    @tornado.web.asynchronous
+    @tornado.gen.engine
+    def post(self):
+        vo = {}
+        name = self.get_argument('name')
+        password = self.get_argument('password')
+        password_verify = self.get_argument('password_verify')
+        email = self.get_argument('email')
+        if password == password_verify:
+            vo['name'] = name
+            vo['password'] = hashlib.md5(password).hexdigest()
+            vo['email'] = email
+            vo['admin'] = 1
+            response = yield gen.Task(self.db.developers.insert, vo)
+            self.render('profile.html', data = response[0][0])
 
 class LoginHandler(BaseHandler):
     def get(self):

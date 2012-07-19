@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block body %}
+
+
+    <form action="/adminregist" method="post" accept-charset="utf-8">
+        <p>
+        <label for="Name">Name</label><input type="text" name="name" value="" id="Name">
+        </p>
+        <p>
+        <label for="Password">Password</label><input type="password" name="password"
+        value="" id="password">
+        </p>
+        <p>
+        <label for="Password Verify">Password Verify</label><input
+        type="password"
+        name="password_verify" value="" id="password_verify">
+        </p>
+        <p>
+        <label for="Email">Email</label><input type="text" name="email" value=""
+        id="email">
+        </p>
+        <p> 
+        <input type="submit" name="submit" value="Sign up">
+        </p>
+    </form>
+{% end %}
