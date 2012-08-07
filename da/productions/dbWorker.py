@@ -28,7 +28,7 @@ from dbConnections import *
 null值在输出时字段会被清除，有值的才会被输出，空串为有值，会被输出
 '''
 
-strip_mode_no = 0
+strip_mode_no = -1
 strip_mode_null = 0
 strip_mode_nullandempty = 1
 strip_mode_invalid = 2
@@ -39,8 +39,8 @@ contact_style_email_1_1 = 3
 contact_style_email_1_n = 4
 contact_style_ident_1_1 = 5
 contact_style_ident_1_n = 6
-contact_style_user_id = 7
-contact_style_user_id = 8
+contact_style_user_id_1_1 = 7
+contact_style_user_id_1_n = 8
 contact_style_mix   = 9
 
 class DatabaseWorker(object):
@@ -151,26 +151,26 @@ where user_id= %u and (selected=1) and (under=0) %s' % ('%s', userid, '%s')
             user_data['sign']  = fieldEncode(row['sign'])
 
         ## user email data / mutiline
-        sql = sqlprf % ('emails', 'order by row_ord')
+        sql = sqlprf % ('emails', 'order by row_serial')
         rs = self.dbConns.execute(sql)
         rows = []
         for row in rs:
             row_data = {}
             rows.append(row_data)
-            row_data['data_id'] = fieldEncode(row['data_id'])
+            row_data['row_serial'] = fieldEncode(row['row_serial'])
             row_data['email_type'] = fieldEncode(row['email_type'])
             row_data['email']  = fieldEncode(row['email'])
             row_data['versign']  = fieldEncode(row['versign'])
         if len(rows)>0 : user_data['emails'] = rows
 
         ## user tel data / mutiline
-        sql = sqlprf % ('telephones', 'order by row_ord')
+        sql = sqlprf % ('telephones', 'order by row_serial')
         rs = self.dbConns.execute(sql)
         rows = []
         for row in rs:
             row_data = {}
             rows.append(row_data)
-            row_data['data_id'] = fieldEncode(row['data_id'])
+            row_data['row_serial'] = fieldEncode(row['row_serial'])
             row_data['tel_type'] = fieldEncode(row['tel_type'])
             row_data['tel_number']  = fieldEncode(row['tel_number'])
             row_data['versign']  = fieldEncode(row['versign'])
@@ -195,26 +195,26 @@ where user_id= %u and (selected=1) and (under=0) %s' % ('%s', userid, '%s')
         if len(row_data)>0 : user_data['url'] = row_data
 
         ## user photos data / mutiline
-        sql = sqlprf % ('photos', 'order by row_ord')
+        sql = sqlprf % ('photos', 'order by row_serial')
         rs = self.dbConns.execute(sql)
         rows = []
         for row in rs:
             row_data = {}
             rows.append(row_data)
-            row_data['data_id'] = fieldEncode(row['data_id'])
+            row_data['row_serial'] = fieldEncode(row['row_serial'])
             row_data['photo_class'] = fieldEncode(row['photo_class'])
             row_data['photo_caption']  = fieldEncode(row['photo_caption'])
             row_data['photo_url']  = fieldEncode(row['photo_url'])
         if len(rows)>0 : user_data['photos'] = rows
 
         ## user adrress data / mutiline
-        sql = sqlprf % ('addresses', 'order by row_ord')
+        sql = sqlprf % ('addresses', 'order by row_serial')
         rs = self.dbConns.execute(sql)
         rows = []
         for row in rs:
             row_data = {}
             rows.append(row_data)
-            row_data['data_id'] = fieldEncode(row['data_id'])
+            row_data['row_serial'] = fieldEncode(row['row_serial'])
             row_data['address_type'] = fieldEncode(row['address_type'])
             row_data['post_office_address']  = fieldEncode(row['post_office_address'])
             row_data['extended_address']  = fieldEncode(row['extended_address'])
@@ -226,13 +226,13 @@ where user_id= %u and (selected=1) and (under=0) %s' % ('%s', userid, '%s')
         if len(rows)>0 : user_data['addresses'] = rows
 
         ## user organization data / mutiline 
-        sql = sqlprf % ('organizations', 'order by row_ord')
+        sql = sqlprf % ('organizations', 'order by row_serial')
         rs = self.dbConns.execute(sql)
         rows = []
         for row in rs:
             row_data = {}
             rows.append(row_data)
-            row_data['data_id'] = fieldEncode(row['data_id'])
+            row_data['row_serial'] = fieldEncode(row['row_serial'])
             row_data['org_name'] = fieldEncode(row['org_name'])
             row_data['org_unit'] = fieldEncode(row['org_unit'])
             row_data['org_subunit']  = fieldEncode(row['org_subunit'])
@@ -245,13 +245,13 @@ where user_id= %u and (selected=1) and (under=0) %s' % ('%s', userid, '%s')
         if len(rows)>0 : user_data['organizations'] = rows
 
         ## user education data / mutiline
-        sql = sqlprf % ('educations', 'order by row_ord')
+        sql = sqlprf % ('educations', 'order by row_serial')
         rs = self.dbConns.execute(sql)
         rows = []
         for row in rs:
             row_data = {}
             rows.append(row_data)
-            row_data['data_id'] = fieldEncode(row['data_id'])
+            row_data['row_serial'] = fieldEncode(row['row_serial'])
             row_data['education']  = fieldEncode(row['education'])
             row_data['school_name'] = fieldEncode(row['school_name'])
             row_data['school_city']  = fieldEncode(row['school_city'])
@@ -260,13 +260,13 @@ where user_id= %u and (selected=1) and (under=0) %s' % ('%s', userid, '%s')
         if len(rows)>0 : user_data['educations'] = rows
         
         ## user sound data / mutiline
-        sql = sqlprf % ('sounds', 'order by row_ord')
+        sql = sqlprf % ('sounds', 'order by row_serial')
         rs = self.dbConns.execute(sql)
         rows = []
         for row in rs:
             row_data = {}
             rows.append(row_data)
-            row_data['data_id'] = fieldEncode(row['data_id'])
+            row_data['row_serial'] = fieldEncode(row['row_serial'])
             row_data['sound_class'] = fieldEncode(row['sound_class'])
             row_data['sound_caption'] = fieldEncode(row['sound_caption'])
             row_data['sound_url']  = fieldEncode(row['sound_url'])
@@ -274,13 +274,13 @@ where user_id= %u and (selected=1) and (under=0) %s' % ('%s', userid, '%s')
         if len(rows)>0 : user_data['sounds'] = rows
 
         ## user geo data / mutiline
-        sql = sqlprf % ('geoes', 'order by row_ord')
+        sql = sqlprf % ('geoes', 'order by row_serial')
         rs = self.dbConns.execute(sql)
         rows = []
         for row in rs:
             row_data = {}
             rows.append(row_data)
-            row_data['data_id'] = fieldEncode(row['data_id'])
+            row_data['row_serial'] = fieldEncode(row['row_serial'])
             row_data['geo_type'] = fieldEncode(row['geo_type'])
             row_data['tz']  = fieldEncode(row['tz'])
             row_data['geo_lat']  = fieldEncode(row['geo_lat'])
@@ -291,8 +291,8 @@ where user_id= %u and (selected=1) and (under=0) %s' % ('%s', userid, '%s')
 
         # user addition field and common data , 可兼容上面的格式
         '''
-        data_class 1->n row_ord 1->1 info_id 
-        {                                                 data_class    row_ord -- info_id
+        data_class 1->n row_serial 1->1 info_id 
+        {                                                 data_class    row_serial -- info_id
             data_field:data_value,                     <- null          null
             data_class:{data_field:data_value,...},    <- not null      null
             data_class:[{data_field:data_value,...}    <- not null      not null
@@ -300,9 +300,10 @@ where user_id= %u and (selected=1) and (under=0) %s' % ('%s', userid, '%s')
             invalid                                    <- null          not null
         }
         '''
+        ### todo: addition data re 
         sql = 'select *, userinfo.info_id as infoid from userinfo inner join userinfo_data on userinfo.info_id=userinfo_data.info_id \
 where user_id= %s and (selected=1) and (under=0) \
-order by user_id, data_class, row_ord, userinfo.info_id' % (userid)
+order by row_serial, data_class' % (userid)
         rs = self.dbConns.execute(sql)
         dataclass = ''
         infoid = 0
@@ -353,11 +354,11 @@ where user_id= %s ' % (userid)
 
         # for application comm user data
         '''
-        data_class 1->n row_ord 1->1 info_id 
+        data_class 1->n row_serial 1->1 info_id 
         {
             app_id:n
             app_account:abcd
-                                                          data_class    row_ord -- info_id
+                                                          data_class    row_serial -- info_id
             data_field:data_value,                     <- null          null
             data_class:{data_field:data_value,...},    <- not null      null
             data_class:[{data_field:data_value,...}    <- not null      not null
@@ -368,7 +369,7 @@ where user_id= %s ' % (userid)
 
         sql = 'select *, userinfo.info_id as infoid from userinfo inner join userinfo_data on userinfo.info_id=userinfo_data.info_id \
 where (user_id= %s) and (selected=1) and (under=1) and (not isnull(app_id)) \
-order by app_id, user_id, data_class, row_ord, userinfo.info_id' % (userid)
+order by app_id, row_serial, data_class' % (userid)
         rs = self.dbConns.execute(sql)
         dataclass = ''
         infoid = 0
@@ -542,7 +543,7 @@ where user_relation.user_id = %s and ur.relation_user_id = %s order by contact_a
 
         sql = 'select * from userinfo inner join userinfo_data on userinfo.info_id=userinfo_data.info_id \
 where (selected=1) and (under=2) and (rel_id in (%s)) \
-order by rel_id, data_class, row_ord, userinfo.info_id' % (idliststr)
+order by rel_id, data_class, row_serial, userinfo.info_id' % (idliststr)
         rs = self.dbConns.execute(sql)
         dataclass = ''
         infoid = 0
@@ -822,8 +823,13 @@ order by rel_id, data_class, row_ord, userinfo.info_id' % (idliststr)
                     r = None
                     if (field['source'] in record):
                         r = {caption:record[field['source']]}
-                    if (field['source'] == '*') :
+                    elif (field['source'] == '*') :
                         r = record
+                    elif field['source'][:2] == '- ':
+                        if caption in parentData:
+                            del parentData[caption]
+                        elif field['source'][2:] in record:
+                            del record[field['source'][2:]]
                     if type(r) is dict:
                         for (caption,c) in r.iteritems() :
                             if type(c) is list :
@@ -1043,13 +1049,37 @@ order by rel_id, data_class, row_ord, userinfo.info_id' % (idliststr)
         return
 
 
+    def userIdForIdent(self, userData, app_id):                         
+        idenTypes = []
+        user_id = None
+        sql = []
+        if 'versign_phone' in userData:
+            sql.append( "(ident_type='tel' and ident='%s')" % userData['versign_phone'] )
+        if 'versign_email' in userData:
+            sql.append( "(ident_type='email' and ident='%s')" % userData['versign_email'] )
+        if 'guid' in userData:
+            sql.append( "(ident_type='guid' and ident='%s')" % userData['guid'])
+        if 'account' in userData or 'application_account' in userData:
+            sql.append( "(ident_type='a%s' and ident='%s')" % (app_id, 
+                        userData.get('application_account',userData['account']['app_account'])) )
+        if len(sql)>0:
+            sql = 'select user_id, ident_type from user_ident where ' + ' or '.join(sql)   
+            rs = self.dbConns.execute(sql)
+            if rs.rowcount>0:
+                rows = rs.fetchall()
+                idenTypes = [row['ident_type'] for row in rows]
+                user_id = rows[0]['user_id']
+            rs.close()
+        return (user_id, idenTypes)
+
+
     # userData必须是符合修改记录标准的数据，否则可能会引起重复记录。
     # userData结构和输出结构相同，增加若干指示字段
     # 每块记录里可以加入以下字段
     # versign, last_update, source_name, source_id, order, data_class, serial
     #
     #
-    def userPut(self, userPutData, app_id, stripMode = strip_mode_nullandempty, checkValid=False): 
+    def userPut(self, userPutData, app_id, stripMode=strip_mode_nullandempty, checkValid=False, user_state=1): 
         '''
         1. check exists user
         2. check exists fields
@@ -1070,41 +1100,28 @@ order by rel_id, data_class, row_ord, userinfo.info_id' % (idliststr)
         elif stripMode == strip_mode_nullandempty:
             emptys=[None, '', u'']
         #清理数据，不存储不需要存储的数据
+        debugShowData = False
+        debugShowData and printJsonData(userData)
         TrimEmptyDataField(userData,emptys)
         #清理数据，剔除无效数据， todo
         if checkValid:
             TrimInvalidData(userData)
-        #printJsonData(userData)
+        debugShowData and printJsonData(userData)
 
         #putMode = None # insert, update, replace, ? 放参数里准备批量更新
 
-        #存在用户则获取user_id,进入update模式，否则进入创建模式，并生成创建时需要的信息。
-        #是否传递了系统中的用户编号
+#        #存在用户则获取user_id,。
+#        #是否传递了系统中的用户编号
+#        #有认证的phone就取phone
+#        #有认证的email就取email
+#        #没有有认证的phone,email就取guid，并检查是否已经有这个用户了
+#        #这个是为外部使用者添加用户时方便标识用户设置的。可以由对方设置标识，而不是我们返回。
+
         user_id = userData.get('user_id', None);
         if user_id != None:
             user_id = self.userExists(user_id)
-        user_accounts =[]
-        #有认证的phone就取phone，并检查是否已经有这个用户了，有则进入update模式，没有则记录phone为默认账号
-        if user_id == None and 'versign_phone' in userData:
-            user_id = self.userLookup(userData['versign_phone'], 'id')
-            if user_id == None:
-                user_accounts.append(userData['versign_phone'])
-        #有认证的email就取phone，并检查是否已经有这个用户了，有则进入update模式，没有则记录email为默认账号
-        if user_id == None and 'versign_email' in userData:
-            user_id = self.userLookup(userData['versign_email'], 'id')
-            if user_id == None:
-                user_accounts.append(userData['versign_email'])
-        #没有有认证的phone,email就取guid，并检查是否已经有这个用户了，有则进入update模式，没有则记录guid为默认账号
-        #这个是为外部使用者添加用户时方便标识用户设置的。可以由对方设置标识，而不是我们返回。
-        if (user_id == None) and 'uid' in userData:
-            user_id = self.userLookup('', 'id', userData['uid'])
-            if user_id == None:
-                user_accounts.append(userData['uid'])
-                
-        if user_id == None and len(user_accounts)>0: # 如果找到user，则不会再次自动创建account
-            apps = userData.get("applications",{"app_id": app_id, 'app_account':user_accounts[0]})
-        else:
-            apps = userData.get("applications",None)
+            
+        apps = userData.get("applications",None)
         #如果这个传递的数据为单一对象，则转换成列表，和列表形式一起处理。
         if type(apps) is dict:
             apps = [apps]
@@ -1112,38 +1129,64 @@ order by rel_id, data_class, row_ord, userinfo.info_id' % (idliststr)
         #如果取到了列表，则取出和appid相应的记录
         if type(apps) is list:
             for app in apps:
-                if app.get('app_id',-1) == app_id:
+                if str(app.get('app_id',-1)) == str(app_id):
                     app_data=app
                     break
         if 'applications' in userData:
             del userData['applications']
+        if app_data != None:
+            app_data['user_id'] = user_id
+            app_data['app_id'] = app_id
+            userData['account'] = app_data
+ 
+        (user_id,idenTypes) = self.userIdForIdent(userData, app_id)
 
         #获取连接，成串传送sql。
         conn = self.dbConns.conn_begin()
+        #conn = self.dbConns
+            
 
         #新用户
         if user_id == None:
             # add user
             phone = userData.get('versign_phone',None)
             email = userData.get('versign_email',None)
-            uguid = userData.get('guid',None)
-            sql = 'insert into users (guid,phone,email,user_state) values (%s,%s,%s,1); select @userid := LAST_INSERT_ID();'
-            rs = conn.execute(sql,uguid,phone,email)
+            uguid = guidHex(userData.get('guid',genGUID()))
+            sql = 'insert into users (guid,phone,email,user_state) values (%s,%s,%s,%s)'
+            rs = conn.execute(sql,uguid,phone,email,user_state)
+            #print rs.rowcount, rs.lastrowid
             if rs.rowcount>0:
-                rs = conn.execute('select @userid')
-                user_id=rs.fetchone()[0]
-            #print user_id
-            do_insert = True #==None 直接新增
+                user_id = rs.lastrowid
+                do_insert = True #==None 直接新增
+                userData['guid'] = uguid
+            else:
+                return None
+            rs.close()
         else:
             do_insert = False
 
         if app_data != None:
-            app_data['user_id'] = user_id
-            app_data['app_id'] = app_id
-            userData['account'] = app_data
+             app_data['user_id'] = user_id
+            
+        
+        idents = []
+        if 'versign_phone' in userData and 'phone' not in idenTypes:
+            idents.append( ('tel', userData['versign_phone']) )
+        if 'versign_email' in userData and 'email' not in idenTypes:
+            idents.append( ('email', userData['versign_email']) )
+        if 'guid' in userData and 'guid' not in idenTypes:
+            idents.append( ('guid', userData['guid']) )
+        if app_data != None and 'a%s'%(app_id) not in idenTypes:
+            idents.append( ('a%s'%(app_id), app_data['app_account']) )
+        if len(idents)>0 :
+            sql = 'replace user_ident values ' + ','.join("(%s,'%s','%s')" % (user_id,k[0],k[1]) for k in idents)
+            rs = conn.execute(sql)
+            rs.close()
 
+       
         # 分解用户数据为可更新数据结构
         udf = extractUserDataFields(userData)
+        debugShowData and printJsonData(udf)
         for uf in udf:
             #如果不是新增，则先查找记录
             if not do_insert:
@@ -1154,25 +1197,29 @@ order by rel_id, data_class, row_ord, userinfo.info_id' % (idliststr)
                 rs = conn.execute(sqlt[0],sqlt[1])
                 if rs.rowcount>0:
                     row = rs.fetchone()
+                    rs.close()
                     info_id = row['info_id']
                     sqlt = userFieldDataToUpdateSql(user_id,app_id,info_id,uf)
                     #print sqlt[0] % tuple(sqlt[1])
-                    conn.execute(sqlt[0],sqlt[1])
+                    rsu = conn.execute(sqlt[0],sqlt[1])
+                    rsu.close()
                     fieldInsert = False
                 else:
+                    rs.close()
                     fieldInsert = True
             if do_insert or fieldInsert:
                 sqlt = userFieldDataToInsertSql(user_id,app_id,uf)
-                #print sqlt[0] % tuple(sqlt[1])
+                #print sqlt[0],sqlt[1], sqlt[0] % tuple(sqlt[1])
                 rs = conn.execute(sqlt[0],sqlt[1])
-                if rs.rowcount>0:
-                    rs = conn.execute('select @dataid')
-                    info_id = rs.fetchone()[0]
+                rs.close()
+                rs2 = conn.execute('select @dataid')
+                info_id = rs2.fetchone()[0]
+                rs2.close()
         # 5. todo: select role
             if info_id>0:
                 conn.execute('update userinfo set selected=1 where info_id=%s',info_id)
         self.dbConns.conn_end(conn)
-        return
+        return user_id
 
     def userAddBlank(self, userData, user_state=0):
         # add user
@@ -1190,20 +1237,27 @@ order by rel_id, data_class, row_ord, userinfo.info_id' % (idliststr)
         user = contactData[0]
         contact = contactData[1]
         relationData = contactData[2]
+        
         def getid(user):
             user_id = user.get('user_id',None)
-            if user_id == None and 'email' in user:
-                user_id = self.userLookup(user['email'], 'id')
-            if user_id == None and 'phone' in user:
-                user_id = self.userLookup(user['phone'], 'id')
-            if user_id == None and 'guid' in user:
-                self.userLookup('', 'id', user['guid'])
             if user_id == None:
-                user_id = self.userAddBlank(user,0)
+                (user_id, idenTypes) = self.userIdForIdent(user, app_id)
+            if user_id == None:
+                if user.has_key('phone'):
+                    user['versign_phone']=user['phone']
+                    if not user.has_key('telephones'):
+                        user['telephones']={'tel_type':'mobile','tel_number':trim(user['phone'])}
+                if user.has_key('email'):
+                    user['versign_email']=user['email']
+                    if not user.has_key('emails'):
+                        user['emails']={'email_type':'person','email':trim(user['email'])}
+                user_id = self.userPut(user, app_id, user_state=0)
+
             return user_id
 
         user_id = getid(user)
         contact_id = getid(contact)
+        print 'user_id, contact_id',user_id, contact_id
         if (contact_id != None) and (user_id != None):
             if type(relationData) is not dict:
                 relationData = {}
@@ -1220,7 +1274,8 @@ order by rel_id, data_class, row_ord, userinfo.info_id' % (idliststr)
             sql = sql+'insert into user_relation (user_id,relation_user_id,app_id'+ks+') ' \
 +' select * from (select @user_id, @contact_uid, @app_id '+vs+') d where (select count(*) from user_relation '  \
 +" where user_id = @user_id and relation_user_id = @contact_uid and app_id=@app_id and relation_type=%s)=0; COMMIT; "
-            self.dbConns.execute(sql, [user_id, contact_id, app_id]+vl+[relationData['relation_type']])
+            rs = self.dbConns.execute(sql, [user_id, contact_id, app_id]+vl+[relationData['relation_type']])
+            rs.close()
         return [user_id, contact_id] 
 
     '''
@@ -1242,7 +1297,7 @@ order by rel_id, data_class, row_ord, userinfo.info_id' % (idliststr)
     style 8:
         [[user user_id, [[contact user_id, relation data], [contact user_id, relation data], ...]]...]
     style 9 [{user object},{user object},{relation data}],[{},{}],...
-        [[{email|phone|user_id|user ident: value,...},{email|phone|user_id|user ident: value,...},relation data],[{},{},{}],...]
+        [[userdata{email|phone|user_id|user ident: value,...},{email|phone|user_id|user ident: value,...},relation data],[{},{},{}],...]
     '''
     def contactPut(self, app_id, contactDataList, dataStyle=contact_style_phone_1_1):
         def extractData_1_1(data, key):
@@ -1294,6 +1349,7 @@ order by rel_id, data_class, row_ord, userinfo.info_id' % (idliststr)
         elif dataStyle == contact_style_user_id_1_n:
             r = add_contract_list_n(contactDataList, 'user_id')
         elif dataStyle == contact_style_mix:
-            pass
-
+            r = []
+            for contactData in contactDataList:
+                r.append(self._contactAdd(app_id, contactData))
         return r

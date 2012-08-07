@@ -6,7 +6,7 @@ import time
 if len(sys.argv)>1 : 
     umax=long(sys.argv[1])
 else :
-    umax=1
+    umax=10
     
 if len(sys.argv)>2 : 
     cmax=long(sys.argv[2])
@@ -15,7 +15,7 @@ else :
 
 trans = DatabaseTrans()
 t1 = time.time()
-trans.ttcontactTrans(umax,cmax)
+trans.qiekeTrans(umax,cmax)
 t2 = time.time()
 
 print t1,t2, t2-t1

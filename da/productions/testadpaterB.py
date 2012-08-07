@@ -52,7 +52,7 @@ d = DatabaseWorker()
 
 #v = d.userRelationList(12)
 #printJsonData(v)
-    
+
 #print '\n--------------------------------'
 
 #v = d.userContacts(12,dict(offset=0,limit=1))
@@ -129,7 +129,7 @@ for j  in range(0,10):
     for i in range(0,x):
         rsls[i].close()
         ls[i].close()
-engine.dispose()    
+engine.dispose()
 
 '''
 '''
@@ -228,37 +228,89 @@ for row in rs:
 t_end = time.time()
 data = [t_start,t_end,t_end-t_start]
 print data
+
+import MySQLdb
+
+tt_start = time.time()
+engine = create_engine('mysql://%s:%s@%s:%s/user_profile_m?charset=utf8'%('root', 'idea', '192.168.91.48', '3306'))
+conn = engine.connect()
+
+s = [
+"select * from users limit 10"
+]
+for sql in s:
+    cur = conn.connection.connection.cursor(MySQLdb.cursors.SSCursor)
+    print '--', cur.execute(sql)
+    print cur.messages
+    print cur.fetchone()
+    print cur.fetchone()
+    print cur.fetchone()
+    print '-----'
+    for rec in cur:
+        print rec
+    cur.close()
 '''
-
-
 '''
 tt_start = time.time()
 engine = create_engine('mysql://%s:%s@%s:%s/user_profile_m?charset=utf8'%('root', 'idea', '192.168.91.48', '3306'))
 conn = engine.connect() # commit; select @id := LAST_INSERT_ID();
-#rs = conn.execute("select @c:=1; set @a=1; select @b:=2; insert into data_dict (data_name) values (111); commit;") 
-rs = conn.execute("SELECT * FROM  `data_dict` LIMIT 0 , 1") 
-for i in range(0,1):
+
+cnn = conn.connection
+cur = cnn.cursor()
+cur.execute('select * from users')
+print cur.fetchall()
+cur.execute("""
+    insert into data_dict (data_name) values (111);
+    select @a:=1;
+    update data_dict set data_name='aaaa' where data_id = 20;
+    select * from data_dict limit 2;
+    set @dataid = LAST_INSERT_ID();
+    commit;
+    """)
+cur.close()
+cur = cnn.cursor()
+cur.execute('select * from users tttt ')
+
+
+for j in range(0,5):
+    #rs = conn.execute("select @c:=1; set @a=1; select @b:=2; insert into data_dict (data_name) values (111); commit;")
+    #rs = conn.execute("SELECT * FROM  `data_dict` LIMIT 0 , 1")
+    rs = conn.execute("""
+    select @a:=1;
+    update data_dict set data_name='aaaa' where data_id = 20;
+    insert into data_dict (data_name) values (111);
+    select * from data_dict limit 2;
+    set @dataid = LAST_INSERT_ID();
+    commit;
+    """)
     cursor = rs.context.cursor
-    print dict(rownumber=cursor.rownumber,
-               lastrowid=cursor.lastrowid, 
-               returns_rows=rs.returns_rows,
-               rowcount=cursor.rowcount,
-               arraysize=cursor.arraysize,
-               description=cursor.description,
-##               rslastrowid=rs.lastrowid,
-##               is_crud  =rs.context.is_crud,
-##               isddl    =rs.context.isddl,
-##               isdelete =rs.context.isdelete,
-##               isupdate =rs.context.isupdate,
-##               isinsert =rs.context.isinsert,
-##               lastrow_has_defaults =rs.context.lastrow_has_defaults()
-               description_flags= cursor.description_flags
-               )
-    #if rs.returns_rows:
-    d = cursor.fetchall()
-    print d
-    a= d[0][8]
-    print 'next',cursor.nextset()
+    #rs.close()
+    for i in range(0,1):
+        #cursor = rs.cursor
+        print dict(rownumber=cursor.rownumber,
+                   lastrowid=rs.lastrowid,
+                   returns_rows=rs.returns_rows,
+                   #rowcount=cursor.rowcount,
+                   #description=cursor.description,
+    ##               rslastrowid=rs.lastrowid,
+    ##               is_crud  =rs.context.is_crud,
+    ##               isddl    =rs.context.isddl,
+    ##               isdelete =rs.context.isdelete,
+    ##               isupdate =rs.context.isupdate,
+    ##               isinsert =rs.context.isinsert,
+    ##               lastrow_has_defaults =rs.context.lastrow_has_defaults()
+                   #description_flags= cursor.description_flags
+                   arraysize=cursor.arraysize
+                   )
+        #if rs.returns_rows:
+        #data = cursor.fetchall()
+        #print data
+        print 'next',cursor.nextset()
+    rs.close()
+    conn.execute("select@a:=1; select * from data_dict limit 1;")
+'''
+
+'''
 
 #conn.execute('update userinfo_emails set  userinfo_emails.hashs = 0')
 tt_start = time.time()
@@ -274,7 +326,7 @@ print [tt_start,time.time(),time.time()-tt_start]
 #conn.execute('update userinfo_emails set  userinfo_emails.hashs = 0')
 tt_start = time.time()
 v = ', '.join( '(%s, %s)' % (f[0],hash(f[2])) for f in data)
-#print v 
+#print v
 sql = "select @a=1; CREATE TEMPORARY TABLE tmp(id BIGINT,n INT,KEY id( id )); \
 INSERT INTO tmp VALUES %s ;\
 UPDATE userinfo_emails u,tmp SET u.hashs = tmp.n WHERE u.info_id = tmp.id; \
@@ -289,14 +341,15 @@ print [tt_start,time.time(),time.time()-tt_start]
 
 '''
 
-
-rs = d.dbConns.execute('SELECT uid FROM  user_ident')
+'''
+rs = d.dbConns.execute('SELECT hex(uid) FROM  user_ident')
 uid = rs.fetchone()[0]
-#d.dbConns.execute('UPDATE user_ident SET uid = 0x123456789ABCDEF0123456789ABCDEF1 where uid = %s',uid)
+print type(uid), uid,
+d.dbConns.execute('UPDATE user_ident SET uid = 0x123456789ABCDEF0123456789ABCDEF2 where uid =unhex(%s)',long(uid,16))
 
-print type(uid), uid, hex(long(uid))
+print hex(long(uid,16))
 
-''' '''
+'''
 
 '''
 print '\n--------------------------------'
@@ -343,7 +396,7 @@ for i in range(23,24):
         #print 'rownumber=%s, returns_rows=%s, rowcount=%s' % (rs.cursor.rownumber , rs.returns_rows, rs.cursor.rowcount)
         #print 'next',
         rs.context.cursor.nextset()
-    
+
 '''
 
 '''

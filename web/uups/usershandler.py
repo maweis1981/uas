@@ -16,6 +16,7 @@ import time
 
 from sqlalchemy import *
 import MySQLdb
+from copy import *
 
 import json
 
@@ -86,7 +87,7 @@ class UsersHandler(BaseHandler):
                 print jsonData
                 print '**********************************'
                 #data = simplejson.loads(data)
-                return self.render('userfull.json',data = data)
+                return self.render('userfull.json',data = TrimEmptyDataField(data))
 
             elif action == "lookup":
                 """
@@ -391,3 +392,27 @@ class UsersHandler(BaseHandler):
             
         return self.write(data)
 
+
+def TrimEmptyDataField(d,emptys=None):
+    if emptys==None:
+        emptys = [None,'',u'']
+    def TrimDict(k,td):
+        for (key,v) in td.items():
+            if v in emptys:
+                del td[key]
+            elif type(v) in [list,dict]:
+                TrimMain(key,v)
+                if len(v)==0:
+                    del td[key]
+    def TrimMain(k,v):
+        if type(v) is dict:
+            TrimDict(k,v)
+        elif type(v) is list:
+            for i in range(len(v)-1,-1,-1):
+                d = v[i]
+                if type(d) in [list,dict]:
+                    TrimMain(k,d)
+                    if len(d) == 0:
+                        del v[i]
+    TrimMain(None,d)
+    return d

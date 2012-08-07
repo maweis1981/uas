@@ -120,7 +120,7 @@ class DatabaseConnections(object):
     def engine(self):
         if (self.__engine == None) :
             dbconf = initdbconfig()
-            connstring = 'mysql://%s:%s@%s:%s/user_profile_m?charset=utf8'%(dbconf.db_user, dbconf.db_pass, dbconf.db_addr, dbconf.db_port)
+            connstring = 'mysql://%s:%s@%s:%s/user_profile_m2?charset=utf8'%(dbconf.db_user, dbconf.db_pass, dbconf.db_addr, dbconf.db_port)
             print connstring
             self.__engine = create_engine(connstring, pool_size=dbconf.pool_maxconnections)
             #self.__engine = DBPool.getInstance('user_profile_m')
@@ -162,7 +162,7 @@ class DatabaseConnections(object):
     
     def execute(self, object, *multiparams, **params):
         try:
-            conn = self.conn_begin()
+            conn = self.conn_begin(False)
             rs = conn.execute(object, *multiparams, **params)
         finally:
             self.conn_end(conn)
